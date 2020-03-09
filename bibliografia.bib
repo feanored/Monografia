@@ -1,0 +1,64 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%% INSERINDO COMENTÁRIOS EM ARQUIVOS .bib %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% 1. Como em outros arquivos LaTeX, comentários são iniciados por "%" e,
+%    portanto, é preciso usar "\%" para imprimir o caractere "%". Esquecer
+%    disso pode gerar erros difíceis de encontrar!
+%
+% 2. Não é possível inserir comentários dentro de uma entrada, apenas fora.
+%
+% 3. Não é possível incluir o caractere arroba em um comentário.
+%
+% 4. Se quiser desabilitar temporariamente um campo ("comentar" o campo),
+%    troque seu nome para algum nome inválido, como "author-disable".
+%    Se quiser fazer alguma observação permanente dentro de uma entrada,
+%    você também pode usar algum nome de campo inválido, como "lembrete",
+%    ou usar o campo "annotation", que normalmente é ignorado.
+%
+% 5. Se quiser desabilitar temporariamente uma entrada inteira ("comentar" a
+%    entrada), não basta colocar "%" nas linhas correspondentes por causa do
+%    caractere arroba; também é preciso remover a arroba.
+%
+% 6. Na verdade, as regras não são bem essas, mas segui-las é uma boa ideia:
+%    https://tex.stackexchange.com/a/262282
+
+% Esta entrada não está em uso em tese.tex, apenas em
+% apresentacao.tex, mas isso não é um problema: você pode
+% ter um banco de dados com todos os papers que são de seu
+% interesse e, em um dado texto, citar apenas alguns deles.
+
+@Book{hands,
+ author   = {Aurélien Géron},
+ title    = {Hands-on Machine Learning with Scikit-Learn, Keras, and TensorFlow},
+ edition  = {2º},
+ publisher= {O'Reilly},
+ year     = {2019},
+}
+
+@Book{classic,
+ author   = {David Kopec},
+ title    = {Problemas Clássicos de Ciência da Computação com Python},
+ edition  = {1º},
+ publisher= {Novatec},
+ year     = {2019},
+}
+
+@Book{data,
+ author   = {Joel Grus},
+ title    = {Data Science do Zero},
+ edition  = {1º},
+ publisher= {O'Reilly},
+ year     = {2016},
+}
+
+@Book{carroll,
+ author   = {Bradley W. Carroll},
+ author   = {Dale A. Ostlie},
+ title    = {An Introduction to Modern Astrophysics},
+ edition  = {2º},
+ publisher= {Addison Wewley Longman},
+ year     = {2006},
+}
+
+% https://adl1995.github.io/an-overview-of-activation-functions-used-in-neural-networks.html
