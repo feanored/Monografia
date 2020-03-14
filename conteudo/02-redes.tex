@@ -4,13 +4,15 @@
 
 \chapter{Redes neurais multicamadas}
 
-Neste capítulo são apresentados alguns conceitos básicos de \defi{aprendizado de máquina}, com foco nos algoritmos de redes neurais multicamadas, em especial o \defi{perceptron}, cujo desenvolvimento foi inspirado nas redes neurais biológicas, ou seja, os neurônios e suas conexões no cérebro, conforme descrito por David Kopec \citep{classic}.
+Neste capítulo são apresentados alguns conceitos básicos de \defi{aprendizado de máquina}, com foco nos algoritmos de redes neurais multicamadas, em especial o \defi{perceptron}, cujo desenvolvimento foi inspirado nas redes neurais biológicas, ou seja, os neurônios e suas conexões no cérebro, conforme descrito por Kopec \citep{classic}.
 
-Pode-se classificar as técnicas de aprendizado de várias formas, de acordo com alguma de suas caracteŕisticas. Por exemplo, Aurélien Géron \citep{hands} utiliza o grau de supervisão humana durante o seu funcionamento para classificá-los em aprendizado supervisionado ou não-supervisionado.
+Pode-se classificar as técnicas de aprendizado de várias formas, de acordo com alguma de suas características. Por exemplo, Géron \citep{hands} utiliza o grau de supervisão humana durante o seu funcionamento para classificá-los em aprendizado supervisionado ou não-supervisionado.
 
 \section{Aprendizado de máquina supervisionado}
 
- O \defi{aprendizado supervisionado} é usado quando conhecemos os rótulos dos dados que estamos utilizando, por exemplo, se estamos classificando fotos de animais, já sabemos de antemão quais fotos são de gatos, cachorros, etc. O ato de rotular/classificar os dados que usamos no aprendizado é o que designamos de ``supervisão humana''.
+ Um algoritmo de \defi{aprendizado supervisionado} é usado quando conhecemos os rótulos dos dados que estamos utilizando para o treinamento, ou seja, temos a resposta correta da aprendizagem. Por exemplo, se estamos classificando fotos de animais, possuímos um conjunto de fotos em que já sabemos de antemão quais são de gatos, cachorros, etc.
+
+ O ato de rotular ou classificar os dados que usamos no aprendizado é o que designamos de supervisão humana. Uma vez \emph{treinado}, o algoritmo recebe uma foto nova e então a classifica como sendo uma foto de um gato, ou cachorro, ou qualquer outra resposta daquelas que foram dadas como exemplos durante o treinamento.
 
 Dentro do aprendizado supervisionado temos duas principais técnicas. A regressão é usada para prever valores, e a classificação é usada para prever os rótulos dos dados (que também são chamados de classes). Neste texto os termos ``algoritmo'' e ``técnica'' serão usados livremente como sinônimos, pois uma técnica de aprendizado de máquina, no contexto atual, é obviamente um algoritmo executado no computador.
 
