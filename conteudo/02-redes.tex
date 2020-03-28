@@ -14,7 +14,7 @@ Pode-se classificar as técnicas de aprendizado de várias formas, de acordo com
 
  O ato de rotular ou classificar os dados que usamos no aprendizado é o que designamos de supervisão humana. Uma vez \emph{treinado}, o algoritmo recebe uma foto nova e então a classifica como sendo uma foto de um gato, ou cachorro, ou qualquer outra resposta daquelas que foram dadas como exemplos durante o treinamento.
 
-Dentro do aprendizado supervisionado temos duas principais técnicas. A regressão é usada para prever valores, e a classificação é usada para prever os rótulos dos dados (que também são chamados de classes). Neste texto os termos ``algoritmo'' e ``técnica'' serão usados livremente como sinônimos, pois uma técnica de aprendizado de máquina, no contexto atual, é obviamente um algoritmo executado no computador.
+Dentro do aprendizado supervisionado temos duas técnicas principais. A regressão é usada para prever valores, e a classificação é usada para prever os rótulos dos dados, que também são chamados de classes. Neste texto os termos ``algoritmo'' e ``técnica'' serão usados livremente como sinônimos, pois uma técnica de aprendizado de máquina, no contexto atual, é obviamente um algoritmo executado no computador.
 
 Colocar exemplos...
 
@@ -44,20 +44,22 @@ Todos essas técnicas podem ser usadas para classificação linear ou não-linea
 
 Uma rede neural artificial é um dentre vários métodos de classificação, ou seja, de aprendizado supervisionado. De acordo com Kopec \citep{classic}, ele é utilizado como um classificador não-linear, e por isso pode ser utilizado para prever tipos de dados genéricos, que podem ou não ser lineares. 
 
-Kopec \citep{classic} também cita que este é um dos primeiros a serem desenvolvidos ainda na década de 1950, sendo sua criação motivada pelo funcionamento do cérebro, mas que, de tempos pra cá, vem recebendo muita importância graças à evolução computacional de hardware e software desde o início dos anos 2000.
+Kopec \citep{classic} também cita que apesar das primeiras redes neurais artificiais, ou \eng{perceptrons} tivessem sido desenvolvidas ainda na década de 1950, sob a inspiração do funcionamento do cérebro, nota-se que, de tempos pra cá, vem recebendo muita importância graças à evolução computacional de hardware e software desde o início dos anos 2000.
 
 Contextualizar mais as redes neurais aqui ...
 
 \section{Perceptron}
 
-A rede mais simples, ou pelo menos o primeiro algoritmo a ser desenvolvido, chama-se Perceptron. Como recentemente surgiu o Perceptron de muitas camadas, a esse primeiro dá-se o nome de Perceptron de única camada, que consiste de uma camada de neurônios de entrada, uma camada oculta de neurônios usados na otimização (mais detalhes abaixo), e uma camada de saída, que contém um neurônio para cada classe pré-definida que será usada na classificação, e cada um armazena a probabilidade deste elemento da amostra pertencer a esta classe.
-
-Um exemplo ilustrativo está na Figura ~\ref{fig:perceptron}. Os neurônios são representados por círculos, cada coluna de neurônios representa uma camada, nesse caso, da esquerda para a direita temos a camada de entrada, a camada oculta e a camada de saída. As linhas representam as ligações entre os neurônios, sendo que cada neurônio de uma camada está ligado a todos da camada anterior.
+A rede neural mais simples, isto é, a primeira que foi criada, chama-se \eng{perceptron}. Mais recentemente surgiu a rede perceptron de várias camadas (\eng{multi-layer perceptron}), àquela mais simples e antiga dá-se o nome de perceptron de única camada (\eng{single-layer perceptron}), uma ilustração dela está na Figura ~\ref{fig:perceptron}. 
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=12cm]{figuras/perceptron}
+\includegraphics[width=6cm]{figuras/perceptron}
 \caption{\label{fig:perceptron}Rede neural simples, o perceptron de única camada. }
 \end{figure}
+
+O perceptron de camada única consiste de uma camada de neurônios de entrada, uma camada oculta de neurônios usados na otimização, e uma camada de saída, que irá conter os dados previstos, ou ainda as probabilidades do dado pertencer a alguma das classes que a rede poderá classificá-lo.
+
+Os neurônios são representados por círculos, cada coluna de neurônios representa uma camada, nesse caso, da esquerda para a direita temos a camada de entrada, a camada oculta e a camada de saída. As linhas representam as ligações entre os neurônios, sendo que cada neurônio de uma camada está ligado a todos da camada anterior.
 
 Vou descrever aqui as contas...

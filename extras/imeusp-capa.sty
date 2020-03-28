@@ -332,16 +332,16 @@
 % muito discrepante do restante do texto.
 
 \@ifpackageloaded{fontspec}
-  {\providecommand{\macQuatroNoveNove}{map~\oldstylenums{2010}}}
+  {\providecommand{\macQuatroNoveNove}{map\oldstylenums{2010}}}
   {
-    \providecommand{\macQuatroNoveNove}{{\fontfamily{lmr}\selectfont map~\oldstylenums{2010}}}
+    \providecommand{\macQuatroNoveNove}{{\fontfamily{lmr}\selectfont map\oldstylenums{2010}}}
 
     \@ifpackageloaded{libertinus}
-      {\renewcommand{\macQuatroNoveNove}{\LibertinusSerifOsF map~2010}}
+      {\renewcommand{\macQuatroNoveNove}{\LibertinusSerifOsF map2010}}
       {}
 
     \@ifpackageloaded{libertine}
-      {\renewcommand{\macQuatroNoveNove}{\libertineOsF map~2010}}
+      {\renewcommand{\macQuatroNoveNove}{\libertineOsF map2010}}
       {}
   }
 
