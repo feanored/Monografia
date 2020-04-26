@@ -113,51 +113,57 @@ Uma busca rápida na \emph{Wikipedia} \citep{wiki} define ciência de dados como
 
 Apesar de não ser a única definição para o termo, Pedro A. Morettin e Julio M. Singer \citep{apostila} nos lembram que essa também é uma definição da estatística. Eles comparam o uso dos termos e apontam que o trabalho dos \emph{cientistas de dados} diferem dos \emph{estatísticos} apenas quando eles usam dados de natureza multimídia como áudio e vídeo, por exemplo. Mas que, uma vez que esses dados são processados e tornam-se números, as técnicas e conceitos utilizados pelos primeiros passam a ser basicamente os mesmos utilizados pelos segundos.
 
-Na verdade, Morettin \& Singer \citep{apostila} citam que na década de 80 houve uma primeira tentativa de aplicar o rótulo \emph{ciência de dados}, (\emph{Data Science}), ao trabalho feito pelos estatísticos aplicados da época, como uma forma de dar-lhes mais visibilidade. Curiosamente, fato mencionado pelos autores, existem atualmente cursos específicos de ciência de dados em universidades ao redor do mundo, mas a maioria deles situada em institutos de áreas aplicadas como Engenharia e Economia, e raramente nos institutos de Estatística propriamente ditos.
+Na verdade, Morettin \& Singer \citep{apostila} citam que na década de 80 houve uma primeira tentativa de aplicar o rótulo \emph{ciência de dados}, (\emph{Data Science}), ao trabalho feito pelos estatísticos aplicados da época, como uma forma de dar-lhes mais visibilidade. Curiosamente, fato mencionado pelos autores, existem atualmente cursos específicos de ciência de dados em universidades ao redor do mundo, mas a maioria deles situada em institutos de áreas aplicadas como engenharia e economia, e raramente nos institutos de estatística propriamente ditos.
 
 Para entender um pouco mais de seu escopo, David M. Blei e Padhraic Smyth \citep{blei} discutem ciência de dados sob as visões estatística, computacional e humana. Eles argumentam que é a combinação desses três componentes que formam a essência do que ela é e, assim como, do conhecimento que ela é capaz de produzir.
 
-Em resumo, a estatística guia a coleta e análise dos dados. A computação cria algoritmos, técnicas de processamento em paralelo e gerenciamento de memória eficazes para que sua execução seja efetiva. E o papel humano é o de avaliar quais tipos de dados, técnicas de análises, algoritmos e modelos são apropriados para responder ao problema em questão. Este é o papel do \emph{cientista de dados}.
+Em resumo, a estatística guia a coleta e análise dos dados. A computação cria algoritmos, técnicas de processamento e gerenciamento de memória eficazes para que sua execução seja efetiva. E o papel humano é o de avaliar quais tipos de dados, técnicas de análises, algoritmos e modelos são apropriados para responder ao problema em questão. Este é o papel do \emph{cientista de dados}.
+
+Este projeto está inserido num pequeno nicho da ciência de dados, que são os \eng{perceptrons}. Nas próximas seções está descrito o caminho que leva até eles.
 
 \section{Aprendizado de máquina}
 
-Enquanto isso, algoritmos de \defi{aprendizado de máquina} vem sendo utilizados em grande parte dos modelos de ciência de dados. Mas o que é aprendizado de máquina? Ou então, o que significa dizer que o computador, neste caso a ``máquina'', está \emph{aprendendo}?
+Algoritmos de \defi{aprendizado de máquina} vem sendo utilizados em grande parte dos modelos de ciência de dados. Mas o que é aprendizado de máquina? Ou então, o que significa dizer que o computador, neste caso a ``máquina'', está \emph{aprendendo}?
 
-Antes da definição formal, Aurélien Géron \citep{hands} nos dá uma ideia geral lembrando que uma das primeiras aplicações de sucesso de aprendizado de máquina foi o filtro de \eng{spam}, criado na década de 90. Uma das fases de seu desenvolvimento foi aquela em que os usuários assinalavam que certos e-mails eram \eng{spams} e outros não eram. Hoje em dia, raramente temos que marcar ou desmarcar e-mails, pois a maioria dos filtros já ``aprenderam'' a fazer seu trabalho de forma muito eficiente.
+Aurélien Géron \citep{hands} nos dá uma ideia geral lembrando que uma das primeiras aplicações de sucesso de aprendizado de máquina foi o filtro de \eng{spam}, criado na década de 90. Uma das fases de seu desenvolvimento foi aquela em que os usuários assinalavam que certos e-mails eram \eng{spams} e outros não eram. Hoje em dia, raramente temos que marcar ou desmarcar e-mails, pois a maioria dos filtros já ``aprenderam'' a fazer seu trabalho de forma muito eficiente, não temos mais nada a ``ensiná-lo''.
 
-Dentre as muitas definições de aprendizado de máquina, de modo geral uma área da ciência da computação, no contexto de ciência de dados, Joel Grus \citep{data} define-o como a ``criação e o uso de modelos que são ajustados a partir dos dados''. Seu objetivo é usar dados existentes para desenvolver modelos que possamos usar para \emph{prever} possíveis saídas para dados novos. Exemplos, além do filtro de \eng{spams} podem ser: prever transações de crédito fraudulentas, prever a chance de um cliente clicar em uma propaganda ou então prever qual time de futebol irá vencer o Campeonato Brasileiro.
+O conceito de aprendizado de máquina está intimamente ligado à ciência da computação. Porém, no contexto de ciência de dados, é definido por Joel Grus \citep{data} como a ``criação e o uso de modelos que são ajustados a partir dos dados''. Seu objetivo é usar dados existentes para desenvolver modelos que possamos usar para \emph{prever} possíveis respostas à consultas. Exemplos, além do filtro de \eng{spams} podem ser: detectar transações de crédito fraudulentas, calcular a chance de um cliente clicar em uma propaganda ou então prever qual time de futebol irá vencer o Campeonato Brasileiro.
 
-Pode-se classificar as técnicas de aprendizado de várias formas, de acordo com alguma de suas características. Por exemplo, Géron \citep{hands} utiliza o grau de supervisão humana durante o seu funcionamento para classificá-los em aprendizado supervisionado ou não-supervisionado.
+Como ficará claro no texto final desse trabalho, o aprendizado consiste na utilização de dados já conhecidos para ajustar parâmetros de modelos. Uma vez ajustados os parâmetros, o algoritmo que descreve o modelo passa a ser usado para responder às consultas. Essa fase de ajuste de parâmetros é chamada de aprendizado ou treinamento.
+
+Pode-se classificar as técnicas de aprendizado de várias formas, de acordo com alguma de suas características. Por exemplo, Géron \citep{hands} utiliza o grau de supervisão humana durante o seu funcionamento para classificá-los em aprendizado supervisionado ou não-supervisionado. Isto quer dizer que durante o treinamento são fornecidos um conjunto de consultas e de respostas esperadas. Tais respostas foram dadas por humanos, daí o termo `supervisão humana'.
 
 \section*{Aprendizado supervisionado}
 
- Um algoritmo de \defi{aprendizado supervisionado} é usado quando conhecemos os rótulos dos dados que estamos utilizando para o treinamento, ou seja, temos a resposta correta da aprendizagem. Por exemplo, se estamos classificando fotos de animais, possuímos um conjunto de fotos em que já sabemos de antemão quais são de gatos, cachorros, etc.
+ Um algoritmo de \defi{aprendizado supervisionado} é usado quando conhecemos os rótulos dos dados que estamos utilizando. De modo geral já temos de antemão as respostas às consultas para os dados utilizados no treinamento. Por exemplo, se estamos classificando fotos de animais, possuímos um conjunto de fotos em que já sabemos quais são de gatos, cachorros, etc.
 
- O ato de rotular ou classificar os dados que usamos no aprendizado é o que designamos de supervisão humana. Uma vez \emph{treinado}, o algoritmo recebe uma foto nova e então a classifica como sendo uma foto de um gato, ou cachorro, ou qualquer outra resposta daquelas que foram dadas como exemplos durante o treinamento.
+ O ato de rotular previamente os dados que usamos no treinamento é o que designamos de supervisão humana. Uma vez \emph{treinado}, o algoritmo recebe uma foto, ou seja, uma nova consulta e então fornece a resposta se essa é a foto de um gato, ou cachorro, ou qualquer outra resposta daquelas que foram dadas como exemplos durante o treinamento.
 
-Dentro do aprendizado supervisionado temos duas técnicas principais. A regressão é usada para prever valores, e a classificação é usada para prever os rótulos dos dados, que também são chamados de classes. Neste texto os termos ``algoritmo'' e ``técnica'' serão usados livremente como sinônimos, pois uma técnica de aprendizado de máquina, no contexto atual, é obviamente um algoritmo executado no computador.
+Dentro do aprendizado supervisionado temos duas técnicas principais. A regressão é usada para prever valores, ou seja, fornecer dados do futuro, e a classificação é usada para prever os rótulos dos dados, que também são chamados de classes. Neste texto os termos ``algoritmo'' e ``técnica'' serão usados livremente como sinônimos, pois uma técnica de aprendizado de máquina, no contexto atual, é obviamente um algoritmo executado no computador.
 
 \section*{Aprendizado não-supervisionado}
 
-Nesse tipo de aprendizado de máquina, não sabemos os rótulos dos dados que estamos lidando, assim o algoritmo poderá agrupar os dados de forma automática, por exemplo, se estiver sendo usado um algoritmo classificador.
+Nesse tipo de aprendizado de máquina, não sabemos os rótulos dos dados que estamos lidando, assim o algoritmo poderá agrupar os dados de forma automática, por exemplo, se estivermos lidando com problemas de classificação. Aqui, as consultas podem ser coisas como ``quantos são os perfis dos clientes'' ou ``quantas espécies de flores existem nestas fotos'', e assim por diante.
 
-Alguns métodos não-supervisionadas de aprendizado foram enumeradas por Géron \citep{hands}. O \textbf{agrupamento} de dados similares, sendo essa similaridade podendo ser uma distância no espaço dos dados (inspiração geométrica), e utiliza-se algoritmos como $k$-Vizinhos, $k$-Means, $k$-Medians, etc. Exemplos de aplicações são agrupamento de produtos em supermercados, interesses comuns de clientes em sites de conteúdo digital, etc.
+Alguns métodos não-supervisionadas de aprendizado foram enumeradas por Géron \citep{hands}. O \textbf{agrupamento} de dados similares sob uma inspiração geométrica. Nesse caso os dados são agrupados conforme suas posições num determinado espaço e utiliza-se algoritmos como $k$-vizinhos, $k$-means, $k$-medians, etc. Exemplos de aplicações são agrupamento de produtos em supermercados, interesses comuns de clientes em sites de conteúdo digital, etc.
 
 Outra técnida é a \textbf{detecção de anomalias}, cujo objetivo é ter uma descrição de como os dados considerados ``normais'' se parecem, e usa esse agrupamento para detectar se novos dados estariam ``fora'' desse padrão. Um exemplo é a detecção de fraudes.
 
 Também pode-se citar sobre a técnica de \textbf{estimação de densidades}, que tem como objetivo a estimação da função densidade de probabilidade de um conjunto de dados gerados por algum processo aleatório.
 
-\section{Técnicas de Classificação}
+\section{Classificação}
 
-Sendo uma das duas técnicas principais do aprendizado supervisionado, problemas desse tipo buscam aprender com um conjunto de dados previamente rotulados, como ``se parecem'' os dados que pertencem às classes que queremos classificar, para que quando processarmos novos dados, o algoritmo usado possa identificar, o mais corretamente possível, as classes às quais pertecem esses dados, dentro do conjunto de classes que já definimos ao rotular os dados iniciais.
+É uma das técnicas principais do aprendizado supervisionado, problemas desse tipo buscam aprender com um conjunto de dados previamente rotulados. Consultas do tipo ``a qual grupo pertence este cliente'' ou ``que animal há nesta foto'' podem ser modeladas por esses algoritmos. De modo geral, ele responde a consultas que dizem respeito às classes dos dados, e atribui para novos dados alguma classe que pertence ao conjunto de classes que usamos para rotular os dados iniciais.
 
-Existem vários tipos de algoritmos de classificação, dentre eles podemos mencionar: Máquina de Vetor Suporte, em inglês Support Vector Machine (SVM), Árvores de decisão, Florestas aleatórias (podendo ser entendidas como um conjunto de centenas de árvores de decisão aleatoriamente definidas) e as Redes neurais artificiais.
+Existem vários tipos de algoritmos de classificação, dentre eles podemos mencionar: máquina de vetor suporte (\eng{support vector machine}, SVM), árvores de decisão, florestas aleatórias que são um conjunto de muitas de árvores de decisão aleatoriamente definidas e, finalmente, as redes neurais artificiais.
 
-Todos essas técnicas podem ser usadas para classificação linear ou não-linear, no sentido em que valores eles estão classificando, assim como na forma que está sendo feita essa classificação. Se imaginamos um espaço bidimensional, um algoritmo de classificação linear irá separar as classes de dados por retas, enquanto que um classificador não-linear poderá usar outra curva qualquer para a separação. Abstraindo o espaço bidimensional para os espaços multidimensionais dos dados que são comumente analisados, podemos pensar em hiperplanos (estruturas ($n{-}1$-dimensionais de espaços $n$-dimensionais) para o caso dos classificadores lineares, ou subespaços quaisquer para os não-lineares.
+Todos essas técnicas podem ser usadas para classificação linear ou não-linear, no sentido em que valores eles estão classificando, assim como na forma que está sendo feita essa classificação. Se visualizarmos os dados num espaço bidimensional, um algoritmo de classificação linear irá separar as classes de dados por retas, enquanto que um classificador não-linear poderá usar outra curva qualquer para a separação. 
+
+Abstraindo o espaço bidimensional para os espaços multidimensionais dos dados que são comumente analisados, podemos pensar em hiperplanos, estruturas ($n{-}1$-dimensionais de espaços $n$-dimensionais, para o caso dos classificadores lineares, ou subespaços quaisquer para os não-lineares.
 
 \section{Redes Neurais}
 
-Uma \defi{rede neural} é um exemplo de modelo preditivo de aprendizado de máquina. Tal modelo foi criado com inspiração no funcionamento do cérebro biológico, e que, apesar de terem sido as primeiras a serem criadas, conforme descrito por David Kopec \citep{classic}, vem ganhando nova importância na última década, graças ao avanço computacional, uma vez que exigem muito processamento, e também porque podem ser usadas para resolver problemas de aprendizagem dos mais variados tipos.
+Uma \defi{rede neural} é um exemplo de modelo preditivo de aprendizado de máquina que foi criado com inspiração no funcionamento do cérebro biológico. David Kopec \citep{classic} descreve que apesar de terem sido as primeiras a serem criadas, elas vem ganhando nova importância na última década, graças ao avanço computacional, uma vez que exigem muito processamento, e também porque podem ser usadas para resolver problemas de aprendizagem dos mais variados tipos.
 
 Uma rede neural artificial é um dentre vários métodos de classificação, ou seja, de aprendizado supervisionado. De acordo com Kopec \citep{classic}, ele é utilizado como um classificador não-linear, e por isso pode ser utilizado para prever tipos de dados genéricos, que podem ou não ser lineares.
 
@@ -173,15 +179,14 @@ Mais recentemente surgiu a rede perceptron de várias camadas (\eng{multi-layer 
 \caption{\label{fig:perceptron}Rede neural simples, o perceptron de única camada. }
 \end{figure}
 
-O perceptron de camada única consiste de uma camada de neurônios de entrada, uma camada oculta de neurônios usados na otimização, e uma camada de saída, que irá conter os dados previstos, ou ainda as probabilidades do dado pertencer a alguma das classes que a rede poderá classificá-lo.
+Os neurônios são representados por círculos, dentro deles há um valor numérico que intuitivamente podemos atribuir ao grau de ativação do neurônio, mesmo que no caso biológico se restrinja aos valores $0$ e $1$, ou seja, ativados ou não. Cada coluna de neurônios representa uma camada, nesse caso, da esquerda para a direita temos a camada de entrada, a camada oculta e a camada de saída. As linhas representam as ligações entre os neurônios, sendo que cada neurônio de uma camada está ligado a todos da camada anterior.
 
-Os neurônios são representados por círculos, cada coluna de neurônios representa uma camada, nesse caso, da esquerda para a direita temos a camada de entrada, a camada oculta e a camada de saída. As linhas representam as ligações entre os neurônios, sendo que cada neurônio de uma camada está ligado a todos da camada anterior.
+O perceptron de camada única consiste de uma camada de neurônios de entrada, uma camada oculta de neurônios usados na otimização, e uma camada de saída, que irá conter os dados previstos, ou ainda as probabilidades do dado pertencer a alguma das classes que a rede poderá classificá-lo.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SEÇÕES FINAIS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%% Bibliografia com biblatex (preferido): %%%%%%%%
-\pagebreak
 \printbibliography[title=Referências]
 
 \end{document}
