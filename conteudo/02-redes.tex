@@ -2,9 +2,10 @@
 %(dica para o editor de texto: este arquivo é parte de um documento maior)
 % para saber mais: https://tex.stackexchange.com/q/78101/183146
 
-\chapter{Redes neurais multicamadas}
+\chapter{Redes neurais artificiais}
+\label{cap:redes}
 
-Neste capítulo são apresentados alguns conceitos básicos de \defi{aprendizado de máquina}, com foco nos algoritmos de redes neurais multicamadas, em especial o \defi{perceptron}, cujo desenvolvimento foi inspirado nas redes neurais biológicas, ou seja, os neurônios e suas conexões no cérebro, conforme descrito por Kopec \citep{classic}.
+Neste capítulo são apresentados alguns conceitos básicos de \defi{aprendizado de máquina}, com foco nos algoritmos de redes neurais artificiais, em especial o \defi{perceptron}, cujo desenvolvimento foi inspirado nas redes neurais biológicas, ou seja, os neurônios e suas conexões no cérebro, conforme descrito por Kopec \citep{classic}.
 
 Pode-se classificar as técnicas de aprendizado de várias formas, de acordo com alguma de suas características. Por exemplo, Géron \citep{hands} utiliza o grau de supervisão humana durante o seu funcionamento para classificá-los em aprendizado supervisionado ou não-supervisionado.
 
@@ -30,7 +31,7 @@ Também pode-se citar sobre a técnica de \textbf{estimação de densidades}, qu
 
 Colocar exemplos...
 
-\section{Técnicas de Classificação}
+\section{Técnicas de classificação}
 
 Sendo uma das duas técnicas principais do aprendizado supervisionado, problemas desse tipo buscam aprender com um conjunto de dados previamente rotulados, como ``se parecem'' os dados que pertencem às classes que queremos classificar, para que quando processarmos novos dados, o algoritmo usado possa identificar, o mais corretamente possível, as classes às quais pertecem esses dados, dentro do conjunto de classes que já definimos ao rotular os dados iniciais.
 
@@ -40,9 +41,9 @@ Colocar exemplos de aplicações...
 
 Todos essas técnicas podem ser usadas para classificação linear ou não-linear, no sentido em que valores eles estão classificando, assim como na forma que está sendo feita essa classificação. Se imaginamos um espaço bidimensional, um algoritmo de classificação linear irá separar as classes de dados por retas, enquanto que um classificador não-linear poderá usar outra curva qualquer para a separação. Abstraindo o espaço bidimensional para os espaços multidimensionais dos dados que são comumente analisados, podemos pensar em hiperplanos (estruturas ($n{-}1$-dimensionais de espaços $n$-dimensionais) para o caso dos classificadores lineares, ou subespaços quaisquer para os não-lineares.
 
-\section{Redes Neurais}
+\section{Redes neurais}
 
-Uma rede neural artificial é um dentre vários métodos de classificação, ou seja, de aprendizado supervisionado. De acordo com Kopec \citep{classic}, ele é utilizado como um classificador não-linear, e por isso pode ser utilizado para prever tipos de dados genéricos, que podem ou não ser lineares. 
+Uma rede neural artificial é um dentre vários métodos de classificação, ou seja, de aprendizado supervisionado. De acordo com Kopec \citep{classic}, ele é utilizado como um classificador não-linear, e por isso pode ser utilizado para prever tipos de dados genéricos, que podem ou não ser lineares.
 
 Kopec \citep{classic} também cita que apesar das primeiras redes neurais artificiais, ou \eng{perceptrons} tivessem sido desenvolvidas ainda na década de 1950, sob a inspiração do funcionamento do cérebro, nota-se que, de tempos pra cá, vem recebendo muita importância graças à evolução computacional de hardware e software desde o início dos anos 2000.
 
@@ -63,3 +64,9 @@ O perceptron de camada única consiste de uma camada de neurônios de entrada, u
 Os neurônios são representados por círculos, cada coluna de neurônios representa uma camada, nesse caso, da esquerda para a direita temos a camada de entrada, a camada oculta e a camada de saída. As linhas representam as ligações entre os neurônios, sendo que cada neurônio de uma camada está ligado a todos da camada anterior.
 
 Vou descrever aqui as contas...
+
+\section{Sistemas nebulosos}
+
+Os sistemas nebulosos foram criados a partir da teoria dos conjuntos nebulosos criada por \cite{fuzzy_1}
+
+A partir disto, conforme descrito por \citep{fuzzy_2}, os sistemas nebulosos são aproximadores universais. Isto significa que podem aproximar quaisquer funções numa grande variedade de de problemas. Ainda neste artigo é descrito como uma função de 
