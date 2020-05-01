@@ -17,3 +17,6 @@ rm -f *.xdy
 rm -f *.lo*
 rm -f *.toc
 rm -f *.bbl
+rm -f *.???_*
+rm -f *.???-*
+
