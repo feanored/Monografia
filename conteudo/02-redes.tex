@@ -43,43 +43,61 @@ Abstraindo o espaço bidimensional para os espaços multidimensionais dos dados 
 
 Colocar exemplos de aplicações...
 
-\section{Redes neurais artificiais}
+\section{A rede neural perceptron}
 
-Uma rede neural artificial é um dentre vários métodos de classificação, ou seja, de aprendizado supervisionado. De acordo com Kopec \citep{classic}, ele é utilizado como um classificador não-linear, e por isso pode ser utilizado para prever tipos de dados genéricos, que podem ou não ser lineares.
+Uma rede neural artificial é um dentre vários métodos de classificação, ou seja, de aprendizado supervisionado. De acordo com Kopec \citep{classic}, ele é utilizado como um classificador não-linear, e por isso pode ser utilizado para classificar ou prever quaisquer tipos de dados ou funções, que podem ou não ter uma relação linear com o tempo ou com qualquer outro domínio no qual estejam definidos.
 
-Contextualizar mais as redes neurais aqui ...
+Uma definição para uma rede neural artificial dada por Rosangela Ballini \citep{doutorado} é a de um sistema de processamento paralelo e distribuído baseado no sistema nervoso biológico, sendo compostos por elementos computacionais chamados neurônios, arranjados em padrões semelhantes às redes biológicas.
 
-\section{Perceptron}
+Na figura~\ref{fig:neuron} está uma representação de um neurônio biológico. Ele recebe impulsos elétricos de entrada através dos dentritos, que são transmitidos ou não através do núcleo, caso sejam ativados por ele, para os terminais de saída dos axônios. Os neurônios se comunicam através de sinapses, que são ligações entre os dentritos de um e os axônios de outro que realizam a transmissão dos sinais. 
 
-Esta é a primeira rede neural artificial a ser criada, e também a mais simples. Dá-se o nome de \eng{perceptron} de camada única (\eng{single-layer perceptron}), e uma ilustração conceitual dele está na Figura ~\ref{fig:perceptron}. Mais recentemente foram criadas várias outras versões dessa rede, dentre as quais podemos citar o \eng{perceptron} de multi-camadas (\eng{multi-layer perceptron}). 
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/neuron}
+\caption{Representação de um neurônio biológico.\footnote{Extraído de \url{https://cs231n.github.io/neural-networks-1/}}}
+\label{fig:neuron}
+\end{figure}
+
+Dá-se o nome de \eng{perceptron} de camada única (\eng{single-layer perceptron}) ou simplesmente \eng{perceptron} a uma das primeiras e mais simples rede neural artificial a ser criada. Uma ilustração conceitual dela está na figura~\ref{fig:perceptron}. Mais recentemente foram criadas várias outras versões dessa rede, dentre as quais podemos citar o \eng{perceptron} de multi-camadas (\eng{multi-layer perceptron}). 
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=6cm]{figuras/perceptron}
-\caption{\label{fig:perceptron}Rede neural simples, o perceptron de camada única.}
+\caption{Rede neural simples, o perceptron de camada única.}
+\label{fig:perceptron}
 \end{figure}
 
 Os neurônios são representados por círculos, dentro deles há um valor numérico que intuitivamente podemos atribuir ao nível ou grau de ativação do neurônio, mesmo que no caso biológico se restrinja aos valores $0$ e $1$, ou seja, ativados ou não. Cada coluna de neurônios representa uma camada, nesse caso, da esquerda para a direita temos a camada de entrada, a camada oculta e a camada de saída. As linhas representam as ligações entre os neurônios, sendo que cada neurônio de uma camada está ligado a todos da camada anterior.
 
-O perceptron de camada única consiste de uma camada de neurônios de entrada, uma camada oculta de neurônios usados na otimização, e uma camada de saída, que irá conter os dados previstos, ou ainda as probabilidades do dado pertencer a alguma das classes que a rede poderá classificá-lo. E é o fato de haver uma camada oculta nesta rede que a define como sendo de ``camada única''. Caso houvessem mais do que uma camada oculta, ela seria do tipo ``multi-camadas'', naturalmente.
+O perceptron de camada única consiste de uma camada de neurônios de entrada, uma camada oculta de neurônios usados na otimização, e uma camada de saída, que irá conter os dados previstos, ou ainda as probabilidades do dado pertencer a alguma das classes que a rede poderá classificá-lo. E é o fato de haver uma camada oculta nesta rede que a define como sendo de ``camada única''. Caso houvessem mais do que uma camada oculta, ela seria do tipo ``multi-camadas'' mencionada acima.
 
-De modo a entendermos as bases matemáticas do algoritmo, podemos começar de uma rede ainda mais básica, a partir um \eng{perceptron} que seja constituído de apenas $1$ neurônio na única camada oculta. Esta rede super simplificada, que está na Figura ~\ref{fig:neuronio}, pode ser útil para para o entendimento uma vez que neste caso será possível acompanhar graficamente o resultado da execução do algoritmo.
+De modo a entendermos as bases matemáticas do algoritmo, podemos começar de uma rede ainda mais básica, a partir um \eng{perceptron} que seja constituído de apenas $1$ neurônio na única camada oculta. Esta rede super simplificada, que está na figura~\ref{fig:neuronio}, pode ser útil para para o entendimento uma vez que neste caso será possível acompanhar graficamente o resultado da execução do algoritmo.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=9cm]{figuras/neuronio}
-\caption{\label{fig:neuronio}Rede neural mais simples ainda, apenas um neurônio oculto.}
+\includegraphics[width=8cm]{figuras/neuronio}
+\caption{Rede neural mais simples ainda, apenas um neurônio oculto.}
+\label{fig:neuronio}
 \end{figure}
 
-Esta rede possui $2$ neurônios na camada de entrada, que são os números reais $A$ e $B$, $1$ neurônio na camada oculta, no qual está a sua função de ativação $f(Ax + By)$, e $1$ neurônio na camada de saída, que neste caso é um número real $C$.
+Esta rede possui $2$ neurônios na camada de entrada, que são os números reais $A$ e $B$, $1$ neurônio na camada oculta, no qual está a sua função de ativação $f(Ax + By)$, e $1$ neurônio na camada de saída, que neste caso é um número real $C$. Pode-se notar a semelhança dessa rede neural artificial com a sua inspiração biológica com a ajuda da figura~\ref{fig:neuron_model}. 
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/neuron_model}
+\caption{Representação de um neurônio artificial.\footnote{Extraído de \url{https://cs231n.github.io/neural-networks-1/}}}
+\label{fig:neuron_model}
+\end{figure}
+
+Temos os sinais de entrada (como o $x_0$) vindos como viriam os sinais dos axônios de outros neurônios. Eles entram pela camada de entrada da rede, ou dentritos do neurônio. A camada oculta processa as entradas com os pesos, definindo o sinal através de sua função de ativação, similar ao funcionamento do núcleo do neurônio que ativa ou não o sinal recebido. Por fim o sinal é enviado à camada de saída, ou aos axônios do neurônio, concluíndo o processamento.
 
 \section{Sistemas nebulosos}
 
 Os sistemas nebulosos foram criados a partir da teoria dos conjuntos nebulosos criada por L.A. Zadeh \citep{fuzzy_1}. Os conjuntos nebulosos diferem dos conjuntos clássicos na forma em que avaliamos se os elementos pertencem aos conjuntos ou não. 
 
-Num conjunto clássico um elemento pertence a ele ou não, não há meio termo. Já nos conjuntos nebulosos existe uma função associando o grau com que um elemento pertence ao conjunto, a função assume $0$ se não pertence e assume $1$ se pertence completamente, mas também assume qualquer valor real dentro deste intervalo. Esta é a chamada função de pertinência, de forma que a frase ``o elemento $x$ percente mais ao conjunto $A$ do que o elemento $y$'', por exemplo, faz sentido neste contexto.
+Num conjunto clássico um elemento pertence a ele ou não, não há meio termo. Já nos conjuntos nebulosos existe uma função associando o grau com que um elemento pertence ao conjunto, a função assume $0$ se não pertence, ou seja, uma exclusão completa, e assume $1$ se pertence completamente, mas também assume qualquer valor real dentro deste intervalo. Esta é a chamada função de pertinência, de forma que a frase ``o elemento $x$ percente mais ao conjunto $A$ do que o elemento $y$'', por exemplo, é a representação verbal da expressão matemática $f(x) > f(y)$ se usarmos a definição de ordem dos números reais e da notação $f(.)$ para a função de pertinência.
 
-Os sistemas nebulosos são portanto modelos matemáticos de situações do mundo real que não podem ser muito bem representadas pelos conjuntos clássicos com seus limites muito bem definidos, assim eles utilizam os conjuntos nebulosos. Um exemplo ilustrativo é o do conceito de \emph{perto}.
+Os sistemas nebulosos podem ser usados para modelar situações do mundo real que não podem ser muito bem representadas pelos conjuntos clássicos com seus limites muito bem definidos, mas melhor representadas pelos conjuntos nebulosos. Um exemplo ilustrativo é o do conceito de \emph{perto}.
 
 Usar imagens e gráficos para mostrar esse exemplo aqui...
 
