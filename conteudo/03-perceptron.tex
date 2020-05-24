@@ -1,0 +1,14 @@
+%!TeX root=../tese.tex
+%(dica para o editor de texto: este arquivo é parte de um documento maior)
+% para saber mais: https://tex.stackexchange.com/q/78101/183146
+
+\chapter{Perceptron multi-camadas}
+\label{cap:perceptron}
+
+Neste capítulo é descrita a implementação e funcionamento de uma versão do algoritmo \eng{perceptron}, feito a partir de um núcleo básico disponibilizado no livro de Kopec \citep{classic}, e a partir do qual foram feitas modificações e criação de novos métodos de treinamento, de validação e de avaliação do treinamento.
+
+O perceptron aqui implementado pode ser usado tanto para aprendizado supervisionado, ou seja, classificações de dados, quanto para aprendizado não-supervisionado, e neste capítulo são apresentados exemplos de ambos os usos, embora o foco deste trabalho seja na versão de aprendizado supervisionado.
+
+\section{O algoritmo de retropropagação}
+
+Para a aprendizagem supervisionada foi utilizado o algoritmo de retropropagação (\eng{retropropagation}), que consiste na minimização de uma função de custos, a partir do gradiente, ou seja, da derivada multi-dimensional desta função de custos, neste caso o erro quadrático médio, conforme é explicado em detalhes no capítulo anterior.

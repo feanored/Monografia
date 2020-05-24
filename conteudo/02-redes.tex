@@ -5,17 +5,21 @@
 \chapter{Redes neurais artificiais}
 \label{cap:redes}
 
-Neste capítulo são apresentados alguns conceitos básicos de \defi{aprendizado de máquina}, com foco nos algoritmos de redes neurais artificiais, em especial o \defi{perceptron}, cujo desenvolvimento foi inspirado nas redes neurais biológicas, ou seja, os neurônios e suas conexões no cérebro, conforme descrito por Kopec \citep{classic}.
+Neste capítulo são apresentados alguns conceitos básicos de \defi{aprendizado de máquina}, com foco nos algoritmos de redes neurais artificiais, em especial o \defi{perceptron}, que teve seu desenvolvimento inspirado nas redes neurais biológicas, ou seja, os neurônios e suas conexões no cérebro, conforme descrito por Kopec \citep{classic}.
 
-Pode-se classificar as técnicas de aprendizado de várias formas, de acordo com alguma de suas características. Por exemplo, Géron \citep{hands} utiliza o grau de supervisão humana durante o seu funcionamento para classificá-los em aprendizado supervisionado ou não-supervisionado. Isto quer dizer que durante o treinamento são fornecidos um conjunto de consultas e de respostas esperadas. Tais respostas foram dadas por humanos, daí o termo `supervisão humana'.
+Pode-se classificar as técnicas de aprendizado de várias formas, de acordo com alguma de suas características. Por exemplo, Géron \citep{hands} utiliza o grau de supervisão humana durante o seu funcionamento para classificá-los em aprendizado supervisionado ou não-supervisionado. Durante o aprendizado podem ou não ser fornecidos um conjunto de consultas e de respostas esperadas. Tais respostas foram dadas por humanos, ao menos neste momento, daí o termo ``supervisão humana''.
+
+Neste texto os termos ``algoritmo'' e ``técnica'' serão usados livremente como sinônimos, pois uma técnica de aprendizado de máquina, no contexto atual, é um algoritmo executado no computador que tem por objetivo ajustar parâmetros de modelos estatísticos.
 
 \section{Aprendizado de máquina supervisionado}
 
- Um algoritmo de \defi{aprendizado supervisionado} é usado quando conhecemos os rótulos dos dados que estamos utilizando. De modo geral já temos de antemão as respostas às consultas para os dados utilizados no treinamento. Por exemplo, se estamos classificando fotos de animais, possuímos um conjunto de fotos em que já sabemos quais são de gatos, cachorros, etc.
+ Um algoritmo de \defi{aprendizado supervisionado} é usado quando conhecemos características dos dados que estamos utilizando. De modo geral já temos de antemão as respostas às consultas para os dados utilizados no treinamento. Por exemplo, se estamos classificando fotos de animais, possuímos um conjunto de fotos em que já sabemos quais são de gatos, cachorros, etc.
 
- O ato de rotular previamente os dados que usamos no treinamento é o que designamos de supervisão humana. Uma vez \emph{treinado}, o algoritmo recebe uma foto, ou seja, uma nova consulta e então fornece a resposta se essa é a foto de um gato, ou cachorro, ou qualquer outra resposta daquelas que foram dadas como exemplos durante o treinamento.
+ O ato de rotular previamente os dados que usamos no treinamento é o que designamos de supervisão humana. Uma vez \emph{treinado}, o algoritmo recebe uma foto, ou seja, uma nova consulta e então fornece a resposta, neste caso se essa é a foto de um gato, ou cachorro, ou qualquer outra resposta dentre aquelas que foram dadas como exemplos durante o treinamento.
 
-Dentro do aprendizado supervisionado temos duas técnicas principais. A regressão é usada para prever valores, ou seja, fornecer dados do futuro, e a classificação é usada para prever os rótulos dos dados, que também são chamados de classes. Neste texto os termos ``algoritmo'' e ``técnica'' serão usados livremente como sinônimos, pois uma técnica de aprendizado de máquina, no contexto atual, é obviamente um algoritmo executado no computador.
+Dentro do aprendizado supervisionado temos duas técnicas principais. A primeira é a regressão, usada para prever valores, ou seja, fornecer respostas a consultas ainda inéditas, sejam dados do futuro ou valores de funções em pontos do domínio para os quais ainda não existem respostas. 
+
+A segunda técnica é a classificação, usada para rotular ou dividir os dados em classes pré-determinadas, a partir de exemplos, que é exatamente o caso dos exemplos descritos nos parágrafos anteriores. Se as classes não são conhecidas deve-se utilizar um algoritmo de aprendizado não-supervisionado, descrito na próxima seção. 
 
 Colocar exemplos...
 
@@ -33,19 +37,19 @@ Colocar exemplos...
 
 \section{Técnicas de classificação}
 
-É uma das técnicas principais do aprendizado supervisionado, problemas desse tipo buscam aprender com um conjunto de dados previamente rotulados. Consultas do tipo ``a qual grupo pertence este cliente'' ou ``que animal há nesta foto'' podem ser modeladas por esses algoritmos. De modo geral, ele responde a consultas que dizem respeito às classes dos dados, e atribui para novos dados alguma classe que pertence ao conjunto de classes que usamos para rotular os dados iniciais.
+É uma das técnicas principais do aprendizado supervisionado, problemas desse tipo buscam aprender com um conjunto de dados previamente rotulados. Consultas do tipo ``a qual grupo pertence este cliente?'' ou ``que animal há nesta foto?'' podem ser modeladas por esses algoritmos. De modo geral, ele responde a consultas que dizem respeito às classes dos dados, e atribui para novos dados alguma classe que pertence ao conjunto de classes que usamos para rotular os dados iniciais.
 
-Existem vários tipos de algoritmos de classificação, dentre eles podemos mencionar: máquina de vetor suporte (\eng{support vector machine}, SVM), árvores de decisão, florestas aleatórias que são um conjunto de muitas de árvores de decisão aleatoriamente definidas e, finalmente, as redes neurais artificiais.
+Existem vários tipos de algoritmos de classificação, e dentre os descritos por Géron \citep{hands} citamos a máquina de vetor suporte (\eng{support vector machine}, SVM), árvores de decisão, florestas aleatórias que são um conjunto de muitas  árvores de decisão aleatoriamente definidas e, finalmente, as redes neurais artificiais.
 
 Todas essas técnicas podem ser usadas para classificação linear ou não-linear, no sentido em que valores eles estão classificando, assim como na forma que está sendo feita essa classificação. Se visualizarmos os dados num espaço bidimensional, um algoritmo de classificação linear irá separar as classes de dados por retas, enquanto que um classificador não-linear poderá usar outra curva qualquer para a separação. 
 
-Abstraindo o espaço bidimensional para os espaços multidimensionais dos dados que são comumente analisados, podemos pensar em hiperplanos, estruturas ($n{-}1$-dimensionais de espaços $n$-dimensionais, para o caso dos classificadores lineares, ou subespaços quaisquer para os não-lineares.
+Abstraindo o espaço bidimensional para os espaços multidimensionais dos dados que são comumente analisados, podemos pensar em hiperplanos, estruturas ($n{-}1$)-dimensionais de espaços $n$-dimensionais, para o caso dos classificadores lineares, ou subespaços quaisquer para os não-lineares.
 
 Colocar exemplos de aplicações...
 
 \section{A rede neural perceptron}
 
-Uma rede neural artificial é um dentre vários métodos de classificação, ou seja, de aprendizado supervisionado. De acordo com Kopec \citep{classic}, ele é utilizado como um classificador não-linear, e por isso pode ser utilizado para classificar ou prever quaisquer tipos de dados ou funções, que podem ou não ter uma relação linear com o tempo ou com qualquer outro domínio no qual estejam definidos.
+Uma rede neural artificial é um dentre vários métodos de classificação, ou seja, de aprendizado supervisionado, embora ela também possa ser usada para aplicaçõesd de aprendizado não supervisionado. De acordo com Kopec \citep{classic}, ele é utilizado como um classificador não-linear, e por isso pode ser utilizado para classificar ou prever quaisquer tipos de funções, que podem ou não ter uma relação linear com o tempo ou com qualquer outro domínio no qual estejam definidas.
 
 Uma definição para uma rede neural artificial dada por Rosangela Ballini \citep{doutorado} é a de um sistema de processamento paralelo e distribuído baseado no sistema nervoso biológico, sendo compostos por elementos computacionais chamados neurônios, arranjados em padrões semelhantes às redes biológicas.
 
@@ -91,9 +95,57 @@ Esta rede possui $2$ neurônios na camada de entrada, que são os números reais
 
 Temos os sinais de entrada (como o $x_0$) vindos como viriam os sinais dos axônios de outros neurônios. Eles entram pela camada de entrada da rede, ou dentritos do neurônio. A camada oculta processa as entradas com os pesos, definindo o sinal através de sua função de ativação, similar ao funcionamento do núcleo do neurônio que ativa ou não o sinal recebido. Por fim o sinal é enviado à camada de saída, ou aos axônios do neurônio, concluíndo o processamento.
 
+A partir desta analogia podemos compreender o funcionamento básico da rede artificial \eng{perceptron}. Ela recebe uma lista de valores como entrada, que podemos representar por um vetor real $x$. O neurônio representa uma transformação linear neste vetor, que podemos escrever como o produto escalar por um outro vetor real denominado de vetor de pesos $w$, ou seja, $<w.x>$, que é o produto escalar usual do conjunto real, e por fim é utilizado uma função de ativação não-linear sobre este valor, o que configura a saída da rede: $f(<w.x>)$.
+
+Este processo de entrada, processamento e saída da rede é chamado de \eng{feed-forward}, e consiste no nível mais fundamental do \eng{perceptron}. A partir daí, a forma como a rede será treinada, é o que define se ela será utilizada para um aprendizado supervisionado ou não-supervisionado.
+
+Se estamos lidando com o aprendizado supervisionado, então deve ser usado um algoritmo de treinamento que forneça à rede pares conhecidos de vetores de entradas e saídas esperadas, e um critério de avaliação de quão boa é a performance da rede para aproximar as suas saídas das saídas esperadas. 
+
+Este critério é uma função que fornece uma medida da distância entre as saídas obtidas pela rede e as saídas esperadas, que é genericamente chamada de função de custo (\eng{cost function}). Exemplos comumente usados são as normas usuais como a distância euclidiana, a função de erro absoluto, e a função de erro quadrático médio (\eng{mean square error}, MSE), que é a usada no algoritmo usado por Kopec \citep{classic} e que será usado neste trabalho.
+
+\section{Derivação matemática de um algoritmo de aprendizado}
+
+Um dos algoritmos de treinamento que minimizam uma função de custo é o gradiente descendente (\eng{gradient descent}), que segundo Géron \citep{hands} é um algoritmo muito geral e que serve para encontrar soluções ótimas para uma grande variedade de problemas de otimização. A ideia geral é ajustar parâmetros iterativamente para otimizar uma função de custo gradativamente.
+
+O seu funcionamento utiliza a ideia fundamental do Cálculo em que utilizamos a derivada de uma função de forma a encontrar seus pontos extremos. Dada uma função $f{:}\mathbb{R}^n \rightarrow \mathbb{R}$, temos que se um ponto $x = \hat{x} \in \mathbb{R}$ é um ponto extremo de $f$ então é condição necessária\footnote{Mais detalhes em Guidorizzi \citep{guidorizzi2}. Um curso de cálculo Vol. 2, pág. 894.} que cada derivada parcial de primeira ordem de $f$ exista e seja igual a zero. Denotando $x = (x_0, x_1, \ldots, x_n)$ e $\hat{x} = (\hat{x_0}, \hat{x_1}, \ldots, \hat{x_n})$, temos:
+
+\begin{equation}\label{grad_0}
+\frac{\del f(\hat{x_0})}{\del x_0} = 0 ,\;\;\; \frac{\del f(\hat{x_1})}{\del x_1} = 0 ,\;\;\; \ldots ,\;\;\; \frac{\del f(\hat{x_n})}{\del x_n} = 0
+\end{equation}
+
+Usando a notação de vetores, podemos simplificar a equação acima, uma vez que o conjunto das derivadas parciais de uma função de várias variáveis é o vetor gradiente desta função, assim, denotando $\mathbf{0} \in \mathbb{R}^n = (0, 0, \ldots, 0)$, temos equivalentemente à equação \ref{grad_0}:
+
+\begin{equation}\label{grad_1}
+\nabla f(\hat{x}) = \mathbf{0}
+\end{equation}
+onde $\nabla{:}\mathbb{R}^n \rightarrow \mathbb{R}^n$ é a função que calcula o gradiente para um dado ponto de uma função.
+
+Geometricamente é nos dada a intuição, por Luis Hamilton Guidorizzi \citep{guidorizzi2}, de que o vetor gradiente de um dado ponto de uma função nos dá a direção de maior aumento da função naquele ponto. Como nosso objetivo é minimizar a função de custo, fica explicado o nome do algoritmo como ``gradiente descendente'', de forma que devemos utilizar o sentido negativo do vetor gradiente.
+
+Assim, podemos dizer que a direção de minimização da função está na direção do vetor gradiente, o que significa dar um passo ($f(x + dx)$) nessa direção no domínio da função, tal passo com tamanho que seja \emph{proporcional} a cada componente do vetor gradiente. Dessa forma podemos escrever $dx$ como sendo um passo na direção do mínimo da função de custo dessa forma:
+
+\begin{equation}\label{grad_2}
+dx = - \eta \nabla f(x)
+\end{equation}
+onde $\eta$ é a constante de proporcionalidade, que é conhecida como \defi{taxa de aprendizado}, que tem por objetivo tornar a velocidade do treinamento ajustável durante a execução do algoritmo, sendo tarefa do cientista de dados testar e obter os valores que dêem os melhores resultados caso-a-caso. Géron \citep{hands} cita que na maior parte dos casos, utiliza-se $\eta = 0.1$.
+
+Podemos observar as diferenças de utilizar uma taxa de aprendizado fixa ou variável (que mude a cada iteração do treinamento, por exemplo), utilizando gráficos. Suponha que estamos querendo minimizar uma função quadrática qualquer, esse exemplo é particularmente útil uma vez que a função de custo que será utilizada, a MSE, é uma função quadrática. Outra característica igualmente útil é que a segunda derivada de uma função quadrática é sempre positiva\footnote{A segunda derivada de uma função de muitas variáveis é a matriz Hessiana, neste caso ela seria uma matriz definida positiva.}, o que implica que o ponto extremo encontrado será necessariamente um ponto mínimo.
+
+Normalmente, sorteamos um ponto inicial, calcula-se o valor da função e o valor do gradiente neste ponto. Se as componentes do gradiente não forem todas nulas (ou arbitrariamente próximas de zero), então quer dizer que não atingimos o mínimo, e dessa forma atualizamos nosso ponto com $dx$ definido acima na equação \ref{grad_2}. Repetimos este processo até que o gradiente do ponto atual seja arbitrariamente próximo do vetor nulo. Uma visualização deste processo, utilizando taxa de aprendizado única, está na Figura \ref{fig:grad_1}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=12cm]{figuras/grad_1}
+\caption{Visualização do método do gradiente descendente com taxa de aprendizado única. Os pontos azuis representam candidatos a ponto mínimo a cada iteração do algoritmo.}
+\label{fig:grad_1}
+\end{figure}
+
+
+
+
 \section{Sistemas nebulosos}
 
-Os sistemas nebulosos foram criados a partir da teoria dos conjuntos nebulosos criada por L.A. Zadeh \citep{fuzzy_1}. Os conjuntos nebulosos diferem dos conjuntos clássicos na forma em que avaliamos se os elementos pertencem aos conjuntos ou não. 
+Os sistemas nebulosos (\eng{fuzzy systems}) foram criados a partir da teoria dos conjuntos nebulosos (\eng{fuzzy sets}) criada por Lotfi Aliasker Zadeh \citep{fuzzy_1}. Os conjuntos nebulosos diferem dos conjuntos clássicos na forma em que ``avaliamos'' se os elementos pertencem aos conjuntos ou não. 
 
 Num conjunto clássico um elemento pertence a ele ou não, não há meio termo. Já nos conjuntos nebulosos existe uma função associando o grau com que um elemento pertence ao conjunto, a função assume $0$ se não pertence, ou seja, uma exclusão completa, e assume $1$ se pertence completamente, mas também assume qualquer valor real dentro deste intervalo. Esta é a chamada função de pertinência, de forma que a frase ``o elemento $x$ percente mais ao conjunto $A$ do que o elemento $y$'', por exemplo, é a representação verbal da expressão matemática $f(x) > f(y)$ se usarmos a definição de ordem dos números reais e da notação $f(.)$ para a função de pertinência.
 
@@ -101,4 +153,4 @@ Os sistemas nebulosos podem ser usados para modelar situações do mundo real qu
 
 Usar imagens e gráficos para mostrar esse exemplo aqui...
 
-A partir disto, conforme descrito por L. Wang \citep{fuzzy_2}, os sistemas nebulosos são aproximadores universais. Isto significa que podem aproximar quaisquer funções numa grande variedade de de problemas. Neste artigo é demonstrado que com uma função de pertinência gaussiana é possível usar sistemas nebulosos para aproximar qualquer função real contínua definida num conjunto compacto.
+A partir disto, conforme descrito por Li-Xin Wang \citep{fuzzy_2}, os sistemas nebulosos são aproximadores universais. Isto significa que podem aproximar quaisquer funções numa grande variedade de de problemas. Neste artigo é demonstrado que com uma função de pertinência gaussiana é possível usar sistemas nebulosos para aproximar qualquer função real contínua definida num conjunto compacto.
