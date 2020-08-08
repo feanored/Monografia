@@ -99,13 +99,13 @@ A partir desta analogia podemos compreender o funcionamento básico da rede arti
 
 Este processo de entrada, processamento e saída da rede é chamado de \eng{feed-forward}, e consiste no nível mais fundamental do \eng{perceptron}. A partir daí, a forma como a rede será treinada, é o que define se ela será utilizada para um aprendizado supervisionado ou não-supervisionado.
 
-Se estamos lidando com o aprendizado supervisionado, então deve ser usado um algoritmo de treinamento que forneça à rede pares conhecidos de vetores de entradas e saídas esperadas, e um critério de avaliação de quão boa é a performance da rede para aproximar as suas saídas das saídas esperadas. 
+Uma vez que estamos lidando com o aprendizado supervisionado, então deve ser usado um algoritmo de treinamento que forneça à rede pares conhecidos de vetores de entradas e saídas esperadas, e um critério de avaliação de quão boa é a performance da rede para aproximar as suas saídas das saídas esperadas. 
 
-Este critério é uma função que fornece uma medida da distância entre as saídas obtidas pela rede e as saídas esperadas, que é genericamente chamada de função de custo (\eng{cost function}). Exemplos comumente usados são as normas usuais como a distância euclidiana, a função de erro absoluto, e a função de erro quadrático médio (\eng{mean square error}, MSE), que é a usada no algoritmo usado por Kopec \citep{classic} e que será usado neste trabalho.
+Este critério é uma função que fornece uma medida da distância entre as saídas obtidas pela rede e as saídas esperadas, que é genericamente chamada de função de custo (\eng{cost function}). Se denotarmos por $y$ uma saída conhecida, e por $a^{(L)}$ uma saída obtida pela última camada, exemplos comumente usados são as normas usuais como a distância euclidiana ($(a^{(L)^2} + y^2)^{1/2}$), a função de erro absoluto ($|a^{(L)} - y|$), e a função de erro quadrático médio ($(a^{(L)} - y)^2$) , (\eng{mean square error}, MSE), que é a usada no algoritmo descrito por Kopec \citep{classic} e que será usado neste trabalho.
 
 \section{Derivação matemática de um algoritmo de aprendizado}
 
-Um dos algoritmos de treinamento que minimizam uma função de custo é o gradiente descendente (\eng{gradient descent}), que segundo Géron \citep{hands} é um algoritmo muito geral e que serve para encontrar soluções ótimas para uma grande variedade de problemas de otimização. A ideia geral é ajustar parâmetros iterativamente para otimizar uma função de custo gradativamente.
+Um dos algoritmos de treinamento que minimizam uma função de custo é o gradiente descendente (\eng{gradient descent}), que segundo Géron \citep{hands} é um algoritmo muito geral e que serve para encontrar soluções ótimas para uma grande variedade de problemas de otimização. A ideia geral é ajustar parâmetros iterativamente para otimizar a função de custo gradativamente.
 
 O seu funcionamento utiliza a ideia fundamental do Cálculo em que utilizamos a derivada de uma função de forma a encontrar seus pontos extremos. Dada uma função $f{:}\mathbb{R}^n \rightarrow \mathbb{R}$, temos que se um ponto $x = \hat{x} \in \mathbb{R}$ é um ponto extremo de $f$ então é condição necessária\footnote{Mais detalhes em Guidorizzi \citep{guidorizzi2}. Um curso de cálculo Vol. 2, pág. 894.} que cada derivada parcial de primeira ordem de $f$ exista e seja igual a zero. Denotando $x = (x_0, x_1, \ldots, x_n)$ e $\hat{x} = (\hat{x_0}, \hat{x_1}, \ldots, \hat{x_n})$, temos:
 
@@ -127,21 +127,53 @@ Assim, podemos dizer que a direção de minimização da função está na dire�
 \begin{equation}\label{grad_2}
 dx = - \eta \nabla f(x)
 \end{equation}
-onde $\eta$ é a constante de proporcionalidade, que é conhecida como \defi{taxa de aprendizado}, que tem por objetivo tornar a velocidade do treinamento ajustável durante a execução do algoritmo, sendo tarefa do cientista de dados testar e obter os valores que dêem os melhores resultados caso-a-caso. Géron \citep{hands} cita que na maior parte dos casos, utiliza-se $\eta = 0.1$.
+onde $\eta$ é a constante de proporcionalidade, que é conhecida como \defi{taxa de aprendizado}, que tem por objetivo tornar a velocidade do treinamento ajustável durante a execução do algoritmo, sendo tarefa do cientista de dados testar e obter os valores que dêem os melhores resultados caso-a-caso. 
 
-Podemos observar as diferenças de utilizar uma taxa de aprendizado fixa ou variável (que mude a cada iteração do treinamento, por exemplo), utilizando gráficos. Suponha que estamos querendo minimizar uma função quadrática qualquer, esse exemplo é particularmente útil uma vez que a função de custo que será utilizada, a MSE, é uma função quadrática. Outra característica igualmente útil é que a segunda derivada de uma função quadrática é sempre positiva\footnote{A segunda derivada de uma função de muitas variáveis é a matriz Hessiana, neste caso ela seria uma matriz definida positiva.}, o que implica que o ponto extremo encontrado será necessariamente um ponto mínimo.
+Podemos observar as diferenças de utilizar uma taxa de aprendizado fixa ou variável (que mude a cada iteração do treinamento, por exemplo), utilizando gráficos. Suponha que estamos querendo minimizar uma função quadrática do tipo $f(x) = x^2$, essa restrição é particularmente útil uma vez que a função de custo que será utilizada, a MSE, é uma função quadrática deste tipo. Outra característica igualmente útil é que a segunda derivada deste tipo de função quadrática é sempre positiva\footnote{A segunda derivada de uma função de muitas variáveis é a matriz Hessiana, neste caso ela seria uma matriz definida positiva.}, o que implica que o ponto extremo encontrado será necessariamente um ponto de mínimo.
 
-Normalmente, sorteamos um ponto inicial, calcula-se o valor da função e o valor do gradiente neste ponto. Se as componentes do gradiente não forem todas nulas (ou arbitrariamente próximas de zero), então quer dizer que não atingimos o mínimo, e dessa forma atualizamos nosso ponto com $dx$ definido acima na equação \ref{grad_2}. Repetimos este processo até que o gradiente do ponto atual seja arbitrariamente próximo do vetor nulo. Uma visualização deste processo, utilizando taxa de aprendizado única, está na Figura \ref{fig:grad_1}.
+Inicialmente, sorteamos um ponto inicial e calculamos o valor da função e o valor do gradiente neste ponto. Se as componentes do gradiente não forem todas nulas (ou arbitrariamente próximas de zero), então quer dizer que não atingimos o mínimo, e dessa forma obtemos um novo ponto a partir deste somado com $dx$ definido acima na equação \ref{grad_2}. Repetimos este processo até que o gradiente do ponto atual seja arbitrariamente próximo do vetor nulo. Uma visualização deste processo, utilizando taxa de aprendizado fixada, está na Figura \ref{fig:grad_1}.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=12cm]{figuras/grad_1}
-\caption{Visualização do método do gradiente descendente com taxa de aprendizado única. Os pontos azuis representam candidatos a ponto mínimo a cada iteração do algoritmo.}
+\includegraphics[height=8cm]{figuras/grad_1}
+\caption{Visualização do método do gradiente descendente com taxa de aprendizado única. Os pontos azuis representam candidatos a ponto mínimo em cada iteração do algoritmo.}
 \label{fig:grad_1}
 \end{figure}
 
+Podemos notar que as estimativas aproximam-se a uma velocidade constante do ponto de mínimo, que nesse caso ilustrativo é bem conhecido. Esse é o comportamento gerado por uma taxa de aprendizado fixa, e além disso com uma magnitude mediana. O que poderia acontecer se utilizarmos uma taxa de aprendizado muito grande é que com um passo do algoritmo, o ponto estimado poderia ir para o outro lado do arco da função, e depois retornar, e assim por diante, nunca convergindo para o mínimo, uma ilustração disso está na Figura \ref{fig:grad_2}.
 
+\begin{figure}[htb]
+\centering
+\includegraphics[height=8cm]{figuras/grad_2}
+\caption{Visualização do método do gradiente descendente com taxa de aprendizado única. Ilustração do uso de um valor de taxa de aprendizado muito grande.}
+\label{fig:grad_2}
+\end{figure}
 
+O caso oposto a este, ou seja, usar uma taxa muito pequena, claramente irá fazer com os passos dados sejam muito pequenos, e dessa forma o algoritmo demore muito a convergir, por isso é importante usar valores medianos que podem ser obtidos de forma heurística, embora na prática, conforme dito por Géron \citep{hands}, utiliza-se $\eta = 0.1$, sendo este um valor consensualmente utilizado pelo menos como ponto de partida.
+
+A outra abordagem é utilizar valores variáveis, sendo o caso mais comum utilizar uma taxa que começa até mesmo maior do que o valor comum de $0.1$ mas que vai diminuindo a cada passo, numa tentativa de obter uma convergência mais rápida. Uma ilustração desse caso está na Figura \ref{fig:grad_3}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[height=8cm]{figuras/grad_3}
+\caption{Visualização do método do gradiente descendente com taxa de aprendizado variável que vai diminuindo passo-a-passo do algoritmo.}
+\label{fig:grad_3}
+\end{figure}
+
+Qualquer que seja o tipo de taxa de apredizado que venha a ser utilizado, permanece como melhor estratégia testar qual deles irá gerar o melhor resultado, a partir de algum problema com solução previamente conhecida, como a função $f(x) = x^2$, em que sabemos que o ponto de mínimo é atingido em $x = 0$, ou podemos testar em nosso problema-alvo, analisando diretamente os valores candidatos a mínimo obtidos pelo algoritmo como função do número do passo, criando assim outro tipo de gráfico, no qual não precisamos saber o formato da função objetivo, o que é razoável uma vez que não precisariamos de um método numérico para obter seu ponto de mínimo.
+
+Podemos observar este comportamento genérico para os 4 casos acima mencionados, na Figura \ref{fig:grad_4} temos os gráficos de valores hipotéticos de candidatos a mínimo gerados por (a) taxa de aprendizado fixa e grande, (b) taxa de aprendizado fixa e pequena, (c) taxa de aprendizado fixa e mediana, (d) taxa de aprendizado decrescente.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=14cm]{figuras/grad_4}
+\caption{Comportamento de diferentes taxas de aprendizado nos valores candidatos a mínimo.}
+\label{fig:grad_4}
+\end{figure}
+
+A partir deste comportamento geral, podemos testar nosso problema-alvo, verificar a qual comportamento ele mais se parece e assim decidir se devemos aumentar ou diminuir nossa taxa até obtermos um bom comportamento como aqueles vistos em (c) ou (d).
+
+Colocar exemplos de outros algoritmos de otimização de função de custo...
 
 \section{Sistemas nebulosos}
 
