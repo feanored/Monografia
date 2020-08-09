@@ -126,3 +126,43 @@ Outro fato útil é que a expressão interna do neurônio é uma transformação
 
 \section{Implementação do algoritmo de retropropagação}
 
+A implementação seguiu uma estrutura orientada a objetos, voltemos então à representação visual da rede perceptron, a partir da imagem \ref{fig:estrutura_rn}. Cada círculo representa um neurônio, cada coluna vertical de neurônios é uma camada da rede, uma das camadas, a camada oculta nesse caso, está destacada em roxo na imagem. As setas representam as conexões entre as camadas de neurônios, cada neurônio de uma camada está ligado a todos os neurônios da camada anterior, o sentido dessa conexão é da esquerda pra direita, o que indica o processo de \eng{feedforward} da rede.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=6cm]{figuras/estrutura_rn}
+\caption{Visão estrutural da rede perceptron. A linha tracejada destaca uma das camadas da rede.}
+\label{fig:estrutura_rn}
+\end{figure}
+
+A implementação do perceptron deste trabalho teve como base a implementação feita por Kopec \cite{classic}, a partir da qual foram adicionados outros recursos, como o viés dos neurônios, não presentes na implementação de Kopec, como o uso da biblioteca \emph{Numpy} para o uso de seus métodos mais eficientes para lidar com listas de números de ponto flutuante. Além dessa base, também estão implementadas várias outras classes, que serão explicadas de modo mais geral.
+
+O primeiro passo é implementar a classe \emph{Neuron} para representar cada neurônio. Esta é uma classe de entidade bem simples, contendo apenas um construtor, e o método \eng{output} que recebe os valores de entrada para esse neurônio e faz o cálculo da transformação linear e a seguir aplica e retorna o valor da função de ativação utilizada, que é passada como parâmetro ao construtor da classe. A listagem \ref{lst:neuron} abaixo mostra este método, em conjunto com o construtor da classe.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe Neuron}, label={lst:neuron}, escapeinside={\%}]
+class Neuron:
+    def __init__(self, weights, bias, learning_rate, ativacao, der_ativacao):
+        '''(list[float], float, float, Callable, Callable) -> None
+        Construtor do Neurônio
+        '''
+        self.weights = weights
+        self.bias = bias
+        self.ativacao = ativacao
+        self.der_ativacao = der_ativacao
+        self.learning_rate = learning_rate
+        self.output_cache = 0.0
+        self.delta = 0.0
+
+    def output(self, inputs):
+        '''(list[float]) -> float
+        Computa valor de ativação do neurônio, salvando o valor
+        antes da função de ativação ser aplicado e retornado
+        '''
+        self.output_cache = np.dot(inputs, self.weights) + self.bias
+        return self.ativacao(self.output_cache)
+\end{lstlisting}
+\end{scriptsize}
+
+A função \emph{np.dot} da biblioteca \emph{Numpy} é utilizada para calcular o produto escalar entre os valores de entrada e os pesos desse neurônio. O valor da transformação linear é armazenado num atributo de classe antes da aplicação da função de ativação, pois será utilizado mais à frente durante o treinamento da rede.

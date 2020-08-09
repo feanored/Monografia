@@ -66,7 +66,7 @@ Dá-se o nome de \eng{perceptron} de camada única (\eng{single-layer perceptron
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=6cm]{figuras/perceptron}
+\includegraphics[width=5cm]{figuras/perceptron}
 \caption{Rede neural simples, o perceptron de camada única.}
 \label{fig:perceptron}
 \end{figure}
@@ -84,7 +84,7 @@ De modo a entendermos as bases matemáticas do algoritmo, podemos começar de um
 \label{fig:neuronio}
 \end{figure}
 
-Esta rede possui $2$ neurônios na camada de entrada, que são os números reais $A$ e $B$, $1$ neurônio na camada oculta, no qual está a sua função de ativação $f(Ax + By)$, e $1$ neurônio na camada de saída, que neste caso é um número real $C$. Pode-se notar a semelhança dessa rede neural artificial com a sua inspiração biológica com a ajuda da figura~\ref{fig:neuron_model}. 
+Esta rede possui $2$ neurônios na camada de entrada, que são os números reais $x_1$ e $x_2$, $1$ neurônio na camada oculta, no qual está a sua função de ativação $f(x_1w_1 + x_2w_2 + b)$, e $1$ neurônio na camada de saída, que neste caso é um número real $y_1$. Pode-se notar a semelhança dessa rede neural artificial com a sua inspiração biológica com a ajuda da figura~\ref{fig:neuron_model}. 
 
 \begin{figure}[htb]
 \centering
@@ -93,13 +93,15 @@ Esta rede possui $2$ neurônios na camada de entrada, que são os números reais
 \label{fig:neuron_model}
 \end{figure}
 
-Temos os sinais de entrada (como o $x_0$) vindos como viriam os sinais dos axônios de outros neurônios. Eles entram pela camada de entrada da rede, ou dentritos do neurônio. A camada oculta processa as entradas com os pesos, definindo o sinal através de sua função de ativação, similar ao funcionamento do núcleo do neurônio que ativa ou não o sinal recebido. Por fim o sinal é enviado à camada de saída, ou aos axônios do neurônio, concluíndo o processamento.
+Temos os sinais de entrada (como o $x_1$) vindos como viriam os sinais dos axônios de outros neurônios. Eles entram pela camada de entrada da rede, ou dentritos do neurônio. A camada oculta processa as entradas com os pesos, definindo o sinal através de sua função de ativação, similar ao funcionamento do núcleo do neurônio que ativa ou não o sinal recebido. Por fim o sinal é enviado à camada de saída, ou aos axônios do neurônio, concluíndo o processamento.
 
-A partir desta analogia podemos compreender o funcionamento básico da rede artificial \eng{perceptron}. Ela recebe uma lista de valores como entrada, que podemos representar por um vetor real $x$. O neurônio representa uma transformação linear neste vetor, que podemos escrever como o produto escalar por um outro vetor real denominado de vetor de pesos $w$, ou seja, $<w.x>$, que é o produto escalar usual do conjunto real, e por fim é utilizado uma função de ativação não-linear sobre este valor, o que configura a saída da rede: $f(<w.x>)$.
+A partir desta analogia podemos compreender o funcionamento básico da rede artificial \eng{perceptron}. Ela recebe uma lista de valores como entrada, que podemos representar por um vetor real $x$. O neurônio oculto representa uma transformação linear neste vetor, que podemos escrever como o produto escalar por um outro vetor real, o vetor de \defi{pesos} $w$, ou seja, $<w.x>$, que é o produto escalar usual dos números reais. A seguir, somamos um outro número real $b$ que é chamado de \defi{viés}, que possui o mesmo papel que a constante de interceptação da reta com o eixo vertical de um ajuste linear.
 
-Este processo de entrada, processamento e saída da rede é chamado de \eng{feed-forward}, e consiste no nível mais fundamental do \eng{perceptron}. A partir daí, a forma como a rede será treinada, é o que define se ela será utilizada para um aprendizado supervisionado ou não-supervisionado.
+Por fim, é aplicada uma função de ativação não-linear sobre esta transformação, o que configura a saída deste neurônio: $f({<w.x>} + b)$, que é transmitida ao neurônio de saída, que pode aplicar uma transformação semelhante ou outra qualquer, dependendo da função de ativação utilizada em cada camada da rede. Por simplicidade mostramos uma rede bem simples, mas na prática podem haver muito mais camadas ocultas, e cada uma delas assim como a camada de saída, podem ter muitos neurônios cada.
 
-Uma vez que estamos lidando com o aprendizado supervisionado, então deve ser usado um algoritmo de treinamento que forneça à rede pares conhecidos de vetores de entradas e saídas esperadas, e um critério de avaliação de quão boa é a performance da rede para aproximar as suas saídas das saídas esperadas. 
+Este processo de entrada, processamento e saída da rede é chamado de \defi{feedforward}, e consiste no nível mais fundamental do \eng{perceptron}. A partir daí, a forma como a rede será treinada, é o que define se ela será utilizada para um aprendizado supervisionado ou não-supervisionado.
+
+Uma vez que estamos lidando com o aprendizado supervisionado, dever ser utilizado um algoritmo de treinamento que forneça à rede pares conhecidos de vetores de entradas e saídas esperadas, e um critério de avaliação de quão boa é a performance da rede para aproximar as suas saídas das saídas esperadas. 
 
 Este critério é uma função que fornece uma medida da distância entre as saídas obtidas pela rede e as saídas esperadas, que é genericamente chamada de função de custo (\eng{cost function}). Se denotarmos por $y$ uma saída conhecida, e por $a^{(L)}$ uma saída obtida pela última camada, exemplos comumente usados são as normas usuais como a distância euclidiana ($(a^{(L)^2} + y^2)^{1/2}$), a função de erro absoluto ($|a^{(L)} - y|$), e a função de erro quadrático médio ($(a^{(L)} - y)^2$) , (\eng{mean square error}, MSE), que é a usada no algoritmo descrito por Kopec \citep{classic} e que será usado neste trabalho.
 
