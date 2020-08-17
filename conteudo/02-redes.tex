@@ -93,7 +93,7 @@ Esta rede possui $2$ neurônios na camada de entrada, que são os números reais
 \label{fig:neuron_model}
 \end{figure}
 
-Temos os sinais de entrada (como o $x_1$) vindos como viriam os sinais dos axônios de outros neurônios. Eles entram pela camada de entrada da rede, ou dentritos do neurônio. A camada oculta processa as entradas com os pesos, definindo o sinal através de sua função de ativação, similar ao funcionamento do núcleo do neurônio que ativa ou não o sinal recebido. Por fim o sinal é enviado à camada de saída, ou aos axônios do neurônio, concluíndo o processamento.
+Temos os sinais de entrada (como o $x_1$) vindos como viriam os sinais dos axônios de outros neurônios. Eles entram pela camada de entrada da rede, ou dentritos do neurônio. A camada oculta processa as entradas com os pesos, definindo o formato final do sinal através de sua função de ativação, que aqui pode ser uma função real qualquer, mas com funcionalidade similar ao do núcleo do neurônio que ativa/transmite ou não o sinal recebido por ele. Por fim o sinal é enviado à camada de saída, ou aos axônios do neurônio, concluíndo o processamento.
 
 A partir desta analogia podemos compreender o funcionamento básico da rede artificial \eng{perceptron}. Ela recebe uma lista de valores como entrada, que podemos representar por um vetor real $x$. O neurônio oculto representa uma transformação linear neste vetor, que podemos escrever como o produto escalar por um outro vetor real, o vetor de \defi{pesos} $w$, ou seja, $<w.x>$, que é o produto escalar usual dos números reais. A seguir, somamos um outro número real $b$ que é chamado de \defi{viés}, que possui o mesmo papel que a constante de interceptação da reta com o eixo vertical de um ajuste linear.
 
@@ -177,14 +177,3 @@ A partir deste comportamento geral, podemos testar nosso problema-alvo, verifica
 
 Colocar exemplos de outros algoritmos de otimização de função de custo...
 
-\section{Sistemas nebulosos}
-
-Os sistemas nebulosos (\eng{fuzzy systems}) foram criados a partir da teoria dos conjuntos nebulosos (\eng{fuzzy sets}) criada por Lotfi Aliasker Zadeh \citep{fuzzy_1}. Os conjuntos nebulosos diferem dos conjuntos clássicos na forma em que ``avaliamos'' se os elementos pertencem aos conjuntos ou não. 
-
-Num conjunto clássico um elemento pertence a ele ou não, não há meio termo. Já nos conjuntos nebulosos existe uma função associando o grau com que um elemento pertence ao conjunto, a função assume $0$ se não pertence, ou seja, uma exclusão completa, e assume $1$ se pertence completamente, mas também assume qualquer valor real dentro deste intervalo. Esta é a chamada função de pertinência, de forma que a frase ``o elemento $x$ percente mais ao conjunto $A$ do que o elemento $y$'', por exemplo, é a representação verbal da expressão matemática $f(x) > f(y)$ se usarmos a definição de ordem dos números reais e da notação $f(.)$ para a função de pertinência.
-
-Os sistemas nebulosos podem ser usados para modelar situações do mundo real que não podem ser muito bem representadas pelos conjuntos clássicos com seus limites muito bem definidos, mas melhor representadas pelos conjuntos nebulosos. Um exemplo ilustrativo é o do conceito de \emph{perto}.
-
-Usar imagens e gráficos para mostrar esse exemplo aqui...
-
-A partir disto, conforme descrito por Li-Xin Wang \citep{fuzzy_2}, os sistemas nebulosos são aproximadores universais. Isto significa que podem aproximar quaisquer funções numa grande variedade de de problemas. Neste artigo é demonstrado que com uma função de pertinência gaussiana é possível usar sistemas nebulosos para aproximar qualquer função real contínua definida num conjunto compacto.

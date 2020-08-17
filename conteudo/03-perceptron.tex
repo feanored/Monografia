@@ -7,7 +7,9 @@
 
 Neste capítulo é descrita a implementação e funcionamento de uma versão do algoritmo \eng{perceptron}, feito a partir de um núcleo básico disponibilizado no livro de Kopec \citep{classic}, e a partir do qual foram feitas modificações e criação de novos métodos de treinamento, de validação e de avaliação do treinamento.
 
-O perceptron aqui implementado pode ser usado tanto para tarefas de classificações, quanto para tarefas de regressões de dados, e neste capítulo são apresentados exemplos de ambos os usos, embora o foco deste trabalho seja na versão de classificação.
+O perceptron aqui implementado tem o objetivo de ser utilizado muito mais para fins didáticos do que práticos e pode ser usado tanto para tarefas de classificações, quanto para tarefas de regressões de dados contanto que sejam problemas que envolvam poucos dados, e neste capítulo são apresentados exemplos de ambos os usos, embora o foco deste trabalho seja na versão de classificação. 
+
+Na última parte desse capítulo é mostrado um panorama atual de implementação e uso das redes neurais, que está muito mais avançado do que esta versão simples do \emph{perceptron} que possui muitos problemas, que surgem quando tentamos treiná-lo com bases de dados maiores, que precisariam de muitos neurônios de entrada, muitas camadas ocultas e assim por diante.
 
 \section{Derivação matemática do algoritmo de retropropagação}
 
@@ -135,7 +137,9 @@ A implementação seguiu uma estrutura orientada a objetos, voltemos então à r
 \label{fig:estrutura_rn}
 \end{figure}
 
-A implementação do perceptron deste trabalho teve como base a implementação feita por Kopec \cite{classic}, a partir da qual foram adicionados outros recursos, como o viés dos neurônios, não presentes na implementação de Kopec, como o uso da biblioteca \emph{Numpy} para o uso de seus métodos mais eficientes para lidar com listas de números de ponto flutuante. Além dessa base, também estão implementadas várias outras classes, que serão explicadas de modo mais geral.
+A implementação do perceptron deste trabalho teve como base a implementação feita por Kopec \citep{classic}, a partir da qual foram adicionados outros recursos, como o viés dos neurônios, não presentes na implementação de Kopec, como o uso da biblioteca \emph{Numpy} para o uso de seus métodos mais eficientes para lidar com listas de números de ponto flutuante. Além dessa base, também estão implementadas várias outras classes, que serão explicadas de modo mais geral.
+
+\subsection{O neurônio}
 
 O primeiro passo é implementar a classe \emph{Neuron} para representar cada neurônio. Esta é uma classe de entidade bem simples, contendo apenas um construtor, e o método \eng{output} que recebe os valores de entrada para esse neurônio e faz o cálculo da transformação linear e a seguir aplica e retorna o valor da função de ativação utilizada, que é passada como parâmetro ao construtor da classe. A listagem \ref{lst:neuron} abaixo mostra este método, em conjunto com o construtor da classe.
 
@@ -144,25 +148,183 @@ O primeiro passo é implementar a classe \emph{Neuron} para representar cada neu
 \begin{lstlisting}[caption={Trecho da classe Neuron}, label={lst:neuron}, escapeinside={\%}]
 class Neuron:
     def __init__(self, weights, bias, learning_rate, ativacao, der_ativacao):
-        '''(list[float], float, float, Callable, Callable) -> None
-        Construtor do Neurônio
-        '''
-        self.weights = weights
-        self.bias = bias
-        self.ativacao = ativacao
-        self.der_ativacao = der_ativacao
-        self.learning_rate = learning_rate
-        self.output_cache = 0.0
-        self.delta = 0.0
+        '''(list[float], float, float, Callable, Callable) -> None'''
+        ...
 
     def output(self, inputs):
-        '''(list[float]) -> float
-        Computa valor de ativação do neurônio, salvando o valor
-        antes da função de ativação ser aplicado e retornado
-        '''
+        '''(list[float]) -> float'''
         self.output_cache = np.dot(inputs, self.weights) + self.bias
         return self.ativacao(self.output_cache)
 \end{lstlisting}
 \end{scriptsize}
 
 A função \emph{np.dot} da biblioteca \emph{Numpy} é utilizada para calcular o produto escalar entre os valores de entrada e os pesos desse neurônio. O valor da transformação linear é armazenado num atributo de classe antes da aplicação da função de ativação, pois será utilizado mais à frente durante o treinamento da rede.
+
+\subsection{A função de ativação}
+
+A função de ativação possui o papel de ativar ou não a saída de um neurônio, conforme visto no capítulo anterior, e a forma com que essa ativação ocorre é definida pela função utilizada. Aqui o termo \emph{ativar} significa que a função irá retornar um valor mais próximo de $1$ enquanto que uma não-ativação retornará um valor mais próximo de $0$. Essa é uma restrição para a função de ativação para a camada de saída, que será sempre da forma:
+
+\[ f: \mathbb{R} \rightarrow [0, 1] \]
+
+No caso do neurônio biológico, quando dizemos que ele ativa/transmite ou não o sinal elétrico que chegou até ele, é como se ele \emph{retornasse} apenas $0$ ou $1$. De fato, poderíamos até usar uma função similar a essa em alguma camada de nossa rede artificial, e este tipo de função escada tem a seguinte definição:
+
+\[
+f(x) = 
+\left\{
+\begin{array}{lcr}
+1 & \text{se} & x \geq 0\\
+0 & \text{se} & x < 0
+\end{array}
+\right.
+\]
+
+A utilização dessa função de ativação, conforme nos diz Grus \citep{data}, faria com que um neurônio fizesse simplesmente a distinção entre espaços separados pelo hiperplano de pontos tal que $ <w.x> + b = 0$, ou seja, o hiperplano definido pelos pontos de entrada cuja transformação linear resultasse em zero.
+
+Esta função é claramente não contínua e portanto não diferenciável, e precisamos de uma função de ativação que o seja, uma vez que algumas das equações da otimização que calculamos anteriormente, dependem da expressão de sua derivada. É por essa razão, que Grus \citep{data} nos explica que passou-se a considerar uma aproximação suave da função escada, essa aproximação é a função \eng{sigmoid}:
+
+\[
+\sigma(x) = \frac{1}{1 + e^{-x}}
+\]
+
+Ela retorna valores somente no intervalo $[0, 1]$, igualmente à função escada, sua inspiração. Essa característica, no entanto, não é uma restrição para as camadas ocultas da mesma forma que é para a camada de saída, uma vez apenas a camada de saída será comparada com valores esperados no intervalo $[0, 1]$. A sua derivada pode ser facilmente calculada, e sua expressão simplifica-se como:
+
+\[
+\sigma^{'}(x) = \sigma(x)(1-\sigma(x))
+\]
+
+Podemos comparar o comportamento dessas funções de ativação no gráfico presente na imagem \ref{fig:ativacao} abaixo. A seguir, na listagem \ref{lst:ativacao}, um trecho do script \texttt{util.py} com a implementação da função \eng{sigmoid} e de sua derivada.
+
+\newpage
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=12cm]{figuras/ativacao}
+\caption{Comparação entre as funções de ativação do tipo escada e a \eng{sigmoid}.}
+\label{fig:ativacao}
+\end{figure}
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho do script util.py}, label={lst:ativacao}, escapeinside={\%}]
+def sigmoid(x):
+    '''(float) -> float'''
+    return 1.0 / (1.0 + np.exp(-x))
+
+def der_sigmoid(x):
+    '''(float) -> float'''
+    sig = sigmoid(x)
+    return sig * (1 - sig)
+\end{lstlisting}
+\end{scriptsize}
+
+Com a popularização das redes neurais, várias outras funções de ativação foram criadas para ativarem as camadas ocultas do treinamento, devido aos problemas que podem acontecer ao se utilizar função \eng{sigmoid}. Podemos identificar um desses problemas analisando seu gráfico. Vemos que ela se aproxima de $1$, que é a ativação máxima, rapidamente a partir de $x > 4$, e aproxima-se simetricamente de zero com valores a partir de $x < -4$. 
+
+Como o método do gradiente tenta ajustar os valores dos pesos a partir dos valores de saída e esses ajustes dependem da derivada da função de ativação, temos que levar em conta o comportamento da derivada da função \eng{sigmoid}, o qual podemos observar a partir de seu gráfico na figura \ref{fig:der_sigm}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=12cm]{figuras/der_sigm}
+\caption{Gráficos da função \eng{sigmoid} e sua derivada.}
+\label{fig:der_sigm}
+\end{figure}
+
+Como podemos ver, a derivada retorna valores sempre menores do que $1$, e além disso aproxima-se de $0$ tão rapidamente quanto a \eng{sigmoid} aproxima-se de $1$. Isso faz com que atualizações para valores de saída que já estão muito altos não sejam efetivos para diminuí-los, pois justamente nessa região a derivada está muito próxima de $0$. Essa é a desvantagem da função \eng{sigmoid}.
+
+Um problema relacionado a este é que se a regra da cadeia em \ref{retro:1} e \ref{retro:2}, com as derivadas da função de ativação dadas em \ref{retro:5} multiplicadas através das várias camadas, pode resultar num número muito grande, se todas as derivadas resultarem em valores maiores do que $0$, ou resultar num número muito próximo de $0$ se todas as derivadas forem menores do que $0$. Isto faz com que atualizações dadas pelo gradiente sejam instáveis. Este é o problema descrito por Matheus Facure \citep{matheus_2} e nomeado como problema do gradiente explodindo/desvanecendo. (\eng{exploding/vanishing gradient problem}).
+
+Assim, conforme nos diz Facure \citep{matheus}, a utilização da função \eng{sigmoid} não é mais recomendada em problemas que envolvam de redes neurais maiores, sendo bem comum o problema do gradiente explodindo, já que a derivada é sempre maior do que $0$. Porém, ele também diz que alguns modelos probabilísticos de variáveis binárias, modelagem de problemas biológicos onde ela é uma aproximação mais plausível da ativação elétrica-biológica, e também alguns modelos não supervisionados de redes tem restrições que fazem com que seja não só desejável como também necessário o uso da função \eng{sigmoid}.
+
+A próxima função de ativação é a o tangente hiperbólico $\tanh(x)$, ela é similar à \eng{sigmoid} e pode ser escrita em função dela. Ela retorna valores no intervalo $[-1, 1]$ mas sua derivada retorna valores mais próximos de $1$, chegando ao valor máximo de $1$ quando $x = 0$. A expressão em função da função \eng{sigmoid} e a derivada da função tangente hiperbólica são dadas por:
+
+\[ tanh(x)=2\sigma(2x) - 1   \quad \quad  tanh'(x)=1 - tanh^2(x) \]
+
+Na figura \ref{fig:tanh} podemos ver o gráfico da função e de sua derivada, a partir do que podemos notar como a derivada da \emph{tanh} retorna valores maiores do que a derivada da função \eng{sigmoid}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=12cm]{figuras/tanh}
+\caption{Gráficos da função tangente hiperbólico e sua derivada.}
+\label{fig:tanh}
+\end{figure}
+
+O próximo avanço é conseguido com a função de ativação linear retificada (\defi{RELU}). Essa função é quase a função identidade, exceto que na região negativa do domínio ela vale identicamente $0$. Ela não é derivável no ponto $x=0$, mas podemos estender a definição fixando seu valor em $1$ nesse ponto. Sua definição e de sua derivada estendida é dada por:
+
+\[
+ReLU(x)=max\{0, x\}   \quad \quad  ReLU'(x)=
+	\begin{cases}
+    	1, & \text{se } x\ge 0\\
+    	0, & \text{c.c.}
+	\end{cases}
+\]
+
+Podemos ver seus gráficos, na figura \ref{fig:relu}, a seguir. Usar essa função de ativação torna até mesmo a execução do código mais rápida, uma vez que não há cálculos matemáticos a serem feitos, apenas uma função de máximo que é trivial. Além disso, podemos notar que a derivada se mantém com o valor $1$ constante enquanto o neurônio é ativado, sendo uma forma de tentar resolver o problema do gradiente explodindo/desvanecendo, além de agilizar o processo de treinamento. 
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=12cm]{figuras/relu}
+\caption{Gráficos da função \eng{RELU} e sua derivada.}
+\label{fig:relu}
+\end{figure}
+
+Essa é a razão, conforme explica Facure \citep{matheus}, dessa função ter contribuido para o recente aumento de popularidade das redes neurais. Adicionalmente, Bing Xu \citep{xu_relu} ressalta que outra vantagem das funções do tipo \eng{RELU}, além de resolver o problema do gradiente explodindo/desvanescendo, é a de aumentar a velocidade da convergência do algoritmo de treinamento rumo a um mínimo da função de custos.
+
+Uma desvantagem da função \eng{RELU} é a chance de neurônios serem desativados permanentemente, já que uma vez que ele zera, a função de ativação e sua derivada são ambos $0$, de forma que ele nunca mais irá aumentar durante o treinamento, tornando-se neurônios \emph{mortos}.
+
+O próximo avanço foi dado pela função conhecida como \eng{Leaky RELU}. Quase identica à \eng{RELU}, exceto que na parte negativa do domínio ao invés de $0$ a função retorna $x/\alpha$, onde $\alpha \in (0, \infty)$. Isso já imediatamente corrige o problema dos neurônios desativados. A definição da função e de sua derivada, dada por Xu \citep{xu_relu}, é:
+
+\[
+LeakyReLU(x, \alpha) = 
+\begin{cases}
+    	x, & \text{se } x\ge 0\\
+    	x/\alpha, & \text{c.c.}
+	\end{cases}
+\quad \quad  
+LeakyReLU'(x, \alpha) =
+	\begin{cases}
+    	1, & \text{se } x\ge 0\\
+    	\alpha, & \text{c.c.}
+	\end{cases}
+\]
+
+A partir dos resultados dos estudos feitos por Xu \citep{xu_relu}, a função \eng{Leaky RELU}, e suas variações, se saíram consistentemente melhores do que a \eng{RELU} para as bases de dados de pequeno e médio portes. Além disso, ele testou a performance para diferentes valores de $\alpha$, obtendo os melhores resultados com $\alpha = 5.5$. Este parâmetro é conhecido como \defi{vazamento}, que dá o nome à função. Podemos ver o seu comportamento no gráfico da imagem \ref{fig:l_relu}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=12cm]{figuras/l_relu}
+\caption{Gráficos da função \eng{Leaky RELU} e sua derivada.}
+\label{fig:l_relu}
+\end{figure}
+
+Por fim, temos a função de unidade linear exponencial \eng{ELU}, proposta por Djork-Arné Clevert \citep{clevert}, que é definida, com $\alpha > 0$, por:
+
+\[
+ELU(x, \alpha)=
+	\begin{cases}
+    	x, & \text{se } x\ge 0\\
+    	\alpha(e^x - 1), & \text{c.c.}
+	\end{cases}
+\quad \quad
+ELU'(x, \alpha)=
+	\begin{cases}
+    	1, & \text{se } x\ge 0\\
+    	ELU(x, \alpha)+\alpha, & \text{c.c.}
+	\end{cases} 
+\]
+
+Em seu artigo, Clevert \citep{clevert} utiliza o valor $\alpha = 1$, e com a função \eng{ELU} conseguiu perfomances melhores, tanto de resultados mais corretos, quanto de velocidade de treinamento, em relação às funções \eng{RELU} e \eng{Leaky RELU} para as mesmas bases de dados avaliadas por XU \citep{xu_relu}, mesmo com o uso da função exponencial em sua definição o que em teoria deveria diminuir a performance do treinamento. Podemos observar o comportamento dessa função e de sua derivada, com $\alpha = 1$ no gráfico mostrado na figura \ref{fig:elu}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=12cm]{figuras/elu}
+\caption{Gráficos da função \eng{ELU} e sua derivada.}
+\label{fig:elu}
+\end{figure}
+
+Testes feitos em condições similares por Facure \citep{matheus}, mostram que essa diferença não é tão significativa em relação à \eng{Leaky RELU}, mas que ambas, \eng{Leaky RELU} e a \eng{ELU} são sim melhores do que a original \eng{RELU}, o que é consistente com o fato delas resolverem teoricamente as desvantagens dela. E são todas obviamente melhores escolhas do que a função \eng{sigmoid}, em todos os estudos acima citados.
+
+Na prática, podemos testar qual função de ativação irá performar melhor para o problema que queremos resolver. A abordagem mais comum, conforme descrita por Facure \citep{matheus} é utilizar a função \eng{Leaky RELU} nas camadas ocultas, sendo o modo mais simples de obtermos bons resultados graças ao seu comportamento. Podemos avaliar a utilização das outras de acordo com o problema em questão, dado que algumas funções se saem melhor em alguns contextos específicos como é o caso da função \eng{sigmoid}.
+
+\subsection{As camadas}
+
+A classe \emph{Layer} representa uma camada de neurônios. Cada camada conecta-se com a sua camada anterior, com exceção da camada de entrada. Por essa razão, a rede perceptron possui um sentido único de conexão, que vai da entrada para a saída, passando por cada camada oculta. A classe é constituída de uma lista de objetos da classe \emph{Neuron}, uma referência à camada anterior e uma lista de saídas dos seus neurônios.
+
