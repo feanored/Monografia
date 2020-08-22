@@ -9,3 +9,15 @@
 \label{cap:series}
 
 Neste capítulo são apresentados os conceitos básicos de séries temporais, com destaque para séries históricas de conversões de moedas estrangeiras. Tais séries estão disponíveis para \eng{download} em diversos sites, incluindo o site do Banco Central do Brasil\footnote{\url{https://www.bcb.gov.br/}}. Também são discutidos brevemente os métodos tradicionais de análise das séries como a \emph{transformada de Fourier} e de previsões de valores futuros da série, como o \emph{SARIMA}.
+
+A análise e predição de fatores de câmbios de moedas estrangeiras, preços de \emph{commodities}, ou outros dados econômicos, constituem uma área essencial da economia e que exige a avaliação de um número enorme de fatores, muitos dos quais de características humanas e portanto imprevisíveis em sua exatidão, até mesmo por se tratar de um fenômeno estatístico e probabilístico, sujeito às suas incertezas.
+
+Apesar disso pode-se estudar as variações de preços, tanto de curto prazo (dias, semanas) quanto de longo prazo (anuais, semestrais) separando seus harmônicos de oscilação presentes nas séries temporais de preços, utilizando para isso a Transformada de Fourier.
+
+A transformada discreta de Fourier é uma função $2\pi$-periódica e definida em: \[F:(x_j)_{j \in \mathbb{N}} \rightarrow (z_j)_{j \in \mathbb{N}} \] onde $ x_j \in [0, 2\pi]$ e $ z_j \in C $, com $C \subset \mathbb{R}$ ou $C \subset \mathbb{C}$. Ou seja, é tabelada em $2N$ pontos igualmente espaçados (no caso das oscilações usamos os preços de cada dia, portanto levando a valores reais, e o intervalo de dias é o domínio), no intervalo $[0, 2\pi]$ (basta normalizar o intervalo de dias nesse intervalo, ou seja, denotando $x_j = j\pi/N $, com $j = 0, 1, \dots, 2N-1$). A função pode ser definida para um conjunto de pontos que podem ser complexos ou mesmo reais. Faz isso associando aos valores $F(x_j)$ os coeficientes de Fourier $(c_k)$, dessa forma:
+\begin{equation}\label{tfd_1}
+F(x_j) = \sum_{k=0}^{2N-1} c_k e^{ikx_j}\ ,\ j=0, 1, \dots, 2N-1
+\end{equation}
+\begin{equation}\label{tfd_2}
+c_k = \frac{1}{2N} \sum_{j=0}^{2N-1} F(x_j) e^{-ikx_j}\ ,\ k=0, 1, \dots, 2N-1
+\end{equation}

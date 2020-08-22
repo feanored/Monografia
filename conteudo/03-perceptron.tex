@@ -7,7 +7,7 @@
 
 Neste capítulo é descrita a implementação e funcionamento de uma versão do algoritmo \eng{perceptron}, feito a partir de um núcleo básico disponibilizado no livro de Kopec \citep{classic}, e a partir do qual foram feitas modificações e criação de novos métodos de treinamento, de validação e de avaliação do treinamento.
 
-O perceptron aqui implementado tem o objetivo de ser utilizado muito mais para fins didáticos do que práticos e pode ser usado tanto para tarefas de classificações, quanto para tarefas de regressões de dados contanto que sejam problemas que envolvam poucos dados, e neste capítulo são apresentados exemplos de ambos os usos, embora o foco deste trabalho seja na versão de classificação. 
+O perceptron aqui implementado tem o objetivo de ser utilizado muito mais para fins didáticos do que práticos e pode ser usado para tarefas de aprendizagem contanto que sejam problemas que envolvam bases de dados de tamanho pequeno ou mediano, e neste capítulo são apresentados exemplos de aplicações de classificações.
 
 Na última parte desse capítulo é mostrado um panorama atual de implementação e uso das redes neurais, que está muito mais avançado do que esta versão simples do \emph{perceptron} que possui muitos problemas, que surgem quando tentamos treiná-lo com bases de dados maiores, que precisariam de muitos neurônios de entrada, muitas camadas ocultas e assim por diante.
 
@@ -326,5 +326,200 @@ Na prática, podemos testar qual função de ativação irá performar melhor pa
 
 \subsection{As camadas}
 
-A classe \emph{Layer} representa uma camada de neurônios. Cada camada conecta-se com a sua camada anterior, com exceção da camada de entrada. Por essa razão, a rede perceptron possui um sentido único de conexão, que vai da entrada para a saída, passando por cada camada oculta. A classe é constituída de uma lista de objetos da classe \emph{Neuron}, uma referência à camada anterior e uma lista de saídas dos seus neurônios.
+A classe \emph{Layer} representa uma camada de neurônios. Cada camada conecta-se com a sua camada anterior, com exceção da camada de entrada. Por essa razão, a rede perceptron possui um sentido único de conexão, que vai da entrada para a saída, passando por cada camada oculta. A classe é constituída de uma lista de objetos da classe \emph{Neuron}, uma referência à camada anterior e uma lista para armazenar as saídas dos seus neurônios.
 
+O construtor de \emph{Layer} é responsável por inicializar seus neurônios. Nessa implementação todos os neurônios de uma camada irão usar a mesma função de ativação e a mesma taxa de aprendizagem. Além de receber esses parâmetros, o número de neurônios dessa camada, e a referência da camada anterior, o construtor inicializa os pesos de cada neurônio, lembrando que cada neurônio de uma camada possui a mesma quantidade de pesos do que a quantidade de neurônios da camada anterior, e também inicializa o viés de cada neurônio. 
+
+Na listagem \ref{lst:layer_1} está o trecho do construtor que inicializa os pesos dos neurônios. Se a camada que estamos inicializando é a camada de entrada, então não criamos pesos e o viés, pois os valores de entrada serão utilizados diretamente como a saída dessa camada, este é o teste presente na linha 11 da listagem, pois a camada de entrada não possui referência a uma camada anterior já que ela é a primeira camada da rede.
+
+A linha 12 de \ref{lst:layer_1} inicializa os pesos dos neurônios da camada. Para fazer isso utiliza uma função que está definida no script \texttt{util.py}, que sortea números aleatórios para esses pesos seguindo uma distribuição normal de média $0$ e desvio-padrão $0.3$ e além disso \emph{truncada} no intervalo $[-1, 1]$, para que nenhum peso esteja fora desse domínio e para que em média esse valor seja $0$. O viés é inicializado com um valor constante, próximo de zero, nesse caso com $0.01$.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Layer}}, label={lst:layer_1}, escapeinside={\%}]
+class Layer:
+    def __init__(self, previous_layer, num_neurons, learning_rate,
+                 ativacao=None, der_ativacao=None):
+        '''(Layer, int, float, Callable, Callable) -> None
+        Construtor da Camada de Neurônios
+        '''
+        ...
+        for i in range(num_neurons):
+            pesos = None
+            bias = None
+            if previous_layer is not None:
+                pesos = normal_t.rvs(len(previous_layer.neurons))
+                bias = 0.01
+            
+            neuron = Neuron(pesos, bias, learning_rate, ativacao, der_ativacao)
+            self.neurons = np.append(self.neurons, neuron)
+\end{lstlisting}
+\end{scriptsize}
+
+Este procedimento é usado para tentar mitigar dois problemas que podem acontecer, conforme explicado por James Dellinger \citep{layers_1}. Se inicializarmos os pesos com muitos números não tão próximos de $0$, numa rede como muitos neurônios e muitas camadas, esses pesos podem somar-se rapidamente através das camadas, resultando em números com valores absolutos muito grandes na camada de saída o que pode prejudicar o treinamento e aprendizado da rede.
+
+Se pelo contrário, inicializarmos todos os pesos com números muito próximos de $0$, ocorre o problema oposto, os neurônios tem seus valores zerados, tornando-se \emph{neurônios desativados}, que se tornam inúteis para o aprendizado já que serão ignorados durante o restante do treinamento. 
+
+Dellinger \citep{layers_1} distute esses problemas no contexto de redes bem grandes, com mais de $100$ camadas, e exibe sua solução heurística que é utilizar uma distribuição normal (não-truncada) com média $0$ e com desvio-padrão $\sqrt{2/n}$, sendo $n$ o número de neurônios da camada anterior.
+
+Para nossos fins didáticos, testei alguns desvios-padrão como $1$, $0.3$ e $0.1$, em um dos exemplos que serão mostrados ainda nesse capítulo, e dentre eles, o valor $0.3$ se saiu melhor sendo o suficiente para não explodir e nem desativar os neurônios da única camada oculta que foi usada na aplicação-exemplo em questão.
+
+O desvio-padrão de $0.3$ auxilia na tarefa de restringir os valores no intervalo $[-1, 1]$, sem que precisemos truncar muitos valores o que poderia aumentar a massa de probabilidade dos extremos $-1$ e $1$, já que valores mais distantes da média do que $3$ vezes o desvio-padrão são raramentes obtidos de uma distribuição normal. 
+
+Após inicializar cada neurônio, salvamos ele na lista de neurônios dessa camada, que é um dos atributos de classe discutidos no primeiro parágrafo. A próxima tarefa de uma camada é processar as entradas recebidas e retornar as saídas. Podemos observar esse comportamento na listagem \ref{lst:layer_2}.
+
+\newpage
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Layer}}, label={lst:layer_2}, escapeinside={\%}]
+def outputs(self, inputs):
+        '''(list[float]) -> list[float]
+        Armazena em cache as saidas dos neuronios e a retornam
+        Se for uma camada de entrada, usa elas diretamente
+        '''
+        if self.previous_layer is None:
+            self.output_cache = inputs
+        else:
+            self.output_cache = np.array([n.output(inputs) for n in self.neurons])
+        return self.output_cache
+\end{lstlisting}
+\end{scriptsize}
+
+A camada de entrada não processa os dados, usando-os diretamente. As demais camadas devem processar cada neurônio, usando seu próprio método de processamento, aplicando a transformação linear e em seguida a função de ativação. O resultado é armazenado numa lista \eng{numpy} que é o atributo de classe \texttt{output$\_$cache}, que armazena as saídas dessa camada para uso posterior; por fim, a lista das saídas da camada é retornada.
+
+A última tarefa da classe \eng{Layer} é calcular os termos $\Delta$ definidos pelas equações \ref{retro:15} e \ref{retro:16}, que definem respectivamente o cálculo que é feito se estamos calculando as derivadas para as camadas ocultas e o cálculo feito para a camada de saída. As duas versões são exibidas na listagem \ref{lst:layer_3} abaixo.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Layer}}, label={lst:layer_3}, escapeinside={\%}]
+def calcular_delta_camada_de_saida(self, expected):
+        '''(list[float]) -> None'''
+        for i, neuron in np.ndenumerate(self.neurons):
+            der_cost = expected[i[0]] - self.output_cache[i]
+            neuron.delta = neuron.der_ativacao(neuron.output_cache) * der_cost
+
+    def calcular_delta_camada_oculta(self, next_layer):
+        '''(Layer) -> None'''
+        for i, neuron in np.ndenumerate(self.neurons):
+            next_weights = np.array([n.weights[i[0]] for n in next_layer.neurons])
+            next_deltas = np.array([n.delta for n in next_layer.neurons])
+            der_cost = np.dot(next_weights, next_deltas)
+            neuron.delta = neuron.der_ativacao(neuron.output_cache) * der_cost
+\end{lstlisting}
+\end{scriptsize}
+
+Os algoritmos são as traduções quase literais das equações \ref{retro:15} e \ref{retro:16}. Podemos ver a natureza recursiva da regra da cadeia nas 2 linhas finais, onde usamos os deltas calculados da próxima camada para calcular os deltas da camada atual. O caso base é a função que calcula o delta da camada de saída. A lógica que orquestra essa recursão está implementada na próxima classe.
+
+\subsection{A rede}
+
+A classe \eng{Network} representa a rede neural como um todo. Ela armazena uma lista de camadas, ou seja, objetos do tipo \eng{Layer}, a partir dos parâmetros que recebe em seu construtor, que são a estrutura da rede que será criada, que é um vetor de inteiros que representam as quantidades de neurônios para cada camada. Além disso, recebe a taxa de aprendizado que será utilizada em toda a rede, nessa versão, e quais as funções de ativação que serão utilizadas nas camadas ocultas e na camada de saída.
+
+A listagem \ref{lst:network_1} exibe o trecho do construtor que cria cada camada e insere na lista de camadas do objeto da classe atual. A camada de entrada não possui camada anterior, nem função de ativação. Além disso, a camada de saída pode utilizar uma função de ativação diferente daquela utilizada pelas camadas ocultas, que usarão a mesma.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_1}, escapeinside={\%}]
+class Network:
+    def __init__(self, layer_structure, taxa, ativacoes):
+        '''(list[int], float, Tuple[Callable]) -> None'''
+        ...
+        self.layers = np.array([], dtype=np.float64)
+        self.estrutura = layer_structure
+
+        # camada de entrada
+        input_layer = Layer(None, self.estrutura[0], taxa)
+        self.layers = np.append(self.layers, input_layer)
+
+        # camadas oculta(s)
+        for previous, qtd_neurons in np.ndenumerate(self.estrutura[1::l]):
+            next_layer = Layer(self.layers[previous[0]], qtd_neurons, taxa,
+                               ativacoes[0], ativacoes[1])
+            self.layers = np.append(self.layers, next_layer)
+
+        # camada de saída
+        output_layer = Layer(self.layers[-1], self.estrutura[-1], taxa,
+                               ativacoes[2], ativacoes[3])
+        self.layers = np.append(self.layers, output_layer)
+\end{lstlisting}
+\end{scriptsize}
+
+A primeira tarefa da classe Network é o de processar entradas, fazendo elas atravessarem a rede, camada a camada, até a camada de saída, e retornar as saídas obtidas. É o processo de \eng{feedforward} explicado no início do capítulo. Sua implementação mesmo para o caso geral de multi-camadas é bem simples, conforme exibido na listagem \ref{lst:network_2} abaixo.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_2}, escapeinside={\%}]
+def feedforward(self, entrada):
+    '''(list[float]) -> list[float]'''
+    ...
+    saida = self.layers[0].outputs(entrada)
+    for i in range(1, len(self.layers)):
+        saida = self.layers[i].outputs(saida)
+    return saida
+\end{lstlisting}
+\end{scriptsize}
+
+A próxima tarefa é treinar a rede, passando uma lista de entradas e saídas esperadas, realizando o procedimento de \eng{backpropagate} para atualizar os pesos e viéses dos neurônios de cada camada, tudo isso em sequência, para cada entrada fornecida. É o que está literalmente implementado na listagem \ref{lst:network_3} abaixo.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_3}, escapeinside={\%}]
+def train(self, entradas, saidas_reais):
+    '''(list[list[floats]], list[list[floats]]) -> None
+    ...
+    for i, xs in enumerate(entradas):
+        ys = saidas_reais[i]
+        _ = self.feedforward(xs)
+        self.backpropagate(ys)
+        self.update_weights()
+        self.update_bias()
+	return saida
+\end{lstlisting}
+\end{scriptsize}
+
+Cada chamada à função \eng{train} significa o procedimento de treinamento sendo executado uma única vez. Cada vez que a rede é treinada dizemos que ela avançou em uma \defi{época} de treinamento. O treinamento consiste em primeiramente executar o \eng{feedforward} para uma entrada, para que as camadas possam armazenar as saídas correspondentes aos valores atuais de seus parâmetros, os pesos e viéses, assim como as saídas em seus atributos \eng{output$\_$cache}, que serão usados pelo método \eng{backpropagate} a seguir, de acordo com as equações que derivamos para o processo de treinamento.
+
+O funcionamento do método \eng{backpropagate} pode ser visto na listagem \ref{lst:network_4} a seguir. Tudo o que ele faz aqui é calcular os deltas das camadas, na ordem correta, começando pela camada de saída, e depois percorrendo as demais camadas do final para o início da rede, fazendo a chamada para cada objeto da classe \eng{Layer} que constitui a rede.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_4}, escapeinside={\%}]
+def backpropagate(self, saidas_reais):
+    '''(list[float]) -> None
+    Calcula as mudanças em cada neurônio com base nos erros da saída
+    em comparação com a saída esperada
+    '''
+    # calcula delta para os neurônios da camada de saída
+    last_layer = len(self.layers) - 1
+    self.layers[last_layer].calcular_delta_camada_de_saida(saidas_reais)
+    
+    # calcula delta para as camadas ocultas, da saída para o início da rede
+    for l in range(last_layer - 1, 0, -1):
+        self.layers[l].calcular_delta_camada_oculta(self.layers[l + 1])
+\end{lstlisting}
+\end{scriptsize}
+
+A seguir, atualiza-se os pesos e os viéses com os métodos correspondentes, que podem ser visualizados na listagem \ref{lst:network_5}. Como os valores são todos armazenados nos atributos de estado dos neurônios e das camadas, implementamos diretamente as contas das equações que obtemos para o método do gradiente e da regra da cadeia da retroprogação. Dessa forma, o que fazemos na classe \eng{Network} é basicamente traduzir a matemática para a sintaxe da linguagem Python.
+
+\newpage
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_5}, escapeinside={\%}]
+def update_weights(self):
+    '''(None) -> None'''
+    ...
+    for layer in self.layers[1:]: # pula a camada de entrada
+        for neuron in layer.neurons:
+            for w in range(len(neuron.weights)):
+                neuron.weights[w,] = neuron.weights[w,] + (neuron.learning_rate
+                     * (layer.previous_layer.output_cache[w]) * neuron.delta)
+
+def update_bias(self):
+    '''(None) -> None'''
+    ...
+    for layer in self.layers[1:]: # pula a camada de entrada
+        for neuron in layer.neurons:
+            neuron.bias = neuron.bias + neuron.learning_rate * neuron.delta
+\end{lstlisting}
+\end{scriptsize}
