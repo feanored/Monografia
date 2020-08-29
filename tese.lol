@@ -18,3 +18,23 @@
 \contentsline {lstlisting}{\numberline {3.9}Trecho da classe \emph {Network}}{30}{lstlisting.3.9}%
 \defcounter {refsection}{0}\relax 
 \contentsline {lstlisting}{\numberline {3.10}Trecho da classe \emph {Network}}{31}{lstlisting.3.10}%
+\defcounter {refsection}{0}\relax 
+\contentsline {lstlisting}{\numberline {3.11}Trecho da classe \emph {Network}}{31}{lstlisting.3.11}%
+\defcounter {refsection}{0}\relax 
+\contentsline {lstlisting}{\numberline {3.12}Trecho da classe \emph {Network}}{31}{lstlisting.3.12}%
+\defcounter {refsection}{0}\relax 
+\contentsline {lstlisting}{\numberline {3.13}Trecho da classe \emph {Perceptron}}{33}{lstlisting.3.13}%
+\defcounter {refsection}{0}\relax 
+\contentsline {lstlisting}{\numberline {3.14}Trecho da classe \emph {Perceptron}}{34}{lstlisting.3.14}%
+\defcounter {refsection}{0}\relax 
+\contentsline {lstlisting}{\numberline {3.15}Trecho da classe \emph {Perceptron}}{35}{lstlisting.3.15}%
+\defcounter {refsection}{0}\relax 
+\contentsline {lstlisting}{\numberline {3.16}Trecho da classe \emph {Perceptron}}{36}{lstlisting.3.16}%
+\defcounter {refsection}{0}\relax 
+\contentsline {lstlisting}{\numberline {3.17}Trecho da classe \emph {Perceptron}}{36}{lstlisting.3.17}%
+\defcounter {refsection}{0}\relax 
+\contentsline {lstlisting}{\numberline {3.18}Trecho da classe \emph {Perceptron}}{36}{lstlisting.3.18}%
+\defcounter {refsection}{0}\relax 
+\contentsline {lstlisting}{\numberline {3.19}Trecho da classe \emph {Perceptron}}{37}{lstlisting.3.19}%
+\defcounter {refsection}{0}\relax 
+\contentsline {lstlisting}{\numberline {3.20}Trecho da classe \emph {Perceptron}}{37}{lstlisting.3.20}%

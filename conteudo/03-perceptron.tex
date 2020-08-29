@@ -7,9 +7,9 @@
 
 Neste capítulo é descrita a implementação e funcionamento de uma versão do algoritmo \eng{perceptron}, feito a partir de um núcleo básico disponibilizado no livro de Kopec \citep{classic}, e a partir do qual foram feitas modificações e criação de novos métodos de treinamento, de validação e de avaliação do treinamento.
 
-O perceptron aqui implementado tem o objetivo de ser utilizado muito mais para fins didáticos do que práticos e pode ser usado para tarefas de aprendizagem contanto que sejam problemas que envolvam bases de dados de tamanho pequeno ou mediano, e neste capítulo são apresentados exemplos de aplicações de classificações.
+O perceptron aqui implementado tem o objetivo de ser utilizado muito mais para fins didáticos do que práticos e pode ser usado para tarefas de aprendizagem contanto que sejam problemas que envolvam bases de dados de tamanho pequeno ou mediano, e neste capítulo é apresentadao um caso de uso para um problema de classificação de dados.
 
-Na última parte desse capítulo é mostrado um panorama atual de implementação e uso das redes neurais, que está muito mais avançado do que esta versão simples do \emph{perceptron} que possui muitos problemas, que surgem quando tentamos treiná-lo com bases de dados maiores, que precisariam de muitos neurônios de entrada, muitas camadas ocultas e assim por diante.
+Na última parte desse capítulo é exibida uma biblioteca de \eng{machine learning} utilizada nas aplicações reais de \eng{deep learning} de redes neurais, muito mais avançada, com muitos outros recursos que vão além do escopo que esta versão simples do \emph{perceptron} é capaz de lidar. Esta será a biblioteca de redes neurais que será utilizada nas partes práticas deste trabalho.
 
 \section{Derivação matemática do algoritmo de retropropagação}
 
@@ -465,7 +465,7 @@ A próxima tarefa é treinar a rede, passando uma lista de entradas e saídas es
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_3}, escapeinside={\%}]
 def train(self, entradas, saidas_reais):
-    '''(list[list[floats]], list[list[floats]]) -> None
+    '''(list[list[floats]], list[list[floats]]) -> None'''
     ...
     for i, xs in enumerate(entradas):
         ys = saidas_reais[i]
@@ -523,3 +523,238 @@ def update_bias(self):
             neuron.bias = neuron.bias + neuron.learning_rate * neuron.delta
 \end{lstlisting}
 \end{scriptsize}
+
+A próxima responsabilidade da classe \eng{Network}, uma vez que já foi treinada, é fazer a previsão de classes de novos dados de entrada. Isto é feito pelo método mostrado na listagem \ref{lst:network_6}. Isto significa simplesmente processar as entradas fornecidas pelo método \eng{feedforward}, que usará os parâmetros que foram ajustados anteriormente para fazer os cálculos. 
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_6}, escapeinside={\%}]
+def predict(self, entradas, interpretar):
+    '''(list[list[floats]], Callable) -> list[list[floats]]
+    '''
+    self.previsoes = np.array([], dtype=np.float64)
+    for entrada in entradas:
+        self.previsoes = np.append(self.previsoes, interpretar(self.feedforward(entrada)))
+    return self.previsoes.reshape(-1, 1)
+\end{lstlisting}
+\end{scriptsize}
+
+Ao final, os dados da última camada são uma lista, isto é, um vetor de valores reais, que são interpretados por uma função que é passada por parâmetro que identifica a qual classe, previamente definida, pertence esse vetor de saída. A lógica dessa interpretação é externa à classe \eng{Network} e será vista mais adiante. A lista de classes preditas em formato \eng{numpy} é retornada.
+
+A última responsabilidade dessa classe é calcular uma métrica de avaliação para esta rede, que irá servir de avaliação do quão boa a rede é para classificar os dados utilizados. A métrica mais simples a ser utilizada é a \defi{acurácia} da previsão. Ela basicamente mede a proporção de classificações corretas dentre todas as classificações realizadas para um conjunto de dados. Essa lógica bem simples é implementada na listagem \ref{lst:network_7} abaixo. 
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_7}, escapeinside={\%}]
+def validate(self, esperados):
+    '''(list[list[floats]], list[list[floats]], Callable) -> float
+    '''
+    ...
+    corretos = 0
+    for y_pred, esperado in zip(self.previsoes, esperados):
+        if y_pred == esperado:
+            corretos += 1
+    acuracia = corretos / len(self.previsoes)
+    return acuracia
+\end{lstlisting}
+\end{scriptsize}
+
+Nota-se que ela utiliza as previsões salvas no atributo de classe que é atualizado toda vez que executamos o método \eng{predict}, acima. As classes esperadas são passadas como parâmetro, uma vez que estamos lidando no \eng{Perceptron} com uma aprendizagem supervisionada. Dessa forma, ao treinarmos a rede utilizamos um conjunto de dados para os quais já sabemos as classes, e ainda dividimos esse conjunto em duas partes, as quais chamamos de \defi{conjunto de treino} e de \defi{conjunto de teste ou validação}.
+
+Treinamos a rede com o conjunto de treino, que deve sempre ser a maior parte de nossa partição, uma vez que é a partir dele que iremos usar o \eng{backpropagate} para aproximar as saídas da rede às saídas esperadas contidas no conjunto. Géron \citep{hands} cita que tipicamente escolhemos aleatoriamente $20\%$ dos dados como nosso conjunto de teste, ficando o restante como o conjunto de treino. A seguir, podemos calcular a acurácia da classificação do conjunto de treino, e a seguir prever e medir a acurácia do conjunto de teste para comparar os resultados. 
+
+Naturalmente a acurácia para o conjunto de teste tende a ser menor, mas não pode ser muito menor, senão dizemos que nossa rede sofre de um problema de classificação conhecido como \defi{overfitting}, ou sobreajuste, o que significa que ela está boa para lidar com o conjunto com o qual foi treinado, o que era esperado dado que foi construída para isso, mas sofre para classificar dados novos, com os quais não foi treinada, e não é isso o que queremos. 
+
+O que queremos é justamente o contrário, que nossa rede, ou seja, nosso algoritmo de aprendizagem seja bom em \defi{generalizar} os dados de entrada que fornecemos a ele. Anas Al-Masri \citep{network_1} define o termo generalização como a habilidade do modelo para fornecer saídas sensíveis para conjuntos de entradas que ele nunca viu antes. 
+
+Dentre as várias técnicas existentes para melhorar a generalização/prevenir o \eng{overfitting} estão a inicialização dos pesos dos neurônios segundo uma distribuição normal de média zero, procedimento explicado anteriormente. Outra técnica é denominada de \defi{dropout}, a qual Amar Budhiraja \citep{network_2} define como ignorar alguns neurônios, escolhidos aleatoriamente, durante o treinamento da rede, isto é, não calculamos deltas durante uma execução do \eng{backpropagate} e nem usamos seu valor em consideração quando processamos uma entrada na rede como o \eng{feedforward}.
+
+É como se deliberadamente ``desativássemos'' alguns neurônios durante a fase de treinamento, de forma a diminuir o sobreajuste aos dados de treino, uma vez que, segundo Budhiraja \citep{network_2} esse procedimento previne que todos os neurônios se tornem dependentes um dos outros, isto é, que a derivada (da função de custo) de cada um se torne dependente das derivadas de todos os outros, criando uma mútua dependência geral para a diminuição do erro, diminuindo assim o poder individual que cada um teria se fossem ajustados de forma mais independente em função de sua contribuição para o custo total da rede.
+
+Em nosso \eng{Perceptron} didático optei por não implementar o procedimento de \eng{dropout}, já que o objetivo dessa versão aqui demonstrada não é fornecer um modelo que seja utilizado em problemas reais, mas apenas didáticos. Em contrapartida essa técnica está presente e pode ser utilizada nas bibliotecas de redes neurais que usaremos na parte prática do trabalho.
+
+\subsection{A classe \eng{Perceptron}}
+
+A última classe implementada, não foi baseada em um exemplo, mas criada a partir da necessidade de encapsular o comportamento da rede, para facilitar os testes do seu funcionamento que iremos realizar. Já discutimos sobre as diferentes taxas de aprendizagem para o gradiente descendente, discutimos sobre as diferentes funções de ativação que podem ser utilizadas nas redes neurais, assim como a sua topologia no que se refere apenas à quantidade de neurônios e a quantidade de camadas de neurônios.
+
+Esses são basicamente os atributos que teremos que ajustar de acordo com a necessidade que os dados utilizados em nosso aprendizado irão criar. Dessa forma criamos a classe \eng{Perceptron} que possui um construtor que irá lidar com a seleção dessas opções. Na listagem \ref{lst:percep_1} está apenas a definição de seu construtor e a documentação explicativa.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_1}, escapeinside={\%}]
+class Perceptron():
+    def __init__(self, N=[1], M=50, ativacao="l_relu", taxa=0.001, debug=0):
+	    '''(None, str, list[int], int, float, float, str, float) -> None
+	    Construtor da minha classe Perceptron
+	    Parâmetros da classe:
+	        *N: quantidade de neurônios da camada oculta, podendo ser
+	            especificada um vetor de várias camadas ocultas ou apenas
+	            uma.
+	        *M: quantidade de treinamentos desejada, denominado de número
+	            de "épocas" da rede, o valor padrão é 50;
+	        *ativacao: escolha de uma das funções de ativação disponíveis
+	            para a(s) camada(s) oculta(s).
+	        *taxa: taxa de aprendizagem, padrão de 0.001
+	        *debug: flag para exibição de parâmetros durante o treinamento
+	    '''
+	    ...
+\end{lstlisting}
+\end{scriptsize}
+
+No construtor é feita uma seleção dentre as funções de ativação existentes no script \eng{util.py}, de forma que só precisamos passar um texto com o nome da função, que o construtor irá selecionar a função e sua derivada para posteriormente informá-las à classe \eng{Network}. Deixamos por padrão a escolha da função de ativação \eng{Leaky RELU}, de acordo com a orientação geral dada por Facure \citep{matheus}.
+
+O parâmetro $M$ define a quantidade inicial padrão de \defi{épocas} que serão treinadas. Uma época corresponde a uma passagem do conjunto de treino pelo \eng{feedforward} e a seguir pelo \eng{backpropagation}, ou seja, configura um único ajuste dos parâmetros através de nosso algoritmo de treinamento.
+
+A arquitetura de camadas padrão definida pelo parâmetro $N$ não tem de fato esse papel, serve apenas para uma validação existente no construtor para que não permita a passagem de uma quantidade $\leq 0$ de camadas ou de neurônios. Se quiséssemos uma arquitetura de $3$ camadas com $4, 5, $ e $6$ neurônios cada, por exemplo, então o parâmetro passado durante a criação de um objeto \eng{Perceptron} deveria ser $N = [4, 5, 6]$.
+
+Outra tarefa do construtor é criar um objeto da classe \eng{OneHotEncoder}\footnote{\url{https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html}} da biblioteca \eng{scikit-learn}\footnote{\url{https://scikit-learn.org/stable/index.html}}. Essa é uma das mais famosas e mais utilizadas bibliotecas da linguagem Python para tarefas de aprendizado de máquina. É a biblioteca utilizada pela maioria dos autores dos livros-textos da área de ciência de dados, como por exemplo Géron \citep{hands} e Grus \citep{data}.
+
+Esse objeto codificador (\eng{encoder}) é salvo como um atributo de classe: \texttt{self.\_enc}, e será utilizado no método de treinamento para criar automaticamente as classes numéricas a partir das classes fornecidas pelos conjuntos de treinamento e validação. Essas classes numéricas representam cada classe no formato de um vetor com todos os componentes zerados exceto um, o que identifica unicamente as classes.
+
+Suponha, por exemplo, que estamos treinando um conjunto de fotos que possuem as classes \emph{cachorro}, \emph{gato} e \emph{rato}. A função codificadora poderá transformar a palavra \emph{cachorro} no vetor $[1, 0, 0]$, \emph{gato} no vetor $[0, 1, 0]$ e \emph{rato} no vetor $[0, 0, 1]$. De forma que estes serão os valores esperados para os $3$ neurônios de saída que nossa rede obrigatoriamente deverá ter (número de classes = número de neurônios de saída). A ordem dessa codificação é irrelevante, sendo gerenciada internamente pela classe \eng{OneHotEncoder}.
+
+A seguir, no método utilizado para treinar a rede, que recebe os dados de entrada e as classes esperadas correspondentes a cada entrada, o primeiro passo é fazer essa codificação. O primeiro trecho do método \texttt{treinar} está na listagem \ref{lst:percep_2}.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_2}, escapeinside={\%}]
+def treinar(self, x_train, y_train, M=0):
+    '''(np.array, np.array, int) -> None
+    Processo de treinamento da rede neural
+    1- Tratar os dados, obtendo as classes das respostas
+    2- Treinar um número M de épocas
+    3- Armazenar no objeto o estado final da rede, 
+    com os pesos e vieses ajustados pelo treinamento
+    '''
+    # onehotencoder extrai as classes únicas já ordenadas alfabeticamente
+    y_encoded = self._enc.fit_transform(y_train)
+    classes = self._enc.categories_[0]
+\end{lstlisting}
+\end{scriptsize}
+
+Nessa classe e nos exemplos subsequentes neste trabalho, sempre nomeio o conjunto dos dados de treino de \texttt{x\_train} e \texttt{y\_train}, e do conjunto de teste de \texttt{x\_test} e \texttt{y\_test}. A letra $x$ indica que é o conjunto de dados de entrada e $y$ indica as classes esperadas de classificação. No trecho acima usamos a classe \eng{OneHotEncoder} para transformar quaisquer formatos que as classes forem informadas nos vetores numéricos que serão os valores esperados da saída da rede.
+
+O próximo trecho de código irá se encarregar de criar a estrutura geral da rede, ao final criando um objeto da classe \eng{Network} e salvando-o como um atributo de classe. É o que está presente na listagem \ref{lst:percep_3}. Os dados de entrada são esperados no formato de lista do tipo \eng{numpy}, dessa forma a primeira linha do trecho obtém a quantidade de características (\eng{features}) dos dados de entrada, ou seja, das variáveis explicativas do modelo, através do método \texttt{shape(1)} do tipo \eng{numpy}, essa será a quantidade de neurônios da camada de entrada da rede, um para cada característica.
+
+Usando o exemplo das fotos de animais, os pixels da foto seriam as variáveis explicativas para um modelo de classificação, assumindo que todas as fotos possuem a mesma quantidade de pixels e que cada pixel possui apenas um valor de intensidade de cinza, ou outra cor única qualquer. Se utilizássemos fotos coloridas, com por exemplo, as intensidades de $3$ cores diferentes por pixel, então o número de variáveis explicativas de nosso modelo seria $3n$, sendo $n$ o número de pixels da foto.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_3}, escapeinside={\%}]
+	neurons_in = x_train.shape[1]
+
+	if self.network is None:
+	    neurons_out = len(self.classes)
+	    for i in range(len(self.N)):
+	        if len(self.N) == 1 and self.N[0] < neurons_out:
+	            self.N[0] = min(int(np.ceil(neurons_in*2/3 + neurons_out)), neurons_in)
+	    
+	    rede = []
+	    rede.append(neurons_in)
+	    for hidden in self.N:
+	        rede.append(hidden)
+	    rede.append(neurons_out)
+	    
+	    ativacoes = (self.ativacao, self.der_ativacao, 
+	                 self.ativacao_saida, self.der_ativacao_saida)
+
+	    self.network = Network(np.array(rede), self.taxa, ativacoes)
+\end{lstlisting}
+\end{scriptsize}
+
+A seguir, o método irá criar a estrutura da rede, se essa é a primeira vez que o objeto estiver sendo utilizado para o treinamento, do contrário ele irá realizar outras $M$ épocas de treinamento, a partir dos dados existentes na rede. 
+
+Obtém-se a quantidade de neurônios para a camada de saída a partir da quantidade de classes identificadas. A seguir ele utiliza as quantidades de neurônios para as camadas ocultas se estas foram previamente informadas manualmente durante a criação da classe, ou então, é feito um cálculo, para que seja utilizada uma quantidade apropriada de neurônios para a primeira camada oculta, que pode ser a única camada oculta por padrão.
+
+Essa quantidade apropriada é definida por Jeff Heaton \citep{layers_2} como sendo $2/3$ da quantidade de neurônios de entrada mais a quantidade de neurônios de saída. Esta é uma das `regras de ouro' que ele descobriu empiricamente pois se mostraram as regras mais gerais para garantir o bom funcionamento da rede em vários casos. Outra regrinha que ele encontrou, que é mais geral mas que incluí esta é que a quantidade de neurônios de uma camada oculta única deve ser tal que seja menor que a quantidade de neurônios de entrada mas maior que a quantidade de neurônios de saída.
+
+Naturalmente o treinamento aceita quaisquer número de camadas ocultas e de neurônios em cada camada, apenas não há garantias de que o treinamento irá suceder sem ocorrer o problema do gradiente explodindo/desaparecendo. Mesmo a utilização das regrinhas de Heaton \citep{layers_2} não asseguram esse sucesso do treinamento, apenas testes com outras quantidades de neurônios e camadas, e com outras funções de ativação e taxas de aprendizado que poderão resultar eventualmente num treinamento bem sucedido, caso essas opções-padrão não sejam suficientes.
+
+Essa é uma dificuldade inerente das redes neurais, ainda mais quando tenta lidar com conjuntos de dados muito grandes e com um grande número de variáveis explicativas. Essa é uma das razões principais para ser preferível a utilização de uma biblioteca já consolidade e com muitos anos de desenvolvimento e ajustes por muitos desenvolvedores e cientistas de dados ao redor do mundo.
+
+O próximo trecho, na listagem \ref{lst:percep_4} é o trecho principal deste método, é o treinamento \eng{backpropagate} feito um número $M$ de épocas. São passados como parâmetros os dados de entrada, e as classes esperadas já codificadas. Ao final desse treinamento, a rede está salva no atributo de classe \texttt{self.network} com os parâmetros já ajustados e prontos para serem utilizados para validação e previsão de novos dados.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_4}, escapeinside={\%}]
+    for _ in self.tqdm(range(self.M)):
+        self.network.train(x_train, y_encoded)
+\end{lstlisting}
+\end{scriptsize}
+
+O próximo método realiza a previsão das classes a partir dos dados informados, simplesmente utilizando a função da classe \eng{Network} criada para isso. É o que está na listagem \ref{lst:percep_5}, abaixo. 
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_5}, escapeinside={\%}]
+def prever(self, X, interpretar=None):
+    '''(np.array, Callable) -> np.array'''
+    ...
+    if interpretar is None:
+        return self.network.predict(X, self.reinterpretar_saidas)
+    return self.network.predict(X, interpretar)
+\end{lstlisting}
+\end{scriptsize}
+
+Por padrão a função que irá interpretar os neurônios de saída, convertendo-os em uma classe, foi criada da forma como será mostrada na listagem \ref{lst:percep_6}, a seguir.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_6}, escapeinside={\%}]
+def reinterpretar_saidas(self, saidas):
+    '''(array) -> np.array
+    '''
+    maximo = max(saidas)
+    saida = np.array([int(x == maximo) for x in saidas])
+    return self._enc.inverse_transform(saida.reshape(1, -1))
+\end{lstlisting}
+\end{scriptsize}
+
+Essa função realiza a interpretação padrão dos neurônios de saída, primeiramente eles são convertidos em vetores com identificação única, ou seja, no formato $[0, \ldots,0, 1, 0, \ldots, 0]$, sendo que a posição que irá receber $1$ é aquela que tiver originalmente o valor máximo, ou seja, mais distante de $0$, e o restante será convertido em zeros. Dessa forma, basta utilizarmos a decodificação inversa do objeto \eng{OneHotEncoder}, que está salvo no atributo de classe, e daí obtemos qual a classe mais provável à qual pertence o dado de entrada que foi processado pela rede.
+
+Isto nos mostra que uma possível interpretação dos neurônios de saída é que cada um possui uma probabilidade de que o dado pertença àquela classe indexada na mesma posição a qual esse neurônio está na camada de saída. Se usarmos como exemplo nosso modelo fictício dos animais, ao processar uma foto, a rede iria devolver os valores dos neurônios de saída, por exemplo, como o seguinte vetor: $[0.002, 0.976, 0.013]$. Pode-se dizer que há uma probabilidade maior de que essa foto pertença à segunda classe, que digamos ser a classe \emph{Gatos}, por exemplo.
+
+O que a função \texttt{reinterpretar\_saidas} faz é converter esse vetor de saídas da rede no vetor $[0, 1, 0]$, que agora está no formato das classes numéricas geradas por nosso objeto codificador. Dessa forma, executar uma decoficação com esse mesmo objeto, que havia originalmente codificado a palavra \emph{Gato} no vetor $[0, 1, 0]$, irá fazer a operação inversa, retornando a palavra \emph{Gato} como sendo a classe mais provável para a foto processada.
+
+Alternativamente podemos utilizar outra função de interpretação dos dados de saída, devendo ser informada diretamente por referência para o método \texttt{prever}.
+
+Por razões didáticas, ou mesmo em casos em que não queremos obter classes diretamente a partir dos neurônios de saída, mas queremos observar diretamente os valores calculados pela rede sem interpretação, criei um método que realiza apenas o \eng{feedforward} para uma lista de entradas fornecidas como parâmetro. É o que vemos na listagem \ref{lst:percep_7}, a seguir.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_7}, escapeinside={\%}]
+def processar(self, X):
+    '''(np.array) -> np.array'''
+    ...
+    saidas = []
+    for x in X:
+        saidas.append(self.network.feedforward(x))
+    return np.array(saidas)
+\end{lstlisting}
+\end{scriptsize}
+
+Por fim, podemos querer observar qual o erro, ou custo, que nossa rede está produzindo para um dado par de conjuntos de entrada e saídas esperadas. Para isso criei o método \texttt{funcao\_erro} exibido na listagem \ref{lst:percep_8}, a seguir. 
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_8}, escapeinside={\%}]
+def funcao_erro(self, X, Y):
+    '''(np.array, np.array) -> float'''
+    ...
+    y_encoded = self._enc.fit_transform(Y)
+    return self.network.mse(X, y_encoded)
+\end{lstlisting}
+\end{scriptsize}
+
+Ele utiliza a função de erro que está implementada na classe \eng{Network}, que é a função de custo que utilizamos como base para a criação de nosso algoritmo de otimização, o erro quadrático médio (MSE), também conhecido como a norma euclidiana do vetor distância entre os vetores das saídas esperadas e o das saídas obtidas pela rede.
+
+Em todos os trechos da classe \eng{Perceptron} acima, várias linhas estão ocultas sob o símbolo de reticências, são linhas que fazem verificações dos dados utilizados e do estado atual do objeto, se ele pode ser usado para previsão por exemplo, ou seja, se já foi treinado previamente, entre outras verificações gerais para um bom funcionamento.
+
+\section{Caso de uso - Base de dados MNIST}
+
+...Aqui vou descrever meu teste com o mnist 8x8... (ótima hora para mostrar a classe da matriz de confusão)
+
+\section{Keras - Uma API de redes neurais para \eng{deep learning}}
+
+De acordo com seu site oficial\footnote{\url{https://keras.io/about/}}, \eng{Keras} é uma API (Interface de Programação de Aplicativos) de \eng{deep learning} escrita em Python, e que roda sobre a plataforma de \eng{machine learning} chamada de \eng{TensorFlow}\footnote{\url{https://github.com/tensorflow/tensorflow}} que é de fato a biblioteca que devemos instalar em nosso ambiente Python, para podermos utilizar as redes neurais ali implementadas e quaisquer outros recursos da API \eng{Keras} em nosso projeto de aprendizado.
+
