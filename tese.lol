@@ -1,40 +1,44 @@
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.1}Trecho da classe Neuron}{19}{lstlisting.3.1}%
+\contentsline {lstlisting}{\numberline {3.1}Trecho da classe Neuron}{17}{lstlisting.3.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.2}Trecho do script util.py}{21}{lstlisting.3.2}%
+\contentsline {lstlisting}{\numberline {3.2}Trecho do script util.py}{19}{lstlisting.3.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.3}Trecho da classe \emph {Layer}}{27}{lstlisting.3.3}%
+\contentsline {lstlisting}{\numberline {3.3}Trecho da classe \emph {Layer}}{25}{lstlisting.3.3}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.4}Trecho da classe \emph {Layer}}{28}{lstlisting.3.4}%
+\contentsline {lstlisting}{\numberline {3.4}Trecho da classe \emph {Layer}}{26}{lstlisting.3.4}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.5}Trecho da classe \emph {Layer}}{28}{lstlisting.3.5}%
+\contentsline {lstlisting}{\numberline {3.5}Trecho da classe \emph {Layer}}{26}{lstlisting.3.5}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.6}Trecho da classe \emph {Network}}{29}{lstlisting.3.6}%
+\contentsline {lstlisting}{\numberline {3.6}Trecho da classe \emph {Network}}{27}{lstlisting.3.6}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.7}Trecho da classe \emph {Network}}{29}{lstlisting.3.7}%
+\contentsline {lstlisting}{\numberline {3.7}Trecho da classe \emph {Network}}{27}{lstlisting.3.7}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.8}Trecho da classe \emph {Network}}{30}{lstlisting.3.8}%
+\contentsline {lstlisting}{\numberline {3.8}Trecho da classe \emph {Network}}{28}{lstlisting.3.8}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.9}Trecho da classe \emph {Network}}{30}{lstlisting.3.9}%
+\contentsline {lstlisting}{\numberline {3.9}Trecho da classe \emph {Network}}{28}{lstlisting.3.9}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.10}Trecho da classe \emph {Network}}{31}{lstlisting.3.10}%
+\contentsline {lstlisting}{\numberline {3.10}Trecho da classe \emph {Network}}{29}{lstlisting.3.10}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.11}Trecho da classe \emph {Network}}{31}{lstlisting.3.11}%
+\contentsline {lstlisting}{\numberline {3.11}Trecho da classe \emph {Network}}{29}{lstlisting.3.11}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.12}Trecho da classe \emph {Network}}{31}{lstlisting.3.12}%
+\contentsline {lstlisting}{\numberline {3.12}Trecho da classe \emph {Network}}{29}{lstlisting.3.12}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.13}Trecho da classe \emph {Perceptron}}{33}{lstlisting.3.13}%
+\contentsline {lstlisting}{\numberline {3.13}Trecho da classe \emph {Perceptron}}{31}{lstlisting.3.13}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.14}Trecho da classe \emph {Perceptron}}{34}{lstlisting.3.14}%
+\contentsline {lstlisting}{\numberline {3.14}Trecho da classe \emph {Perceptron}}{32}{lstlisting.3.14}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.15}Trecho da classe \emph {Perceptron}}{35}{lstlisting.3.15}%
+\contentsline {lstlisting}{\numberline {3.15}Trecho da classe \emph {Perceptron}}{33}{lstlisting.3.15}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.16}Trecho da classe \emph {Perceptron}}{36}{lstlisting.3.16}%
+\contentsline {lstlisting}{\numberline {3.16}Trecho da classe \emph {Perceptron}}{34}{lstlisting.3.16}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.17}Trecho da classe \emph {Perceptron}}{36}{lstlisting.3.17}%
+\contentsline {lstlisting}{\numberline {3.17}Trecho da classe \emph {Perceptron}}{34}{lstlisting.3.17}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.18}Trecho da classe \emph {Perceptron}}{36}{lstlisting.3.18}%
+\contentsline {lstlisting}{\numberline {3.18}Trecho da classe \emph {Perceptron}}{34}{lstlisting.3.18}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.19}Trecho da classe \emph {Perceptron}}{37}{lstlisting.3.19}%
+\contentsline {lstlisting}{\numberline {3.19}Trecho da classe \emph {Perceptron}}{35}{lstlisting.3.19}%
 \defcounter {refsection}{0}\relax 
-\contentsline {lstlisting}{\numberline {3.20}Trecho da classe \emph {Perceptron}}{37}{lstlisting.3.20}%
+\contentsline {lstlisting}{\numberline {3.20}Trecho da classe \emph {Perceptron}}{35}{lstlisting.3.20}%
+\defcounter {refsection}{0}\relax 
+\contentsline {lstlisting}{\numberline {3.21}Trecho do script \emph {mnist\_test.py}}{37}{lstlisting.3.21}%
+\defcounter {refsection}{0}\relax 
+\contentsline {lstlisting}{\numberline {3.22}Trecho do script \emph {mnist\_test.py}}{37}{lstlisting.3.22}%

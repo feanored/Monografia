@@ -11,7 +11,7 @@ O perceptron aqui implementado tem o objetivo de ser utilizado muito mais para f
 
 Na última parte desse capítulo é exibida uma biblioteca de \eng{machine learning} utilizada nas aplicações reais de \eng{deep learning} de redes neurais, muito mais avançada, com muitos outros recursos que vão além do escopo que esta versão simples do \emph{perceptron} é capaz de lidar. Esta será a biblioteca de redes neurais que será utilizada nas partes práticas deste trabalho.
 
-\section{Derivação matemática do algoritmo de retropropagação}
+\section{Matemática do algoritmo de retropropagação}
 
 Para a aprendizagem supervisionada foi utilizado o algoritmo de retropropagação (\eng{retropropagation}), que consiste na minimização de uma função de custos, a partir do gradiente, ou seja, da derivada desta função de custos, neste caso o erro quadrático médio, conforme foi definido no capítulo anterior.
 
@@ -750,11 +750,91 @@ Ele utiliza a função de erro que está implementada na classe \eng{Network}, q
 
 Em todos os trechos da classe \eng{Perceptron} acima, várias linhas estão ocultas sob o símbolo de reticências, são linhas que fazem verificações dos dados utilizados e do estado atual do objeto, se ele pode ser usado para previsão por exemplo, ou seja, se já foi treinado previamente, entre outras verificações gerais para um bom funcionamento.
 
-\section{Caso de uso - Base de dados MNIST}
+\section{Exemplo de utilização do \eng{perceptron}}
 
-...Aqui vou descrever meu teste com o mnist 8x8... (ótima hora para mostrar a classe da matriz de confusão)
+Para demonstrar a utilização da versão aqui implementada da rede \eng{perceptron}, resolvi utilizar aquela que é considerada a base de dados de entrada no mundo da ciência de dados, a base MNIST (\eng{Modified National Institute of Standards and Technology}) de números escritos à mão compilada originalmente pela Universidade de Nova York\footnote{Disponível originalmente em \url{http://yann.lecun.com/exdb/mnist/}.}.
 
-\section{Keras - Uma API de redes neurais para \eng{deep learning}}
+A versão oficial da base de dados consistem em $60$ mil imagens de dimensões $28 \times 28$ pixels. Cada imagem é uma foto de um dígito manuscrito entre $0$ e $9$, sendo que a proporção de cada dígito é aproximadamente de um décimo, além disso a base contém a informação dos valores nominais de cada número, o que torna essa base de dados muito útil para validar modelos de aprendizado supervisionado, antes que sejam utilizados em casos reais. Exemplos de fotos estão na figura \ref{fig:mnist_fig}.
 
-De acordo com seu site oficial\footnote{\url{https://keras.io/about/}}, \eng{Keras} é uma API (Interface de Programação de Aplicativos) de \eng{deep learning} escrita em Python, e que roda sobre a plataforma de \eng{machine learning} chamada de \eng{TensorFlow}\footnote{\url{https://github.com/tensorflow/tensorflow}} que é de fato a biblioteca que devemos instalar em nosso ambiente Python, para podermos utilizar as redes neurais ali implementadas e quaisquer outros recursos da API \eng{Keras} em nosso projeto de aprendizado.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/mnist}
+\caption{Exemplos de fotos da base de dados MNIST de números manuscritos.\footnote{Extraído de \url{https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2019/02/Plot-of-a-Subset-of-Images-from-the-MNIST-Dataset-1024x768.png}}}
+\label{fig:mnist_fig}
+\end{figure}
+
+É exatamente esse o objetivo aqui, testar nossa implementação didática do \eng{perceptron}. Para isso, o primeiro passo foi obter uma versão mais \emph{leve} da base de dados, com as fotos redimensionadas para $8 \times 8$ pixels, o que implica em $64$ variáveis explicativas e mesmo número de neurônios de entrada. Além disso essa base possui apenas $1.800$ fotos etiquetadas. A base original de $28^2 = 784$ pixels já se mostrou grande demais para essa implementação conseguir lidar em tempo hábil.\footnote{Em tentativas que fiz com a base original, meu computador ficou calculando deltas por quase 2 horas sem completar uma só época de treinamento.}
+
+A base foi importada através da biblioteca \eng{sklearn}, que já possui opções para fazer download automático para o programa em execução de várias versões da base MNIST. O código da listagem \ref{lst:mnist_1} mostra a importação e também o próximo passo, que é separar a base nos conjuntos de treino, com $85\%$ dos dados, e de validação com os $15\%$ restantes.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho do script \eng{mnist\_test.py}}, label={lst:mnist_1}, escapeinside={\%}]
+# obtendo o conjunto de imagens de numeros escritos
+from sklearn.datasets import load_digits
+mnist = load_digits()
+
+# dividindo a base nos conjuntos de treino e de teste
+N = int(mnist.data.shape[0]*0.85)
+x_train, y_train = mnist.data[:N], mnist.target[:N].astype(np.uint8)
+x_test, y_test = mnist.data[N:], mnist.target[N:].astype(np.uint8)
+\end{lstlisting}
+\end{scriptsize}
+
+A implementação está tão fácil de utilizar, que para a tarefa de treinar a classificação dos números digitados, não precisamos de mais de meia dúzia de linhas de código, mostradas na listagem \ref{lst:mnist_2}.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho do script \eng{mnist\_test.py}}, label={lst:mnist_2}, escapeinside={\%}]
+perceptron = Perceptron(taxa=0.001, ativacao="l_relu", N=[48, 24])
+perceptron.treinar(x_train, y_train, M=25)
+
+y_train_pred = perceptron.prever(x_train)
+y_test_pred = perceptron.prever(x_test)
+
+score = Scores(y_test, y_test_pred)
+score.exibir_grafico()
+\end{lstlisting}
+\end{scriptsize}
+
+Basicamente, uma rede é criada com a estrutura de uma camada de entrada com $64$ neurônios, quantidade obtida automaticamente pela classe a partir das dimensões da lista de dados informada (\eng{y\_train}), duas camadas ocultas com $48$ e $24$ neurônios cada, com taxa de aprendizado $0.001$ e a função de ativação \eng{Leaky RELU}, ambos ajustados empiricamente sendo o que se saíram melhores em acurácia. A segunda linha realiza o treinamento com $25$ épocas, informando a lista de imagens e a lista das classificações conhecidas.
+
+As duas últimas linhas dessa listagem fazem a comparação dos valores previstos com os valores já conhecidos da classificação, para conhecermos a acurácia de nosso modelo de aprendizado. Abaixo nas figuras \ref{fig:mnist_treino} e \ref{fig:mnist_test} está uma exibição gráfica com a função de erro MSE, a acurácia e a \defi{matriz de confusão}, a partir da qual podemos calcular a acurácia de nossa rede neural.
+
+A matriz de confusão permite relacionar as classes esperadas com as classes previstas de um conjunto de dados utilizados num algoritmo de aprendizagem supervisionada como é o caso do \eng{perceptron}. Ela mostra as contagens dessas relações, e dessa forma, a diagonal dessa matriz possui as classificações corretamente obtidas pelo algoritmo, e o restante da matriz a contagem das classificações incorretas.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=10cm]{figuras/mnist_treino}
+\caption{Matriz de confusão, função de erro e acurácia do conjunto de treino da base MNIST $8\times8$.}
+\label{fig:mnist_treino}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=10cm]{figuras/mnist_test}
+\caption{Matriz de confusão, função de erro e acurácia do conjunto de teste da base MNIST $8\times8$.}
+\label{fig:mnist_test}
+\end{figure}
+
+Como os pesos da rede são inicializados aleatoriamente, cada treinamento pode obter resultados levemente diferentes, embora que, no geral os resultados irão convergir para um resultado médio, que dependem dos parâmetros utilizados, como a função de ativação, quantidade de camadas e de neurônios e de épocas de treinamento.
+
+Podemos notar que o conjunto de treino possui uma boa perfomance, obtendo mais de $93\%$ de acurácia, ou seja, de classificações corretas. Por outro lado, o conjunto de treino obteve apenas pouco mais de $81\%$, o que indica o problema de \eng{overfitting} em nossa rede, quando a classificação do treino está boa, o que é esperado dado que é a base utilizada para o ajuste dos parâmetros internos, mas quando a rede treinada tenta lidar com dados inéditos, o que é o papel do conjunto de teste, se sai consideravelmente pior.
+
+Está demonstrada a necessidade da utilização de alguma implementação mais robusta, e já refinada com anos de contribuições da comunidade de programadores e cientistas de dados ao redor do planeta. E essa implementação, ou pelo menos uma delas, é a API Keras, que veremos na próxima seção, e que será utilizada no restante desse trabalho.
+
+\section{Utilizando a API Keras}
+
+De acordo com seu site oficial\footnote{\url{https://keras.io/about/}}, \eng{Keras} é uma API (Interface de Programação de Aplicativos) de \eng{deep learning} escrita em Python, e que roda sobre a plataforma de \emph{deep learning} chamada de \eng{TensorFlow}\footnote{\url{https://www.tensorflow.org/}} que é de fato a biblioteca que devemos instalar em nosso ambiente Python, para podermos utilizar as redes neurais ali implementadas e quaisquer outros recursos da API \eng{Keras} em nosso projeto de aprendizado.
+
+Keras implementa quase todas as arquiteturas de redes neurais, segundo Géron \citep{hands}, sua popularidade é devido sua facilidade de uso, flexibilidade aliadas a um lindo design de software. Existem algumas implementações da API, como a \emph{TensorFlow}, que é a principal, a \eng{Microsoft Cognitive Toolkit}, a \eng{Apache MXNet}, a \eng{Apple's Core ML}, etc. 
+
+Todas essas implementações podem ser utilizadas em conjunto, na biblioteca conhecida como \eng{multibackend Keras}, sendo que a escolha entre uma delas ocorre de forma encapsulada até mesmo para o cientista de dados. Alternativamente, utilizar a versão própria presente na biblioteca \eng{TensorFlow} traz benefícios como recursos exclusivos à ela. O funcionamento dessas 2 implementações está na Figura \ref{fig:tensor_flow}, a seguir.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=12cm]{figuras/tensor_flow}
+\caption{As 2 implementações da API Keras. \eng{Multibackend} à esquerda e \eng{TensorFlow} à direita.\footnote{Extraído de: Aurélien Géron, `Hands-on Machine Learning with Scikit-Learn, Keras, and TensorFlow', O'Reilly 2.a edição 2019, página 385.}}
+\label{fig:tensor_flow}
+\end{figure}
 

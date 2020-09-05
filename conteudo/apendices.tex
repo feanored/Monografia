@@ -13,4 +13,75 @@
 % invés de \input: https://tex.stackexchange.com/a/32058/183146
 
 % \input{conteudo-exemplo/apendice-pseudocodigo}
-\par
+%\par
+
+\chapter{O método do gradiente descendente}
+\label{ap:gradiente}
+
+O gradiente descendente é um dos métodos de otimização de funções, no contexto de aprendizado máquina é geralmente utilizado para minimizar funções de custo. A ideia geral é ajustar parâmetros iterativamente para otimizar a função de custo gradativamente. 
+
+O seu funcionamento utiliza a ideia fundamental do Cálculo em que utilizamos a derivada de uma função de forma a encontrar seus pontos extremos. Dada uma função $f{:}\mathbb{R}^n \rightarrow \mathbb{R}$, temos que se um ponto $x = \hat{x} \in \mathbb{R}$ é um ponto extremo de $f$ então é condição necessária\footnote{Mais detalhes em Guidorizzi \citep{guidorizzi2}. Um curso de cálculo Vol. 2, pág. 894.} que cada derivada parcial de primeira ordem de $f$ exista e seja igual a zero. Denotando $x = (x_0, x_1, \ldots, x_n)$ e $\hat{x} = (\hat{x_0}, \hat{x_1}, \ldots, \hat{x_n})$, temos:
+
+\begin{equation}\label{grad_0}
+\frac{\del f(\hat{x_0})}{\del x_0} = 0 ,\;\;\; \frac{\del f(\hat{x_1})}{\del x_1} = 0 ,\;\;\; \ldots ,\;\;\; \frac{\del f(\hat{x_n})}{\del x_n} = 0
+\end{equation}
+
+Usando a notação de vetores, podemos simplificar a equação acima, uma vez que o conjunto das derivadas parciais de uma função de várias variáveis é o vetor gradiente desta função, assim, denotando $\mathbf{0} \in \mathbb{R}^n = (0, 0, \ldots, 0)$, temos equivalentemente à equação \ref{grad_0}:
+
+\begin{equation}\label{grad_1}
+\nabla f(\hat{x}) = \mathbf{0}
+\end{equation}
+onde $\nabla{:}\mathbb{R}^n \rightarrow \mathbb{R}^n$ é a função que calcula o gradiente para um dado ponto de uma função.
+
+Geometricamente é nos dada a intuição, por Luis Hamilton Guidorizzi \citep{guidorizzi2}, de que o vetor gradiente de um dado ponto de uma função nos dá a direção de maior aumento da função naquele ponto. Como nosso objetivo é minimizar a função de custo, fica explicado o nome do algoritmo como ``gradiente descendente'', de forma que devemos utilizar o sentido negativo do vetor gradiente.
+
+Assim, podemos dizer que a direção de minimização da função está na direção do vetor gradiente, o que significa dar um passo ($f(x + dx)$) nessa direção no domínio da função, tal passo com tamanho que seja \emph{proporcional} a cada componente do vetor gradiente. Dessa forma podemos escrever $dx$ como sendo um passo na direção do mínimo da função de custo dessa forma:
+
+\begin{equation}\label{grad_2}
+dx = - \eta \nabla f(x)
+\end{equation}
+onde $\eta$ é a constante de proporcionalidade, que é conhecida como \defi{taxa de aprendizado}, que tem por objetivo tornar a velocidade do treinamento ajustável durante a execução do algoritmo, sendo tarefa do cientista de dados testar e obter os valores que dêem os melhores resultados caso-a-caso. 
+
+Podemos observar as diferenças de utilizar uma taxa de aprendizado fixa ou variável (que mude a cada iteração do treinamento, por exemplo), utilizando gráficos. Suponha que estamos querendo minimizar uma função quadrática do tipo $f(x) = x^2$, essa restrição é particularmente útil uma vez que a função de custo que será utilizada, a MSE, é uma função quadrática deste tipo. Outra característica igualmente útil é que a segunda derivada deste tipo de função quadrática é sempre positiva\footnote{A segunda derivada de uma função de muitas variáveis é a matriz Hessiana, neste caso ela seria uma matriz definida positiva.}, o que implica que o ponto extremo encontrado será necessariamente um ponto de mínimo.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[height=8cm]{figuras/grad_1}
+\caption{Visualização do método do gradiente descendente com taxa de aprendizado única. Os pontos azuis representam candidatos a ponto mínimo em cada iteração do algoritmo.}
+\label{fig:grad_1}
+\end{figure}
+
+Inicialmente, sorteamos um ponto inicial e calculamos o valor da função e o valor do gradiente neste ponto. Se as componentes do gradiente não forem todas nulas (ou arbitrariamente próximas de zero), então quer dizer que não atingimos o mínimo, e dessa forma obtemos um novo ponto a partir deste somado com $dx$ definido acima na equação \ref{grad_2}. Repetimos este processo até que o gradiente do ponto atual seja arbitrariamente próximo do vetor nulo. Uma visualização deste processo, utilizando taxa de aprendizado fixada, está na Figura \ref{fig:grad_1}.
+
+Podemos notar que as estimativas aproximam-se a uma velocidade constante do ponto de mínimo, que nesse caso ilustrativo é bem conhecido. Esse é o comportamento gerado por uma taxa de aprendizado fixa, e além disso com uma magnitude mediana. O que poderia acontecer se utilizarmos uma taxa de aprendizado muito grande é que com um passo do algoritmo, o ponto estimado poderia ir para o outro lado do arco da função, e depois retornar, e assim por diante, nunca convergindo para o mínimo, uma ilustração disso está na Figura \ref{fig:grad_2}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[height=8cm]{figuras/grad_2}
+\caption{Visualização do método do gradiente descendente com taxa de aprendizado única. Ilustração do uso de um valor de taxa de aprendizado muito grande.}
+\label{fig:grad_2}
+\end{figure}
+
+O caso oposto a este, ou seja, usar uma taxa muito pequena, claramente irá fazer com os passos dados sejam muito pequenos, e dessa forma o algoritmo demore muito a convergir, por isso é importante usar valores medianos que podem ser obtidos de forma heurística, embora na prática, conforme dito por Géron \citep{hands}, utiliza-se $\eta = 0.1$, sendo este um valor consensualmente utilizado pelo menos como ponto de partida.
+
+A outra abordagem é utilizar valores variáveis, sendo o caso mais comum utilizar uma taxa que começa até mesmo maior do que o valor comum de $0.1$ mas que vai diminuindo a cada passo, numa tentativa de obter uma convergência mais rápida. Uma ilustração desse caso está na Figura \ref{fig:grad_3}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[height=8cm]{figuras/grad_3}
+\caption{Visualização do método do gradiente descendente com taxa de aprendizado variável que vai diminuindo passo-a-passo do algoritmo.}
+\label{fig:grad_3}
+\end{figure}
+
+Qualquer que seja o tipo de taxa de apredizado que venha a ser utilizado, permanece como melhor estratégia testar qual deles irá gerar o melhor resultado, a partir de algum problema com solução previamente conhecida, como a função $f(x) = x^2$, em que sabemos que o ponto de mínimo é atingido em $x = 0$, ou podemos testar em nosso problema-alvo, analisando diretamente os valores candidatos a mínimo obtidos pelo algoritmo como função do número do passo, criando assim outro tipo de gráfico, no qual não precisamos saber o formato da função objetivo, o que é razoável uma vez que não precisariamos de um método numérico para obter seu ponto de mínimo.
+
+Podemos observar este comportamento genérico para os 4 casos acima mencionados, na Figura \ref{fig:grad_4} temos os gráficos de valores hipotéticos de candidatos a mínimo gerados por (a) taxa de aprendizado fixa e grande, (b) taxa de aprendizado fixa e pequena, (c) taxa de aprendizado fixa e mediana, (d) taxa de aprendizado decrescente.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=14cm]{figuras/grad_4}
+\caption{Comportamento de diferentes taxas de aprendizado nos valores candidatos a mínimo.}
+\label{fig:grad_4}
+\end{figure}
+
+A partir deste comportamento geral, podemos testar nosso problema-alvo, verificar a qual comportamento ele mais se parece e assim decidir se devemos aumentar ou diminuir nossa taxa até obtermos um bom comportamento como aqueles vistos em (c) ou (d).
