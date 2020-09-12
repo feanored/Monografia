@@ -806,14 +806,14 @@ A matriz de confusão permite relacionar as classes esperadas com as classes pre
 \begin{figure}[htb]
 \centering
 \includegraphics[width=10cm]{figuras/mnist_treino}
-\caption{Matriz de confusão, função de erro e acurácia do conjunto de treino da base MNIST $8\times8$.}
+\caption{Matriz de confusão, função de perda e acurácia do conjunto de treino da base MNIST $8\times8$.}
 \label{fig:mnist_treino}
 \end{figure}
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=10cm]{figuras/mnist_test}
-\caption{Matriz de confusão, função de erro e acurácia do conjunto de teste da base MNIST $8\times8$.}
+\caption{Matriz de confusão, função de perda e acurácia do conjunto de teste da base MNIST $8\times8$.}
 \label{fig:mnist_test}
 \end{figure}
 
@@ -821,7 +821,7 @@ Como os pesos da rede são inicializados aleatoriamente, cada treinamento pode o
 
 Podemos notar que o conjunto de treino possui uma boa perfomance, obtendo mais de $93\%$ de acurácia, ou seja, de classificações corretas. Por outro lado, o conjunto de treino obteve apenas pouco mais de $81\%$, o que indica o problema de \eng{overfitting} em nossa rede, quando a classificação do treino está boa, o que é esperado dado que é a base utilizada para o ajuste dos parâmetros internos, mas quando a rede treinada tenta lidar com dados inéditos, o que é o papel do conjunto de teste, se sai consideravelmente pior.
 
-Está demonstrada a necessidade da utilização de alguma implementação mais robusta, e já refinada com anos de contribuições da comunidade de programadores e cientistas de dados ao redor do planeta. E essa implementação, ou pelo menos uma delas, é a API Keras, que veremos na próxima seção, e que será utilizada no restante desse trabalho.
+Está demonstrada a necessidade da utilização de alguma implementação mais robusta, e refinada com anos de contribuições da comunidade de programadores e cientistas de dados ao redor do planeta. E essa implementação, ou pelo menos uma delas, é a API Keras, que veremos na próxima seção, e que será utilizada no restante desse trabalho.
 
 \section{Utilizando a API Keras}
 
@@ -838,3 +838,90 @@ Todas essas implementações podem ser utilizadas em conjunto, na biblioteca con
 \label{fig:tensor_flow}
 \end{figure}
 
+Para entender o funcionamento e uso do Keras, criei uma rede com a mesma estrutura do Perceptron aqui implementado mas com algumas melhorias já disponíveis com a API, e com objetivo de classificar o mesmo conjunto de dados MNIST, só que agora com a versão oficial da base de dados, o que é possível já que a biblioteca está implementada com muita eficiência e funciona bem para bases maiores mesmo num ambiente pessoal de computação. 
+
+A importação da base é feita agora usando outra função da biblioteca \emph{sklearn}. Pode ser visto na listagem \ref{lst:keras_1}. A seguir os dados são divididos entre os conjuntos de treino e de teste, com as listas \texttt{x\_train, x\_test} e \texttt{y\_train, y\_test} contendo os pixels e as classficações respectivamente, como antes.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}}, label={lst:keras_1}, escapeinside={\%}]
+from sklearn.datasets import fetch_openml
+mnist = fetch_openml('mnist_784', version=1) # versao 28x28
+\end{lstlisting}
+\end{scriptsize}
+
+O próximo passo é criar a rede utilizando a API Keras, o que vemos na listagem \ref{lst:keras_2}. A primeira linha cria uma rede sequencial, isto é, uma rede \eng{feedforward}. A seguir, são adicionadas as camadas, a primeira camada é definida como \eng{Flatten} pois é a camada de entrada, então ela não aplica nenhuma transformação nos dados. A base de dados é importada num formato matricial de $28\times28$ pixels, o que pode ser utilizado e tratado diretamente pela API.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}}, label={lst:keras_2}, escapeinside={\%}]
+model = tf.keras.Sequential()
+layers = tf.keras.layers
+
+model.add(layers.Flatten(input_shape=(28, 28)))
+model.add(layers.Dense(512, activation='elu'))
+model.add(layers.Dense(256, activation='elu'))
+model.add(layers.Dense(128, activation='elu'))
+model.add(layers.Dense(10, activation='softmax'))
+
+model.compile(optimizer=keras.optimizers.SGD(lr=0.001),
+              loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+\end{lstlisting}
+\end{scriptsize}
+
+As próximas camadas são adicionadas com o tipo \eng{Dense}, o que significa uma conexão de todos os neurônios de uma camada com todos da próxima, dessa forma estamos criando um \eng{Perceptron} exatamente como aquele implementado. As camadas ocultas utilizam a função de ativação \eng{ELU}, e a camada de saída utiliza a função \eng{softmax}, o que na API Keras significa que estamos classificando os dados de acordo com o valor máximo dos neurônios de saída, o que em nossa implementação foi papel da função \texttt{reinterpretar\_saidas}, que foi definida na listagem \ref{lst:percep_6}.
+
+Na última linha da listagem \ref{lst:keras_2}, definimos os parâmetros finais da rede. Define-se a função de otimização \eng{SGD} (\eng{Stocastic Gradient Descent}), quase idêntico à implementação do gradiente descendente implementada, mas ao invês de utilizar sempre todos os dados de treino numa época de treinamento, alguns são escolhidos aleatoriamente, e isso é feito um certo número de vezes, e os deltas são escolhidos para o conjunto aleatorio que tenha se saído melhor, de acordo com a função de perda e métrica utilizada.
+
+A função de perda é escolhida com a opção \eng{sparse\_categorical\_crossentropy}, o que significa que a API irá tratar as categorias de dados da forma que ela foi obtida, com as $10$ classes de $0$ a $9$, onde cada imagem pertence a apenas uma dessas classes. Esse parâmetro seria diferente se fosse criada uma rede para classificação binária, por exemplo, ou então se nossos vetores \texttt{y\_train} e \texttt{y\_test} tivessem sido codificados em vetores do tipo $[0,\ldots,1,0,\ldots]$ da forma que foi feita na nossa implementação.
+
+Por fim a acurácia é escolhida como a métrica para avaliação da rede, e que será utilizada pelo gradiente estocástico para definir o melhor sub-conjunto de treino durante uma dada época de treinamento. Basta treinar a rede como o método \eng{fit}, especificando o número de épocas de treinamento desejado, neste caso $15$ foram suficientes, o que está feito na listagem \ref{lst:keras_3}.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}}, label={lst:keras_3}, escapeinside={\%}]
+model.fit(x_train, y_train, epochs=15)
+
+test_loss, test_acc = model.evaluate(x_train, y_train, verbose=2)
+test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
+\end{lstlisting}
+\end{scriptsize}
+
+Nessa listagem também está a avaliação da rede, para o conjunto de treino e para o conjunto de teste. Os resultados obtidos após $15$ épocas de treinamento foram $99.9\%$ de acurácia para o conjunto de treino e $96.4\%$ para o conjunto de teste. Por fim podemos fazer previsões com a rede treinada, nesse caso a API possui o método \eng{predict} que irá retornar os valores da camada de saída, ou seja, as probabilidades de cada imagem pertencer à uma das $10$ classes informadas durante o treinamento.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}}, label={lst:keras_4}, escapeinside={\%}]
+y_pred = np.argmax(model.predict(x), axis=-1)
+
+# usando a minha propria classe de validação
+# e que mostra a acuracia e a matriz de confusão
+score = Scores(y_test, y_pred)
+score.exibir_grafico("Dados de teste")
+\end{lstlisting}
+\end{scriptsize}
+
+Na listagem \ref{lst:keras_4}, está a lógica de obter a classificação predita para o conjunto de teste, utliza a função \eng{argmax} para obter a classe que obteve a probabilidade máxima. E por fim exibe a matriz de confusão dessa predição, o que está na Figura \ref{fig:keras_test}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=10cm]{figuras/keras_test}
+\caption{Matriz de confusão, função de perda e acurácia do conjunto de teste da base MNIST $28\times28$, utilizando a API Keras.}
+\label{fig:keras_test}
+\end{figure}
+
+É notável a eficiência da API em comparação à nossa implementação simples. A rede é treinada em menos de $2$ minutos, mesmo sendo utilizada a base MNIST original que possui muito mais pixels e também muito mais imagens, $60$ mil em comparação às $2$ mil da base menor utilizada anteriormente. 
+
+Além disso a acurácia final do conjunto de treino é praticamente perfeita, e o conjunto de treino, apesar de muito melhor em relação à implementação, ainda está relativamente menor à acurácia do treino, indicando que nessa versão imitada do \eng{Perceptron} existe o problema de \eng{overfitting}, mesmo que em menor intensidade.
+
+É para resolver esse problema e outros, que existem diversas otimizações e configurações alternativas ao simples Perceptron, implementadas na API Keras. Existem várias outros métodos de otimização, outras funções de perda e sobretudo outras arquiteturas de rede que podem ser utilizadas em alternativa às camadas densas do perceptron. 
+
+A estratégia utilizada no contexto de \eng{deep-learning} é sobretudo de tentativa e erro, e conforme um cientista de dados vai fazendo isso muitas vezes vai construindo conhecimentos sobre qual arquitetura usar para um problema, qual otimização funciona melhor, uma vez que isso irá sempre variar de acordo com a base de dados utilizada, seja para classificação seja para regressão.
+
+Uma tentativa recente de melhora nessa estratégia foi a criação de uma biblioteca cujo objetivo é o de justamente testar entre diversas arquiteturas e demais parâmetros de criação de uma rede neural, qual a que se sairá melhor para um dado conjunto de dados e objetivo de aprendizagem. Essa biblioteca é chamada de \eng{AutoKeras} e pertence à essa nova vertente de \eng{deep-learning} conhecida como AutoML (\eng{Automated Machine Learning}).
+
+Os objetivos da AutoML é, segundo Andre Ye \citep{automl}, é o de tornar \eng{deep-learning} mais acessível para o aprendizado de todos os entusiastas, e também o de acelerar o desenvolvimento de pesquisas nessa área, para tornar a criação de conhecimentos mais sólidos e gerar mais \eng{insigths} para a interpretabilidade dos modelos de redes neurais.
+
+Em seu artigo, Andre Ye \citep{automl} demostra como instalar e utilizar o \eng{AutoKeras}. Resumidamente, o que fazemos é informá-la com a nossa base de dados, e ela irá fazer todo o trabalho de escolha da arquitetura e dos parâmetros, e ao final retornará um objeto da API Keras, que poderá ser usado tanto para tarefas de classificação quanto de regressão. 
+
+Uma desvantagem a ser considerada é o tempo de processamento da biblioteca \eng{AutoKeras}. Dessa forma, para problemas de menor escala, tanto de quantidade de dados utilizada quanto de poder computacional disponível, o que inclui o que iremos fazer a seguir na previsão de séries temporais, é mais viável testar dentre alguns poucos parâmetros conhecidamente melhores a partir da experiência de outros cientistas de dados, o que implica num tempo consideravelmente menor de processamento.

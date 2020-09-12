@@ -127,6 +127,52 @@ Um dos algoritmos de treinamento que minimizam uma função de custo é o gradie
 
 \section{Outras arquiteturas de redes neurais}
 
-Existem dezenas de arquiteturas de redes neurais artificiais, uma breve olhada na quantidade de arquiteturas listadas no website \emph{The neural network zoo}\footnote{\url{https://www.asimovinstitute.org/neural-network-zoo/}} demonstra que essa brincadeira é levada muito a sério.
+Existem dezenas de arquiteturas de redes neurais artificiais, uma breve olhada na quantidade de arquiteturas listadas no website \emph{The neural network zoo}\footnote{\url{https://www.asimovinstitute.org/neural-network-zoo/}} demonstra que essa brincadeira é levada muito a sério. A representação gráfica ali criada é útil para o entendimento das características das diversas arquiteturas, graças aos padrões de cores e de formas geométricas utilizadas.
 
-Aqui serão exemplificadas alguns dos tipos principais, com todas as imagens aqui mostradas foram extraídas do website citado no parágrafo anterior, dado que a representação gráfica ali criada é útil para o entendimento das características das diversas arquiteturas, graças aos padrões de cores e de formas geométricas utilizadas.
+A primeira estrutura é o \eng{perceptron} simples, de apenas um neurônio, que processa $n$ entradas através de uma transformação linear seguida de uma função de ativação. É exibido no canto superior esquerdo da Figura \ref{fig:estrutura_p}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=7cm]{figuras/estrutura_p}
+\caption{As redes neurais recorrentes: \eng{perceptron}, \eng{feedforward} e \eng{deep feedforward}.\footnote{Extraído de \url{https://www.asimovinstitute.org/neural-network-zoo/}}}
+\label{fig:estrutura_p}
+\end{figure}
+
+No canto superior direito está a versão \eng{feedforward}, possuindo uma camada oculta(representada pelos círculos verdes), e embaixo está a versão \eng{deep feedforward}, que possui múltiplas camadas ocultas, e número variado de neurônios em todas as camadas, e é de fato a versão que foi implementada nesse trabalho.
+
+As características em comum das arquiteturas derivadas da rede \eng{perceptron}, chamadas de \defi{redes neurais sequenciais}, são a conexão que existe entre cada neurônios de uma camada com todos os neurônios da camada anterior, e a forma que a informação é transmitida da rede, num sentido único, da camada de entrada(os círculos amarelos) para a camada de saída(os círculos vermelhos).
+
+A próxima arquitetura em destaque define o que são as \defi{redes neurais recorrentes}, ilustrada na Figura \ref{fig:estrutura_r}. Nesse tipo de rede a informação pode ir para frente e para trás, além disso pode passar pelo mesmo neurônio oculto mais de uma vez, o que determina o nome recorrente. Esses neurônios são representados pela cor azul na figura.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=7cm]{figuras/estrutura_r}
+\caption{As redes neurais recorrentes.\footnote{Extraído de \url{https://www.asimovinstitute.org/neural-network-zoo/}}}
+\label{fig:estrutura_r}
+\end{figure}
+
+Esse tipo de rede, segundo Kopec \citep{classic} é o mais usado em problemas em que os dados utilizados possuem uma dependência da ordem em que são obtidos e possuem entradas contínuas, por exemplo, os dados de uma série temporal de dados, ou seja, em que a previsão de um dado , o que representaria o futuro, depende da ordem em que estão os dados já conhecidos, o que representaria os dados do passado.
+
+Outra arquitetura muito utilizada é o das \defi{redes neurais covolucionais}, ilustradas na Figura \ref{fig:estrutura_c}.  Segundo Kopec \citep{classic} essas redes foram projetadas e usadas com sucesso para classificação de imagens ``pesadas'', como fotos de galáxias obtidas em telescópios.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/estrutura_c}
+\caption{As redes neurais convolucionais.\footnote{Extraído de \url{https://www.asimovinstitute.org/neural-network-zoo/}}}
+\label{fig:estrutura_c}
+\end{figure}
+
+Em resumo, são redes em que os neurônios de entrada não são conectados totalmente com a primeira camada oculta, mas o que acontece é que vários conjuntos distintos de neurônios da camada de entrada são conectados a várias camadas ocultas separadamente.
+
+A seguir a união dessas camadas ocultas, exibidas como círculos rosas, conectam-se em cascata, perdendo conexões progressivamente até que um número reduzido se conecta a outras camadas, dessa vez camadas ocultas simples, que são os círculos verdes, que conectam-se em formato \eng{feedforward} até o final da rede com a camada de saída. 
+
+Existem ainda outras dezenas de arquiteturas, algumas bem alternativas no formato e nas conexões entre as camadas, fica aqui um único exemplo dentre elas, que é a arquitetura de \defi{redes neurais extremas}. Está ilustrada na Figura \ref{fig:estrutura_e}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=7cm]{figuras/estrutura_e}
+\caption{Redes neurais extremas.\footnote{Extraído de \url{https://www.asimovinstitute.org/neural-network-zoo/}}}
+\label{fig:estrutura_e}
+\end{figure}
+
+As conexões ocorrem de forma não-sequencial, e até mesmo aleatória entre as camadas ocultas, configurando um exemplo curioso de arquitetura, e discussões sobre essas outras arquiteturas não fazem parte do escopo desse trabalho.
