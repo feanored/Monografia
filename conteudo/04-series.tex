@@ -58,7 +58,7 @@ Além disso, para as séries e modelos aqui tratados iremos restringir $\mathcal
 
 \subsection{Definições}
 
-Sejam $t_1, \ldots, t_n$ elementos quaisquer de $\mathcal{T}$, então se conhecermos as \emph{distribuições finito-dimensionais} dadas por:
+Seguem algumas definições que nos levarão a classes específicas de processos estocásticos, com as quais lidaremos daqui em frente. Sejam $t_1, \ldots, t_n$ elementos quaisquer de $\mathcal{T}$, daí se conhecermos as \defi{distribuições finito-dimensionais} de $Z$ dadas por:
 
 \begin{equation}\label{series:2.1}
 F(z_1, \ldots, z_n; t_1, \ldots, t_n) = P\{ Z_{t_1} \leq z_1, \ldots, Z_{t_n} \leq z_n \}
@@ -96,6 +96,113 @@ Particularmente, quando $t = t_1 = t_2$, define-se a função \defi{variância} 
 
 \subsection{Processos estacionários}
 
+Um processo $Z$ é dito \defi{estacionário} se suas características para qualquer tempo não dependem da escolha da origem do domínio temporal, isto é, as características de $Z(t + \tau)$ para todo $\tau$, são as mesmas de $Z(t)$. Morettin e Toloi \citep{morettin} nomeia o parâmetro $\tau$ de ``\defi{lag}''\footnote{jargão em inglês que em português pode significar latência ou atraso.}, e dá como exemplo de processo estacionário as medidas de vibrações de um avião em regime estável de vôo.
 
+Formalmente, um processo estocástico $Z = \{Z(t), t \in \mathcal{T}\}$ é \defi{fracamente estacionário} ou estacionário de segunda ordem, se e somente se:
+
+	(i) $\E\{Z(t)\} = \mu(t) = \mu, \;\;\; \forall ~ t \in \mathcal{T};$
+
+	(ii) $\E\{Z^2(t)\} < \infty, \;\;\; \forall ~ t \in \mathcal{T};$
+
+	(iii) $\gamma(t_1, t_2) = \Cov\{Z(t_1), Z(t_2)\}$ é uma função de $|t_1 - t_2|, \;\;\; \forall~ t_1, t_2 \in \mathcal{T}.$
+
+Dessa forma, podemos dizer que processos estacionários de segunda ordem desenvolvem-se em torno de uma média constante, ou seja, ao redor de uma mesma tendência ou reta. É possível citar dois tipos de não-estacionaridade. 
+
+Existem os processos \emph{homogêneos}, que apresentam uma estacionariedade inicial mas que depois sofrem uma mudança de tendência e então tornam-se estacionárias novamente, mas não necessariamente ao redor da mesma média inicial, e que segundo Morettin e Toloi \citep{morettin} podem se tornar estacionários se tomarmos diferenças sucessivas da série original.
+
+Tomar diferenças de uma série $Z(t)$ corresponde a criar uma nova série a partir da original. A primeira diferença de $Z(t)$ é definida por:
+
+\begin{equation}\label{series:2.12}
+\Delta Z(t) = Z(t) - Z(t - 1)
+\end{equation}
+
+Recursivamente, a partir dessa primeira definição, podemos escrever a n-ésima diferença de $Z(t)$ como sendo:
+
+\begin{equation}\label{series:2.13}
+\Delta^n Z(t) = \Delta[\Delta^{n-1} Z(t)]
+\end{equation}
+
+Adicionalmente, aplicar a transformação não-linear $\log Z(t)$ também pode ser útil para transformar uma série não-estacionária em uma série estacionária. De acordo com Morettin e Toloi \citep{morettin}, a transformação logarítmica é muito usada em séries econômicas e será apropriada se a variância da série for proporcional à média.
+
+Para exemplificar esses conceitos, considere a Figura \ref{fig:exe_estac}. Temos à esquerda uma série temporal que é uma realização de um processo não-estacionário homogêneo, a saber, índices mensais da bolsa de valores Ibovespa. À direita, foi aplicado o logaritmo da primeira diferença da série, o que gerou uma série estacionária.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=14cm]{figuras/exemplo_estac}
+\caption{Esquerda: Índices mensais do Ibovespa. Direita: Log-diferença do Ibovespa.\footnote{Extraido de Morettin e Castro Toloi, 2019, pág 7.}}
+\label{fig:exe_estac}
+\end{figure}
+
+O segundo tipo de não-estacionaridade é chamada de \emph{explosiva}. Um exemplo de um processo não-estacionário explosivo é uma série temporal que descreve o crescimento de uma população de bactérias. Não tratamos de processos deste tipo neste trabalho.
+
+\subsection{Função de autocorrelação}
+
+Seja $\{ X_t, t \in \mathbb{Z} \}$ um processo estacionário real com tempo discreto, de média $\mu = 0$ e facv $\gamma_\tau = \E\{ X_t, X_{t+\tau} \}$. Sob essas condições, Morettin e Toloi \citep{morettin} demonstram que a facv $\gamma_\tau$ satisfaz as propriedades:
+
+	(i) $\gamma_0 > 0$,
+
+	(ii) $\gamma_{-\tau} = \gamma_\tau$,
+
+	(iii) $|\gamma_\tau| \leq \gamma_0$,
+
+	(iv) $\sum_{j=1}^n \sum_{k=1}^n a_j a_k \gamma_{\tau_j - \tau_k} \geq 0 \;\;\; \forall a_1, \ldots, a_n \in \mathbb{R}$ e $\tau_1, \ldots, \tau_n \in \mathbb{Z}$,
+
+	(v) $\lim_{|\tau| \to \infty}  \gamma_\tau = 0$.
+
+Define-se a \defi{função de autocorrelação} (fac) de um processo estocástico por:
+
+\begin{equation}\label{series:2.14}
+\rho_\tau = \frac{\gamma_\tau}{\gamma_0}
+\end{equation}
+
+A fac de um processo estacionário possui todas as propriedades da facv acima listadas e, em particular, $\rho_0 = 1$. O mais interessante é a ressalva de Morettin e Toloi \citep{morettin} de que a recíproca é verdadeira, isto é, dado um processo cuja fac ou facv possuem essas propriedades, então ele é estacionário. Dessa forma, temos um arcabouço teórico que nos permite investigar a existência da propriedade estacionária de uma série temporal dada.
+
+\subsection{Exemplos de processos estocásticos}
+
+O exemplo mais simples é o de uma \emph{sequência aleatória}. Uma sequência de v.a. definidas num mesmo espaço amostral $\Omega$ dada por $\{ X_n , n = 1, 2, \ldots \}$ é um processo estocástico com parâmetro discreto, ou seja, $\mathcal{T} = \{ 1, 2, \ldots \}$. Para todo $n \geq 1$ temos, em geral, que:
+
+\[ P\{X_1 = a_1, \ldots, X_n = a_n\} = P\{X_1 = a_1\}\times P\{X_2 = a_2|X_1 = a_1\} \]
+\[ \times\ldots\times P\{X_n = a_n|X_1 = a_1, \ldots, X_{n-1} = a_{n-1}\}\]
+
+Se simplificarmos esse caso geral para o caso de uma sequência $\{ X_n , n \geq 1 \}$ de v.a. \emph{mutuamente independentes} então:
+
+\[ P\{X_1 = a_1, \ldots, X_n = a_n\} = P\{X_1 = a_1\}\times\ldots\times P\{X_n = a_n\} \]
+
+E se, além disso, todas as v.a. dessa sequência tiverem a mesma distribuição de probabilidades, elas serão portanto independentes e identicamente distribuidas (i.i.d.), o que configura $X_n = \{ X_n , n \geq 1 \}$, uma sequência de v.a. i.i.d., como um processo estocástico estacionário.
+
+Definindo $\E\{X_n\} = \mu$, $\Var\{X_n\} = \sigma^2$, para todo $n \geq 1$, teremos que a facv de $X_n$ será dada por:
+
+\begin{equation}\label{series:2.19}
+\gamma_\tau = \Cov\{X_n, X_{n+\tau}\} = \left\{\begin{array}{lr} \sigma^2, & \text{ se } \tau = 0 \\ 0, & \text{ se } \tau \neq 0 \end{array}\right.
+\end{equation}
+
+E, a fac de $X_n$, será tal que:
+
+\begin{equation}\label{series:2.20}
+\rho_\tau = \left\{\begin{array}{lr} 1, & \text{ se } \tau = 0 \\ 0, & \text{ se } \tau \neq 0 \end{array}\right.
+\end{equation}
+
+Um segundo exemplo de processo estocástico, e muito mais útil para os estudos de séries temporais, é o de \defi{ruído branco}. Morettin e Toloi \citep{morettin} definem que a sequência $\{\epsilon_t,\; t \in \mathbb{Z}\}$ é um \emph{ruído branco discreto} se as v.a. $\epsilon_t$ não são correlacionadas, ou seja, $\Cov\{\epsilon_t, \epsilon_s\} = 0, t \neq s$.
+
+Esse processo será estacionário se $\E\{\epsilon_t\} = \mu_\epsilon$ e $\Var\{\epsilon-t\} = \sigma_\epsilon^2$, para todo $t \in \mathbb{Z}$. Dessa forma, as facv e fac de um ruído branco serão dadas, respectivamente e analogamente, por \ref{series:2.19} e \ref{series:2.20}. Tipicamente representa-se o gráfico de uma função de autocorrelação conforme o exemplo do fac de um ruído branco, dado na Figura \ref{fig:fac_ruido}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=10cm]{figuras/fac_ruido}
+\caption{Função de autocorrelação (fac) de um ruído branco.\footnote{Extraido de Morettin e Castro Toloi, 2019, pág 35.}}
+\label{fig:fac_ruido}
+\end{figure}
+
+Normalmente, é dito por Morettin e Toloi \citep{morettin} que, sem perda de generalidade, podemos assumir que a média de um ruído branco é zero. E, assim, escrevemos:
+
+\[ \epsilon_t \sim RB (0, \sigma_\epsilon^2). \]
+
+Se, as v.a. de $\epsilon_t$ forem independentes, então é um resultado de probabilidade conhecido e citado por Morettin e Toloi \citep{morettin} que serão também não correlacionados. Um ruído branco, como definido acima, e com a propriedade adicional da independência, é um terceiro exemplo de um processo estocástico, chamado de \emph{processo puramente aleatório}. Nesse caso, escrevemos:
+
+\[ \epsilon_t \sim i.i.d. (0, \sigma_\epsilon^2). \]
+
+Outros exemplos de processos estocásticos, menos formais e mais físicos, são os \emph{passeios aleatórios}, que é por exemplo, a modelagem de um sistema de partículas livres, como as partículas de um gás ideal. E, outro exemplo, análogo, é o do \emph{movimento browniano}, que modela, por exemplo, como partículas de poeira movimentam-se num meio com partículas ligadas entre si, como a água no estado líquido.
+
+\section{Modelos para séries temporais}
 
 %\section{Um modelo de série temporal construído com uma rede neural}
