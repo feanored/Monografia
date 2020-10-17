@@ -27,7 +27,7 @@ Pode-se classificar a análise das séries temporais de acordo com seu objetivo 
 
 Neste contexto, Morettin e Toloi \citep{morettin} definem que um modelo é uma descrição probabilística de uma série temporal, cabendo ao cientista de dados decidir a melhor utilização desse modelo segundo seus objetivos. 
 
-Além disso eles afirmam que qualquer tarefa de previsão, sendo este o objetivo, será baseada em algum procedimento computacional que calcula uma estimativa do futuro baseada na otimização de uma função de perda a partir de combinações lineares de valores do passado. É a união de um modelo probabilístico com a otimização de uma função de perda que define um \defi{método de previsão}.
+Além disso eles afirmam que qualquer tarefa de previsão, sendo este o objetivo, será baseada em algum procedimento computacional que calcula uma estimativa do futuro baseada na otimização de uma função de perda calculada sobre combinações lineares de valores do passado. É a união de um modelo probabilístico com a otimização de uma função de perda que define um \defi{método de previsão}.
 
 Há dois tipos básicos de modelos que lidam com séries temporais, de acordo com Morettin e Toloi \citep{morettin}, que são os modelos \defi{paramétricos}, onde a análise é feita no \emph{domínio temporal} com suposições e parâmetros a serem estimados, e os modelos \defi{não-paramétricos}, em que a análise é feita no \emph{domínio das frequências} com um enfoque mais descritivo e sem muitas suposições.
 
@@ -201,8 +201,26 @@ Se, as v.a. de $\epsilon_t$ forem independentes, então é um resultado de proba
 
 \[ \epsilon_t \sim i.i.d. (0, \sigma_\epsilon^2). \]
 
-Outros exemplos de processos estocásticos, menos formais e mais físicos, são os \emph{passeios aleatórios}, que é por exemplo, a modelagem de um sistema de partículas livres, como as partículas de um gás ideal. E, outro exemplo, análogo, é o do \emph{movimento browniano}, que modela, por exemplo, como partículas de poeira movimentam-se num meio com partículas ligadas entre si, como a água no estado líquido.
+Outros exemplos de processos estocásticos que podemos citar, menos formais e mais físicos, são os \emph{passeios aleatórios}, que fazem por exemplo, a modelagem de um sistema de partículas livres, como as moléculas de um gás ideal. E, outro exemplo, análogo, é o do \emph{movimento browniano}, que modela, por exemplo, como partículas de poeira movimentam-se num fluído visto como um conjunto de muitas moléculas ligadas entre si, como a água no estado líquido.
 
 \section{Modelos para séries temporais}
+
+Já foi citado acima que existem os modelos parâmétricos, que lidam com as séries no domínio temporal, e os modelos não-paramétricos que lidam com o \defi{espectro} da série, isto é, o conjunto das frequências da série, onde as componentes desse espaço das frequências são ortogonais entre si, o que garante a não correlação entre as frequências, diferindo dos valores sob o domínio temporal que quase sempre são correlacionados entre si, conforme explicado por Morettin e Toloi \citep{morettin}.
+
+Se temos uma série temporal discreta $Z = \{ Z_t, t \in \mathbb{Z} \}$, que assumimos ser um processo estacionário, e assumindo também que as autocovariâncias $\gamma_\tau$ são tais que $\sum_{\tau=-\infty}^{\infty} |\gamma_\tau| < \infty$, então o espectro de $Z$, isto é, a \defi{transformada de Fourier} de $Z$ será:
+
+\begin{equation}\label{series:2.33}
+f(\omega) = \frac{1}{2\pi} \sum_{\tau=-\infty}^{\infty} \gamma_\tau e^{-i\omega\tau}, \;\;\; -\pi\leq\omega\leq\pi.
+\end{equation}
+
+Ora, isto redefine a função de autocovariância (facv), como sendo a \emph{anti-transformada} de $Z$, pois:
+
+\begin{equation}\label{series:2.34}
+\gamma_\tau = \int_{-\pi}^{\pi} e^{i\omega\tau} f(\omega) d\omega, \;\;\; \tau \in \mathbb{Z}.
+\end{equation}
+
+Embora úteis para a construção de modelos de engenharia e física, Morettin e Toloi \citep{morettin} ressaltam que usar o espectro ou a facv para modelar uma série temporal é mais útil no contexto de processos industriais, e o que o uso mais prático em outros contextos, como o de séries financeiras é o papel que desempenham nos modelos paramétricos como o ARIMA.
+
+Isto advém do fato de que os modelos paramétricos tem comportamentos esperados, com valores de facv, em alguns casos, muito bem definidos e que podem ser testados e usados como uma validação ao modelo que se supõe ter o mesmo comportamento que a série temporal de estudo.
 
 %\section{Um modelo de série temporal construído com uma rede neural}
