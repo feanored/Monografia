@@ -72,7 +72,7 @@ Teremos então que o processo estocástico $Z = \{ Z_t, t \in \mathcal{T} \}$ es
 	(ii) (Compatibilidade) Para $m < n$:
 \[ \lim_{\mathlarger{z_{m+1} \to \infty, \ldots, z_n \to \infty}} F(z_1, \ldots, z_m, z_{m+1}, \ldots, z_n; t_1, \ldots, t_n) = F(z_1, \ldots, z_m; t_1, \ldots, t_m) \]
 
-Segundo Morettin e Toloi \citep{morettin}, pode-se demonstrar que qualquer conjunto de funções de distribuição da forma \ref{series:2.1} satisfazendo as duas condições acima define um processo estocástico $Z$ sobre $\mathcal{T}$.
+Segundo Morettin e Toloi \citep{morettin}, pode-se demonstrar que qualquer conjunto de funções de distribuição da forma (\ref{series:2.1}) satisfazendo as duas condições acima define um processo estocástico $Z$ sobre $\mathcal{T}$.
 
 Em termos práticos, não se conhecem as funções de distribuição finito-dimensionais de um processo $Z$ sobre $\mathcal{T}$. Assim a abordagem mais utilizada, conforme Morettin e Toloi \citep{morettin} é tentar determinar os momentos, principalmente os de primeira e segunda ordem, das v.a. $Z_{t_1}, \ldots, Z_{t_n}$. 
 
@@ -184,7 +184,7 @@ E, a fac de $X_n$, será tal que:
 
 Um segundo exemplo de processo estocástico, e muito mais útil para os estudos de séries temporais, é o de \defi{ruído branco}. Morettin e Toloi \citep{morettin} definem que a sequência $\{\epsilon_t,\; t \in \mathbb{Z}\}$ é um \emph{ruído branco discreto} se as v.a. $\epsilon_t$ não são correlacionadas, ou seja, $\Cov\{\epsilon_t, \epsilon_s\} = 0, t \neq s$.
 
-Esse processo será estacionário se $\E\{\epsilon_t\} = \mu_\epsilon$ e $\Var\{\epsilon-t\} = \sigma_\epsilon^2$, para todo $t \in \mathbb{Z}$. Dessa forma, as facv e fac de um ruído branco serão dadas, respectivamente e analogamente, por \ref{series:2.19} e \ref{series:2.20}. Tipicamente representa-se o gráfico de uma função de autocorrelação conforme o exemplo do fac de um ruído branco, dado na Figura \ref{fig:fac_ruido}.
+Esse processo será estacionário se $\E\{\epsilon_t\} = \mu_\epsilon$ e $\Var\{\epsilon-t\} = \sigma_\epsilon^2$, para todo $t \in \mathbb{Z}$. Dessa forma, as facv e fac de um ruído branco serão dadas, respectivamente e analogamente, por (\ref{series:2.19}) e (\ref{series:2.20}). Tipicamente representa-se o gráfico de uma função de autocorrelação conforme o exemplo do fac de um ruído branco, dado na Figura \ref{fig:fac_ruido}.
 
 \begin{figure}[htb]
 \centering
@@ -243,7 +243,9 @@ A seguir, o operador \emph{translação para o futuro} $F$, definido por:
 
 O operador \emph{diferença}, denotado por $\Delta$ e definido por:
 
-\[ \Delta Z_t = Z_t - Z_{t-1} = (1 - B)Z_t \]
+\begin{equation}\label{series:diferenca} 
+\Delta Z_t = Z_t - Z_{t-1} = (1 - B)Z_t 
+\end{equation}
 
 E o operador \emph{soma}, denotado por $S$ e definido por:
 
@@ -255,7 +257,7 @@ Combinando as expressões acima, resulta que:
 
 \subsection{Processo linear geral}
 
-O modelo mais básico, assume que a série temporal é gerada por um sistema linear, que possui como entradas ruídos brancos, já caracterizados acima como processos estocásticos. Uma série $Z_t$ é dita um \defi{processo linear} é definido como:
+O modelo mais básico, assume que a série temporal é gerada por um sistema linear, que possui como entradas ruídos brancos, já caracterizados acima como processos estocásticos. Uma série $Z_t$ é dita um \defi{processo linear} se for definida como:
 
 \begin{equation}\label{series:5.1}
 Z_t = \mu + a_t + \psi_1 a_{t-1} + \psi_2 a_{t-2} + \ldots = \mu + \psi(B)a_t
@@ -264,19 +266,199 @@ onde os termos $a_t \sim RB(0, \sigma_a^2)$, ou seja, são ruídos brancos, $\mu
 
 \[ \psi(B) = 1 + \psi_1 B + \psi_2 B^2 + \ldots \]
 
-Escrevendo $\tilde{Z_t} = Z_t - \mu$, 
+Escrevendo $\tilde{Z_t} = Z_t - \mu$, simplifica-se a notação para:
 
 \begin{equation}\label{series:5.3}
 \tilde{Z_t} =  \psi(B)a_t 
 \end{equation}
 
-A função de transferência é composta de uma sequência de \emph{pesos}, $\{ \psi_j, j \geq 1 \}$, que, se convergir a um número real, dizemos que a função é estável, e a série $Z_t$ é estacionária. Além disso, se for esse o caso, o parâmetro $\mu$ será a média do processo. Senão, é apenas um parâmetro sem significado específico que configura o nível da série em algum ponto de referência.
+A função de transferência é composta de uma sequência de \emph{pesos}, $\{ \psi_j, j \geq 1 \}$, que, se convergir a um número real, dizemos que a função é estável, o que nos leva à seguinte proposição feita por Morettin e Toloi \citep{morettin} e demonstrada por Box e Jenkins \citep{box}:
 
-%\pi
+\textbf{Proposição:}
+\begin{equation}\label{prop:5.1}
+\text{Um processo linear será estacionário se a série } \psi(B) \text{ convergir quando } |B| \leq 1.
+\end{equation}
+
+Com isto define-se o conceito de raízes de equações envolvendo operadores (como $\psi(B)$) dentro ou fora do \emph{círculo unitário}, abstraindo a condição acima para $B^p$, com $p \geq 1$. Pode-se observar a validade dessa proposição tomando a esperança da expressão (\ref{series:5.1}):
+
+\[
+\E(Z_t) = \mu + \E \left( a_t + \sum_{j=1}^\infty \psi_j a_{t-j} \right)
+\]
+
+Se a série dos pesos acima convergir, segue o resultado descrito acima, já que $\E(a_t) = 0$ para todo $t$ já que os termos $a_t$ são ruídos brancos, e assim $\E[\tilde{Z_t}] = 0$. Neste caso, o parâmetro $\mu$ será a média do processo. Caso contrário, $\mu$ não terá significado específico e apenas representará o nível da série em algum intervalo de tempo observado.
+
+Uma forma alternativa de escrever (\ref{series:5.1}), definida por Morettin e Toloi \citep{morettin}, é como uma soma ponderada de valores passados, já utilizando a notação simplificada de (\ref{series:5.3}):
+
+\begin{equation}\label{series:5.6}
+\tilde{Z}_t = \sum_{j=1}^\infty \phi_j \tilde{Z}_{t-j} + a_t
+\end{equation}
+
+Assim, nessa notação temos um outro conjunto de pesos, denotados por $\phi_t$, e com os quais pode-se definir o operador:
+
+\begin{equation}\label{series:5.8}
+\phi(B) = 1 - \sum_{j=1}^\infty \phi_j B^j
+\end{equation}
+
+A partir do qual, pode-se simplificar a notação de (\ref{series:5.6}) para:
+
+\begin{equation}\label{series:5.7}
+\phi(B)\tilde{Z}_t = a_t
+\end{equation}
+
+Assim, combinando (\ref{series:5.7}) e (\ref{series:5.3}), obtemos uma relação entre os operadores definidos para as duas notações de um processo linear geral:
+
+\begin{equation}\label{series:5.9}
+\phi(B) = \psi^{-1}(B)
+\end{equation}
 
 Esse tipo de modelo é um ponto de partida, a partir do qual complicações são adicionadas para criar os outros modelos, mas que já serve para modelar, por exemplo, passeios aleatórios. Morettin e Toloi \citep{morettin} definem alguns conceitos adicionais como a estacionaridade e a invertibilidade desses processos, mas que configuram detalhes que fogem do escopo deste trabalho.
 
+
 \subsection{Modelos autorregressivos (AR)}
+
+Tomando $\phi_j = 0$ para $j > p$ em (\ref{series:5.6}), obtém-se um \emph{processo autorregressivo de ordem $p$}, denotado por $AR(p)$ e escrito por:
+
+\begin{equation}\label{series:5.14}
+\tilde{Z}_t = \phi_1 \tilde{Z}_{t-1} + \phi_2 \tilde{Z}_{t-2} + \ldots + \phi_p \tilde{Z}_{t-p} + a_t
+\end{equation}
+
+Definindo o operador autorregressivo de ordem $p$ por:
+
+\[
+\phi(B) = 1 - \phi_1 B - \phi_2 B^2 - \ldots - \phi_p B^p
+\]
+
+Pode-se escrever (\ref{series:5.14}) como:\footnote{Neste caso, o operador $\phi(B)$ é finito}
+
+\begin{equation}\label{series:5.16}
+\phi(B)\tilde{Z}_t = a_t
+\end{equation}
+
+Tomando o exemplo mais simples possível de um modelo $AR$ poderemos investigar a estacionaridade desse modelo. Quando $\tilde{Z}_t \sim AR(1)$:
+
+\begin{equation}\label{series:5.17}
+\tilde{Z}_t = \phi \tilde{Z}_{t-1} + a_t 
+\end{equation}
+ou, usando a notação de (\ref{series:5.16}), nesse caso:
+
+\[
+(1 - \phi B)\tilde{Z}_t = a_t
+\]
+o que nos diz que nesse modelo, um valor da série num tempo $t$ depende apenas do valor da série e de um ruído no tempo anterior.
+
+Substituindo recursivamente $\tilde{Z}_{t-1}, \tilde{Z}_{t-2}, \ldots$ em (\ref{series:5.17}), e lembrando da definição da função de transferência em (\ref{series:5.1}), obtemos:
+
+\[
+\tilde{Z}_t = \sum_{j=0}^\infty \phi^j a_{t-j} = \psi(B)a_t
+\]
+
+Por (\ref{series:5.9}) e (\ref{series:5.17}) chegamos em:
+
+\[
+\psi(B) = [\phi(B)]^{-1} = (1 - \phi B)^{-1}
+\]
+
+De acordo com a Proposição (\ref{prop:5.1}), $Z_t$ será estacionária se $\psi(B)$ convergir a um número real quando $|B| \leq 1$. Pela expressão anterior, deveremos ter também $|\phi| < 1$. Isto significa dizer que a raiz da equação $\phi(\hat{B}) = 0$ estará \emph{fora do círculo unitário}, pois: $\hat{B} = \phi^{-1} > 1$.
+
+
+\subsection{Modelos de médias móveis (MA)}
+
+Considerando o processo linear em (\ref{series:5.1}), e supondo que $\psi_j = 0$ quando $j > q$, obtemos um \emph{processo de médias móveis de ordem $q$}, denotado por $MA(q)$, e é escrito, usando a notação $\theta_j := -\psi_j\;, \; \forall j>0$, da forma:
+
+\begin{equation}\label{series:5.44}
+\tilde{Z}_t = a_t - \theta_1 a_{t-1} - \ldots - \theta_q a_{t-q} = (1 - \theta_1 B - \ldots - \theta_q B^q)a_t 
+\end{equation}
+
+Ou seja, definindo o operador de médias móveis de ordem $q$, $MA(q)$ por:
+\[
+\theta(B) = 1 - \theta_1 B - \theta_2 B^2 - \ldots - \theta_q B^q
+\]
+
+Escrevemos (\ref{series:5.44}) simplificadamente como:
+
+\begin{equation}\label{series:5.45}
+\tilde{Z}_t = \theta(B) a_t 
+\end{equation}
+
+Considerando o modelo mais simples, ou seja, $MA(1)$, uma série assim modelada seria escrita:
+
+\[
+\tilde{Z}_t = a_t - \theta a_{t-1} = (1 - \theta B)a_t
+\]
+
+Novamente, temos que esta é uma série cujos valores em qualquer tempo só dependem do valor no tempo anterior e de um ruído. Aplicando o mesmo raciocínio que foi utilizado no modelo $AR(1)$, utilizando a proposição (\ref{prop:5.1}), a série $Z_t$ será estacionária quando as raízes da equação $\theta(\hat{B}) = 0$ se encontrarem fora do círculo unitário, isto é, $\hat{B} > 1$.
+
+
+\subsection{Modelos autorregressivos e de médias móveis (ARMA)}
+
+Como o nome já indica, podemos combinar os dois modelos num só, assumindo que uma série seja escrita como a soma das componentes autorregressivas com as de médias móveis, resultando num modelo $ARMA(p, q)$:
+
+\begin{equation}\label{series:5.52}
+\tilde{Z}_t = \phi_1 \tilde{Z}_{t-1} + \ldots + \phi_p \tilde{Z}_{t-p} + a_t - \theta_1 a_{t-1} - \ldots - \theta_q a_{t-q}
+\end{equation}
+
+Utilizando os operadores já respectivamente definidos, simplifica-se para:
+
+\begin{equation}\label{series:5.53}
+\phi(B)\tilde{Z}_t = \theta(B)a_t
+\end{equation}
+
+Analisando o modelo simples definido por $ARMA(1, 1)$, a série em (\ref{series:5.52}) simplifica-se para:
+
+\begin{equation}\label{series:5.54}
+\tilde{Z}_t = \phi \tilde{Z}_{t-1} + a_t - \theta a_{t-1}
+\end{equation}
+
+Substituindo-se recursivamente $\tilde{Z}_{t-1}, \tilde{Z}_{t-2}, \ldots$ nessa expressão, a série será escrita na forma de um processo linear, ou seja, um modelo de médias móveis de ordem infinita:
+
+\[
+\tilde{Z}_t = \psi(B)a_t
+\]
+
+Assim, Morettin e Toloi \citep{morettin} mostram que, da mesma forma que no modelo $AR(1)$, a série $ARMA(1,1)$ será estacionária se a raíz da equação $\phi(\hat{B}) = 0$ estiver fora do círculo unitário. Inclusive, vale a generalização para os modelos $AR(p)$, $MA(q)$ e $ARMA(p,q)$, que serão processos estacionários se as $p$ raízes do polinômio autorregressivo estiverem todas fora do círculo unitário.
+
+Essa generalização é bem útil quando temos que decidir se uma série dada é ou não estacionária. Há testes estatísticos específicos que testam, para uma série real, a hipótese nula que é a existência de raízes no círculo unitário, o que a configura como uma série não estacionária, contra a hipótese alternativa da não-existência de raízes unitárias, caracterizando-a então como uma série estacionária.
+
+Dentre os testes de estacionaridade existentes, Morettin e Toloi \citep{morettin} apresentam-nos o teste de \emph{Dickey e Fuller}, que será utilizado na parte prática do trabalho, a partir de implementações disponíveis na linguagem \eng{python}, ao usarmos os modelos ARIMA na criação de modelos paramétricos para as séries temporais aqui estudadas.
+
+
+\subsection{Os modelos integrados não-estacionários (ARIMA)}
+
+Todos os modelos até agora vistos são úteis para modelar séries estacionárias. Morettin e Toloi \citep{morettin} nos lembram que várias séries econômicas e financeiras não são estacionárias, mas tornam-se estacionárias após operações de diferenças, já definidas em (\ref{series:diferenca}). 
+
+Já vimos que as séries não-estacionárias podem ser do tipo \emph{homogêneas} ou do tipo \emph{explosivas}. Seja $Z_t$ uma série representada por um modelo $AR(1)$:
+
+\[
+(1 - \phi B)\tilde{Z}_t = a_t
+\]
+
+A condição de estacionariedade é $|\phi| < 1$. Se $\phi = 1$ então a série é não-estacionária homogênea. Note que nesse caso: 
+\[ (1 - B)\tilde{Z}_t = \Delta \tilde{Z}_t = a_t \]
+pela própria definição do operador diferença em (\ref{series:diferenca}), e assim torna-se estacionária. 
+
+Se, por outro lado, $|\phi| > 1$, é fácil ver pela expressão acima que a série irá ``explodir'', já que cada termo será aumentado numa taxa maior do que $1$, caracterizando um crescimento exponencial do valor da série.
+
+Dessa forma, séries $Z_t$ que, sendo diferençadas $d$ vezes tornam-se estacionárias, isto é, séries tais que $\Delta^d \tilde{Z}_t = a_t$, são chamadas de não estacionárias homogêneas, ou também de \emph{integradas de ordem $d$}.
+
+Se temos uma série $W_t = \Delta^d Z_t$ estacionária, então $W_t$ pode ser representada por uma modelo $ARMA(p, q)$, isto é:
+
+\[
+\phi(B) W_t = \theta(B) a_t
+\]
+
+Sendo $W_t$ uma diferença de $Z_t$, isto torna $Z_t$ uma \emph{integral} de $W_t$. Dizemos, neste caso, 
+que $Z_t$ segue um modelo \emph{autorregressivo, integrado e de médias móveis} ou $ARIMA(p, d, q)$, escrito como:
+
+\begin{equation}\label{series:5.75}
+\phi(B) \Delta^d Z_t = \theta(B) a_t
+\end{equation}
+
+Assim, o operador $\phi(B) \Delta^d$ é chamado de autorregressivo não-estacionário, de ordem $p{+}d$, onde $d$ raízes são iguais a $1$, isto é, sobre o círculo unitário, e as demais $p$ raízes estarão fora do círculo unitário. Temos que a $d-$ésima diferença de $Z_t$ pode ser representado por um modelo $ARMA(p, q)$, estacionário. 
+
+\subsection{Identificação dos modelos utilizando a função de autocorrelação}
+
+\[ \mathfrak{DIO} \]
+
 
 
 %\section{Um modelo de série temporal construído com uma rede neural}
