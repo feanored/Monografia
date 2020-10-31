@@ -91,3 +91,100 @@ Podemos observar este comportamento genérico para os 4 casos acima mencionados,
 \end{figure}
 
 A partir deste comportamento geral, podemos testar nosso problema-alvo, verificar a qual comportamento ele mais se parece e assim decidir se devemos aumentar ou diminuir nossa taxa até obtermos um bom comportamento como aqueles vistos em (c) ou (d).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Transformação de Box-Cox}
+\label{ap:box-cox}
+
+De forma a estabilizar a variância de séries temporais financeiras, faz-se necessária a aplicação de transformações não-lineares à série original, de forma a modelar a série transformada com os modelos $ARIMA$, que assumem uma variância constante, mesmo quando a média possui algumas tendências que podem ser compensadas aplicando-se diferenças, conforme visto no Capítulo \ref{cap:series}.
+
+A transformação a seguir, criada por George Edward Pelham Box e David Roxbee Cox \citep{cox}, e conhecida por transformação de Box-Cox, é uma generalização da transformação logarítmica. Fada uma série temporal $Z_t$, ela é definida por:
+
+\begin{equation}\label{eq:cox}
+Z_t^{(\lambda)} = \left\{ \begin{array}{lr}\dfrac{Z_t^\lambda - 1}{\lambda},& \text{se } \lambda \neq 0\\\log{Z_t},& \text{se } \lambda = 0\end{array} \right.
+\end{equation}
+
+Onde, $\lambda$ é um parâmetro real que deve ser estimado. Para isso, Morettin e Toloi \citep{morettin} sugerem a análise de um gráfico que será construído a partir de dados da série temporal. No eixo das abcissas calculam-se médias de subconjuntos de observações, e no eixo das ordenadas, calculam-se as amplitudes de cada um desses subconjuntos.
+
+Seja $Z_1, \ldots, Z_k$ um subconjunto de $k$ elementos da série temporal, definimos o par $(\bar{Z}, w)$ que será um ponto no gráfico, pelas componentes:
+
+\[
+\begin{array}{rl}
+\bar{Z} =& \frac{1}{k}\sum_{i=1}^k Z_{t_i}\\
+w =& \max(Z_{t_i}) - \min(Z_{t_i})
+\end{array}
+\]
+
+Se, a partir desse gráfico, verificarmos que $w$ independer de $\bar{Z}$, ou seja, se os pontos estiverem espalhados ao redor de uma reta paralela ao eixo das abcissas, não haverá necessidade de transformação, pois assim a variância da série é estável, de acordo com Box e Jenkins \citep{box}. 
+
+Se, por outro lado, $w$ for diretamente proporcional a $\bar{Z}$, ou seja, correlacionadas com uma reta com inclinação próxima de $45$ graus, então poderemos assumir que $\lambda = 0$. Por se tratar de um procedimento empírico, Box e Jenkins \citep{box} fornecem uma guia que pode ser utilizado para decidirmos por um valor adequado de $\lambda$. 
+
+Exibido na Figura \ref{fig:box}, são dados possíveis gráficos que poderemos obter com esse procedimento e qual o valor correspondente de $\lambda$ que usaremos para aplicar a transformação \ref{eq:cox}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/box}
+\caption{Gráficos da amplitude por média de subconjuntos de $Z_t$, com os correspondentes valores de $\lambda$.\footnote{Extraido de Morettin e Toloi, 2019, pág 10.}}
+\label{fig:box}
+\end{figure} 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Função de autocorrelação parcial}
+\label{ap:facp}
+
+A derivação da função de autocorrelação parcial mostrada abaixo, é extraída de Morettin e Toloi \citep{morettin}, páginas 138 e 139.
+
+Suponha um modelo $AR(k)$ e seja $\phi_{kj}$ o seu $j$-ésimo coeficiente. Sabe-se que:
+
+\[
+\rho_j = \phi_{k1}\rho_{j-1} + \phi_{k2}\rho_{j-2} + \ldots + \phi_{kk}\rho_{j-k} \;,\;\;
+j=1,\ldots,k
+\]
+
+A partir dessas $k$ expressões, obtemos as chamadas equações de Yule-Walker:
+
+\begin{equation}\label{eq:yule}
+\left[ \begin{array}{ccccc}
+1 & \rho_1 & \rho_2 & \ldots & \rho_{k-1}\\
+\rho_1 & 1 & \rho_1 & \ldots & \rho_{k-2}\\
+ & \vdots &  & \ddots & \vdots\\
+\rho_{k-1} & \rho_{k-2} & \rho_{k-3} & \ldots & 1
+\end{array}  \right]
+\left[ \begin{array}{c}
+\phi_{k1}\\
+\phi_{k2}\\
+\vdots\\
+\phi_{kk}
+\end{array}  \right]
+=
+\left[ \begin{array}{c}
+\rho_1\\
+\rho_2\\
+\vdots\\
+\rho_k
+\end{array}  \right]
+\end{equation}
+
+Resolvendo essas equações sucessivamente para $k=1, 2, \ldots$ obtemos:
+
+\[
+\begin{array}{rcl}
+\phi_{11} & = & \rho_1 \\
+\phi_{22} & = & \frac{\left| \begin{array}{cc}1&\rho_1\\\rho_1&\rho_2\end{array} \right|}{\left| \begin{array}{cc}1&\rho_1\\\rho_1&1\end{array} \right|}  \\
+\phi_{33} & = & \frac{\left| \begin{array}{ccc}1&\rho_1&\rho_1\\\rho_1&1&\rho_2\\\rho_2&\rho_1&\rho_3\end{array} \right|}{\left| \begin{array}{ccc}1&\rho_1&\rho_2\\\rho_1&1&\rho_1\\\rho_2&\rho_1&1\end{array} \right|}\\
+& \vdots &
+\end{array}
+\]
+
+De modo geral, pode-se escrever:
+
+\begin{equation}\label{defi:parcial}
+\varphi_k := \phi_{kk} = \dfrac{|\mathbf{P}_k^{*}|}{|\mathbf{P}_k|}
+\end{equation}
+
+Onde nota-se que $\mathbf{P}_k$ é a matriz de autocorrelações do modelo $AR(k)$, e $\mathbf{P}_k^{*}$ é a matriz $\mathbf{P}_k$ com a última coluna substituída pelo vetor de autocorrelações, que é o termo à direita da igualdade das equações de Yule-Walker (\ref{eq:yule}).

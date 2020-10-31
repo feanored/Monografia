@@ -48,7 +48,7 @@ Por outro lado, para cada $\omega_i \in \Omega$ fixado, denotamos $Z(t, \omega_i
 \begin{figure}[htb]
 \centering
 \includegraphics[width=10cm]{figuras/trajetorias}
-\caption{Processo estocástico como uma família de trajetórias, isto é, de séries temporais.\footnote{Extraido de Morettin e Castro Toloi, 2019, pág 27.}}
+\caption{Processo estocástico como uma família de trajetórias, isto é, de séries temporais.\footnote{Extraído de Morettin e Toloi, 2019, pág 27.}}
 \label{fig:trajetorias}
 \end{figure}
 
@@ -129,7 +129,7 @@ Para exemplificar esses conceitos, considere a Figura \ref{fig:exe_estac}. Temos
 \begin{figure}[htb]
 \centering
 \includegraphics[width=14cm]{figuras/exemplo_estac}
-\caption{Esquerda: Índices mensais do Ibovespa. Direita: Log-diferença do Ibovespa.\footnote{Extraido de Morettin e Castro Toloi, 2019, pág 7.}}
+\caption{Esquerda: Índices mensais do Ibovespa. Direita: Log-diferença do Ibovespa.\footnote{Extraído de Morettin e Toloi, 2019, pág 7.}}
 \label{fig:exe_estac}
 \end{figure}
 
@@ -188,8 +188,8 @@ Esse processo será estacionário se $\E\{\epsilon_t\} = \mu_\epsilon$ e $\Var\{
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=10cm]{figuras/fac_ruido}
-\caption{Função de autocorrelação (fac) de um ruído branco.\footnote{Extraido de Morettin e Castro Toloi, 2019, pág 35.}}
+\includegraphics[width=8cm]{figuras/fac_ruido}
+\caption{Função de autocorrelação (fac) de um ruído branco.\footnote{Extraído de Morettin e Toloi, 2019, pág 35.}}
 \label{fig:fac_ruido}
 \end{figure}
 
@@ -272,9 +272,7 @@ Escrevendo $\tilde{Z_t} = Z_t - \mu$, simplifica-se a notação para:
 \tilde{Z_t} =  \psi(B)a_t 
 \end{equation}
 
-A função de transferência é composta de uma sequência de \emph{pesos}, $\{ \psi_j, j \geq 1 \}$, que, se convergir a um número real, dizemos que a função é estável, o que nos leva à seguinte proposição feita por Morettin e Toloi \citep{morettin} e demonstrada por Box e Jenkins \citep{box}:
-
-\textbf{Proposição:}
+A função de transferência é composta de uma sequência de \emph{pesos}, $\{ \psi_j, j \geq 1 \}$, que, se convergir a um número real, dizemos que a função é estável, o que nos leva à seguinte \textbf{proposição} feita por Morettin e Toloi \citep{morettin} e demonstrada por Box e Jenkins \citep{box}:
 \begin{equation}\label{prop:5.1}
 \text{Um processo linear será estacionário se a série } \psi(B) \text{ convergir quando } |B| \leq 1.
 \end{equation}
@@ -419,7 +417,7 @@ Assim, Morettin e Toloi \citep{morettin} mostram que, da mesma forma que no mode
 
 Essa generalização é bem útil quando temos que decidir se uma série dada é ou não estacionária. Há testes estatísticos específicos que testam, para uma série real, a hipótese nula que é a existência de raízes no círculo unitário, o que a configura como uma série não estacionária, contra a hipótese alternativa da não-existência de raízes unitárias, caracterizando-a então como uma série estacionária.
 
-Dentre os testes de estacionaridade existentes, Morettin e Toloi \citep{morettin} apresentam-nos o teste de \emph{Dickey e Fuller}, que será utilizado na parte prática do trabalho, a partir de implementações disponíveis na linguagem \eng{python}, ao usarmos os modelos ARIMA na criação de modelos paramétricos para as séries temporais aqui estudadas.
+Dentre os testes de estacionaridade existentes, Morettin e Toloi \citep{morettin} apresentam-nos o teste de \emph{Dickey e Fuller}, que utiliza uma estatística de teste com distribuição tabelada, e que será utilizado na parte prática do trabalho, a partir de bibliotecas disponíveis na linguagem \eng{python}, durante a estimação dos modelos paramétricos para as séries temporais aqui estudadas.
 
 
 \subsection{Os modelos integrados não-estacionários (ARIMA)}
@@ -457,10 +455,59 @@ Assim, o operador $\phi(B) \Delta^d$ é chamado de autorregressivo não-estacion
 
 \subsection{Identificação dos modelos utilizando a função de autocorrelação}
 
-Com uma série real em mãos, queremos poder representá-la com algum dos modelos $ARIMA$ vistos. Mas como determinar os parâmetros $p, d \text{e} q$?. Morettin e Toloi \citep{morettin} consideram um procedimento de três partes:
+Com uma série real em mãos, queremos poder representá-la com algum dos modelos $ARIMA$ vistos. Mas como determinar os parâmetros $p, d \text{ e } q$? Morettin e Toloi \citep{morettin} consideram um procedimento de três passos.
 
+O \defi{primeiro passo} é verificar se há a necessidade de aplicar uma transformação não-linear à série original, com o objetivo de estabilizar a sua variância, uma vez que, de acordo com Morettin e Toloi \citep{morettin} é comum que em séries econômicas e financeiras existam tendências que causem um aumento da variância em função do tempo.
 
+Uma das transformações mais usadas, nesse caso, é a logarítmica, ou uma versão geral dela, conhecida como \emph{transformação de Box-Cox}. Os detalhes da transformação e o procedimento de como utilizá-la para estabilizar a variância de uma série temporal estão presentes no Apêndice \ref{ap:box-cox}.
 
+O \defi{segundo passo}, é tomar diferenças da série, já transformada (se houve necessidade), um número de vezes que for necessária a torná-la estacionária, caso ela não seja. Este número de vezes será o parâmetro $d$ do modelo $ARIMA$, de forma que a nova série, dada por $\Delta^d Z_t$ poderá ser dada por um modelo $ARMA(p, q)$.
 
+A escolha apropriada de $d$ será feita com a ajuda do teste de estacionaridade, conforme explicado no item anterior, de forma iterativa. Assim, fazendo o teste para a série original, se este identificar a presença de raízes unitárias, uma vez que o teste de Dickey-Fuller testa se há \emph{alguma} raiz unitária, então a série não é estacionária. 
 
-%\section{Um modelo de série temporal construído com uma rede neural}
+Assim tomamos uma diferença na série e realizamos o teste novamente. Se ele ainda apontar a existência de alguma raiz unitária, tomamos nova diferença. Repetimos até que o teste dê evidência de que não há mais raízes unitárias.
+
+Este é um procedimento delicado e de natureza estocástica, assim pode ser útil o uso de outra verificação conforme as diferenças vão sendo tomadas da série. Morettin e Toloi \citep{morettin} sugerem avaliarmos a variância da série diferençada. 
+
+Quando a série é corretamente diferençada, a variância irá diminuir, porém, um excesso de diferenças fará com que a variância volte a aumentar. Assim, um monitoramento do comportamento da variância pode ser útil para verificarmos quando devemos parar e assim definir o parâmetro $d$ mais adequado.
+
+Por fim, o \defi{terceiro passo}, é estimar os parâmetros autorregressivos e de médias móveis, respectivamente $p$ e $q$. Isto pode ser feito via análise de estimativas da função de autocorrelação, e de uma versão alternativa desta, chamada de \emph{autocorrelação parcial}, que será definida a seguir.
+
+Essas estimativas deverão imitar o comportamento das quantidades teóricas dessas funções, que são definidas justamente pelos parâmetros $p$ e $q$. É a análise \emph{visual} das estimativas dessas funções, e com a ajuda da receita do comportamento teórico que listaremos abaixo, que serão os guias para a escolha dos parâmetros do modelo.
+
+O comportamento das funções de autocorrelação dos modelos $AR(p)$, $MA(q)$ e $ARMA(p, q)$ são listados por Morettin e Toloi \citep{morettin} como se segue:
+ 
+(i) A fac de um modelo $AR(p)$ decai exponencialmente, ou de acordo com senóides amortecidas, possuindo uma extensão infinita de valores não-nulos.
+
+(ii) A fac de um modelo $MA(q)$ é finita, no sentido que seu valor é zerado após o \emph{lag}\footnote{Lembramos que o \emph{lag} de ordem $\tau$, é um deslocamento temporal da série, isto é, $Z_{t{+}\tau}$, a partir do qual as funções de autocovariância/autocorrelação são calculadas.} temporal de ordem $q$.
+
+(iii) A fac de um modelo $ARMA(p, q)$ é infinita em extensão, e decai exponencialmente após o \emph{lag} $q{-}p$.
+
+Como pode ser complicada a análise de apenas a função de autocorrelação, Box e Jenkins \citep{box} derivaram a \defi{função de autocorrelação parcial} (facp) a partir da fac de um modelo $AR(k)$, da seguinte maneira:
+
+\begin{equation}\label{eq:facp}
+\varphi(k) = \dfrac{|\mathbf{P}_k^*|}{|\mathbf{P}_k|}
+\end{equation}
+
+Onde, $\mathbf{P}_k$ é a matriz de autocorrelações do modelo $AR(k)$, e $\mathbf{P}_k^*$ é a mesma matriz mas com a última coluna substituída pelo vetor de autocorrelações do modelo. As definições detalhadas de ambos, e a derivação da equação (\ref{eq:facp}) podem ser vistas no Apêndice \ref{ap:facp}.
+
+Dessa forma, a facp, dada pela quantidade $\varphi(k)$ é uma função do parâmetro $k$, que será o \emph{lag}, e para a qual é demonstrada em Box e Jenkins \citep{box} o seguinte comportamento:
+
+(i) A facp de um modelo $AR(p)$ é tal que $\varphi(k) \neq 0$, para $k \leq p$ e $\varphi(k) = 0$, para \emph{lags} $k > p$.
+
+(ii) A facp de um modelo $MA(q)$ tem comportamento análogo ao fac de um modelo $AR(p)$, ou seja, com decaimento exponencial ou por senóides amortecidas e infinita em extensão.
+
+(iii) A facp de um modelo $ARMA(p, q)$ tem um comportamento similar ao comportamento da facp de um modelo $MA(q)$.
+
+Pode ser bem complicada a análise de modelos com parâmetros $p$, $q$ ou $d$ muito grandes. Para uma tentativa de ilustração, temos na Figura \ref{fig:parciais} abaixo, exemplos de fac e facp dos modelos $AR(1)$, $MA(1)$ e $ARMA(1, 1)$.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=14cm]{figuras/parciais}
+\caption{Autocorrelações e autocorrelações parciais amostrais de alguns modelos $ARIMA$.}
+\label{fig:parciais}
+\end{figure}
+
+Esta é uma clara desvantagem dos modelos paramétricos de aprendizagem, já que dependem de parâmetros que devem ser definidos \emph{a priori}, e os procedimentos para estimá-los, como neste caso, podem ser inexatos e até mesmo inconclusivos, dada a natureza complicada das funções de autocorrelação.
+
+A recomendação dada por Morettin e Toloi \citep{morettin} é a mais comum, no âmbito de aprendizado de máquina, e consiste em testar vários parâmetros que se mostrem razoáveis após as análises feitas, e verificar qual série modelada é a mais adequada à série real de interesse, de acordo com alguma métrica de erro.
