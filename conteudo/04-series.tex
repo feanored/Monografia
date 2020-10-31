@@ -386,7 +386,7 @@ Considerando o modelo mais simples, ou seja, $MA(1)$, uma série assim modelada 
 \tilde{Z}_t = a_t - \theta a_{t-1} = (1 - \theta B)a_t
 \]
 
-Novamente, temos que esta é uma série cujos valores em qualquer tempo só dependem do valor no tempo anterior e de um ruído. Aplicando o mesmo raciocínio que foi utilizado no modelo $AR(1)$, utilizando a proposição (\ref{prop:5.1}), a série $Z_t$ será estacionária quando as raízes da equação $\theta(\hat{B}) = 0$ se encontrarem fora do círculo unitário, isto é, $\hat{B} > 1$.
+Novamente, temos que esta é uma série cujo valor em qualquer tempo só depende do valor no tempo anterior e de um ruído. Aplicando o mesmo raciocínio que foi utilizado no modelo $AR(1)$, utilizando a proposição (\ref{prop:5.1}), a série $Z_t$ será estacionária quando as raízes da equação $\theta(\hat{B}) = 0$ se encontrarem fora do círculo unitário, isto é, $\hat{B} > 1$.
 
 
 \subsection{Modelos autorregressivos e de médias móveis (ARMA)}
@@ -403,7 +403,7 @@ Utilizando os operadores já respectivamente definidos, simplifica-se para:
 \phi(B)\tilde{Z}_t = \theta(B)a_t
 \end{equation}
 
-Analisando o modelo simples definido por $ARMA(1, 1)$, a série em (\ref{series:5.52}) simplifica-se para:
+Analisando o modelo simples definido por $ARMA(1, 1)$, a série em (\ref{series:5.52}) é escrita:
 
 \begin{equation}\label{series:5.54}
 \tilde{Z}_t = \phi \tilde{Z}_{t-1} + a_t - \theta a_{t-1}
@@ -415,7 +415,7 @@ Substituindo-se recursivamente $\tilde{Z}_{t-1}, \tilde{Z}_{t-2}, \ldots$ nessa 
 \tilde{Z}_t = \psi(B)a_t
 \]
 
-Assim, Morettin e Toloi \citep{morettin} mostram que, da mesma forma que no modelo $AR(1)$, a série $ARMA(1,1)$ será estacionária se a raíz da equação $\phi(\hat{B}) = 0$ estiver fora do círculo unitário. Inclusive, vale a generalização para os modelos $AR(p)$, $MA(q)$ e $ARMA(p,q)$, que serão processos estacionários se as $p$ raízes do polinômio autorregressivo estiverem todas fora do círculo unitário.
+Assim, Morettin e Toloi \citep{morettin} mostram que, da mesma forma que no modelo $AR(1)$, a série $ARMA(1,1)$ será estacionária se a raíz da equação $\phi(\hat{B}) = 0$ estiver fora do círculo unitário. Inclusive, vale a generalização para os modelos $AR(p)$ e $ARMA(p,q)$, que serão processos estacionários se as $p$ raízes do polinômio autorregressivo estiverem todas fora do círculo unitário.
 
 Essa generalização é bem útil quando temos que decidir se uma série dada é ou não estacionária. Há testes estatísticos específicos que testam, para uma série real, a hipótese nula que é a existência de raízes no círculo unitário, o que a configura como uma série não estacionária, contra a hipótese alternativa da não-existência de raízes unitárias, caracterizando-a então como uma série estacionária.
 
@@ -436,11 +436,11 @@ A condição de estacionariedade é $|\phi| < 1$. Se $\phi = 1$ então a série 
 \[ (1 - B)\tilde{Z}_t = \Delta \tilde{Z}_t = a_t \]
 pela própria definição do operador diferença em (\ref{series:diferenca}), e assim torna-se estacionária. 
 
-Se, por outro lado, $|\phi| > 1$, é fácil ver pela expressão acima que a série irá ``explodir'', já que cada termo será aumentado numa taxa maior do que $1$, caracterizando um crescimento exponencial do valor da série.
+Se, por outro lado, $|\phi| > 1$, é fácil ver pela expressão acima que a série será do tipo \emph{explosivo}, já que cada termo será aumentado numa taxa maior do que $1$, caracterizando um crescimento exponencial do valor da série.
 
 Dessa forma, séries $Z_t$ que, sendo diferençadas $d$ vezes tornam-se estacionárias, isto é, séries tais que $\Delta^d \tilde{Z}_t = a_t$, são chamadas de não estacionárias homogêneas, ou também de \emph{integradas de ordem $d$}.
 
-Se temos uma série $W_t = \Delta^d Z_t$ estacionária, então $W_t$ pode ser representada por uma modelo $ARMA(p, q)$, isto é:
+Se temos uma série $W_t = \Delta^d Z_t$ estacionária\footnote{Perceba que $\Delta^d \tilde{Z}_t = \Delta^d Z_t$}, então $W_t$ pode ser representada por uma modelo $ARMA(p, q)$, isto é:
 
 \[
 \phi(B) W_t = \theta(B) a_t
@@ -453,11 +453,13 @@ que $Z_t$ segue um modelo \emph{autorregressivo, integrado e de médias móveis}
 \phi(B) \Delta^d Z_t = \theta(B) a_t
 \end{equation}
 
-Assim, o operador $\phi(B) \Delta^d$ é chamado de autorregressivo não-estacionário, de ordem $p{+}d$, onde $d$ raízes são iguais a $1$, isto é, sobre o círculo unitário, e as demais $p$ raízes estarão fora do círculo unitário. Temos que a $d-$ésima diferença de $Z_t$ pode ser representado por um modelo $ARMA(p, q)$, estacionário. 
+Assim, o operador $\phi(B) \Delta^d$ é chamado de autorregressivo não-estacionário, de ordem $p{+}d$, onde $d$ raízes são iguais a $1$, isto é, sobre o círculo unitário, e as demais $p$ raízes estarão fora do círculo unitário. Temos que a $d-$ésima diferença de $Z_t$ pode ser representada por um modelo $ARMA(p, q)$, estacionário. 
 
 \subsection{Identificação dos modelos utilizando a função de autocorrelação}
 
-\[ \mathfrak{DIO} \]
+Com uma série real em mãos, queremos poder representá-la com algum dos modelos $ARIMA$ vistos. Mas como determinar os parâmetros $p, d \text{e} q$?. Morettin e Toloi \citep{morettin} consideram um procedimento de três partes:
+
+
 
 
 
