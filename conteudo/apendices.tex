@@ -137,7 +137,7 @@ Exibido na Figura \ref{fig:box}, são dados possíveis gráficos que poderemos o
 \chapter{Função de autocorrelação parcial}
 \label{ap:facp}
 
-A derivação da função de autocorrelação parcial mostrada abaixo, é extraída de Morettin e Toloi \citep{morettin}, páginas 138 e 139.
+A derivação da função de autocorrelação parcial mostrada abaixo, é extraída de Morettin e Toloi \citep{morettin}, nas páginas 138-140.
 
 Suponha um modelo $AR(k)$ e seja $\phi_{kj}$ o seu $j$-ésimo coeficiente. Sabe-se que:
 
@@ -188,3 +188,5 @@ De modo geral, pode-se escrever:
 \end{equation}
 
 Onde nota-se que $\mathbf{P}_k$ é a matriz de autocorrelações do modelo $AR(k)$, e $\mathbf{P}_k^{*}$ é a matriz $\mathbf{P}_k$ com a última coluna substituída pelo vetor de autocorrelações, que é o termo à direita da igualdade das equações de Yule-Walker (\ref{eq:yule}).
+
+Dessa forma, a definição acima de $\varphi_k$ é chamada de \emph{função de autocorrelação parcial} do \emph{lag} $k$, ou seja, de ordem autorregressiva $k$. Ela pode ser entendida como a correlação parcial entre as variáveis $Z_t$  e $Z_{t-k}$, ajustadas às variáveis intermediárias $Z_{t-1}, \ldots, Z_{t-k+1}$. Isto é, ela mede a correlação remanescente entre $Z_t$  e $Z_{t-k}$ depois de removida a influência de $Z_{t-1}, \ldots, Z_{t-k+1}$.
