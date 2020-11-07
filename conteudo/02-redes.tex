@@ -7,36 +7,189 @@
 
 Neste capítulo são apresentados alguns conceitos básicos de ciência de dados e de aprendizado de máquina, alguns dentre os vários tipos e exemplos de algoritmos de aprendizagem, direcionando-os para aquele que é o foco do trabalho, ou seja, as redes neurais artificiais.
 
-
-
-Pode-se classificar as técnicas de aprendizado de várias formas, de acordo com alguma de suas características. Por exemplo, Géron \citep{hands} utiliza o grau de supervisão humana durante o seu funcionamento para classificá-los. Durante o aprendizado podem ou não ser fornecidos um conjunto de consultas e de respostas esperadas. Tais respostas foram dadas por humanos, ao menos neste momento, daí o termo ``supervisão humana''.
-
 Neste texto os termos ``algoritmo'' e ``técnica'' serão usados livremente como sinônimos, pois uma técnica de aprendizado de máquina, no contexto atual, é um algoritmo executado no computador que tem por objetivo ajustar parâmetros de modelos estatísticos.
+
+Analogamente à definição dada na Introdução (\ref{cap:introducao}), citamos outras duas. Prince Barpaga \citep{prince} define aprendizado de máquina como sendo um ramo da inteligência artificial, em que computadores são treinados a partir de dados conhecidos para realizar alguma tarefa específica, ao invés de ser explicitamente programado para exibir uma resposta fixa.
+
+Similarmente, Robbie Allen \citep{allen} descreve que um conjunto de dados é usado para treinar um modelo estatístico de forma que, ao ser deparado com dados similares aos dados usados para o treino, saberá como tratá-los. Geralmente, dados são usados como entradas para esses modelos que irão fornecer como saída predições de interesse.
+
+Concluindo, pode-se utilizar o grau de supervisão humana durante o aprendizado para classificá-los em diferentes tipos, como é descrito por Géron \citep{hands}. Durante o aprendizado podem ser fornecidos um conjunto de consultas e de respostas já conhecidas. Tais respostas foram dadas por humanos, ao menos neste momento, e daí o termo ``supervisão humana''.
 
 \section{Tipos de aprendizagem}
 
- Um algoritmo de \defi{aprendizado supervisionado} é usado quando conhecemos características dos dados que estamos utilizando. De modo geral já temos de antemão as respostas às consultas para os dados utilizados no treinamento. Por exemplo, se estamos classificando fotos de animais, possuímos um conjunto de fotos em que já sabemos quais são de gatos, cachorros, etc.
+Um algoritmo de \defi{aprendizado supervisionado} é usado quando conhecemos características dos dados que estamos utilizando. De modo geral já temos de antemão as respostas às consultas para os dados utilizados no treinamento. Por exemplo, se estamos classificando fotos de animais, possuímos um conjunto de fotos para as quais já sabemos quais são de gatos, cachorros, etc.
 
- O ato de rotular previamente os dados que usamos no treinamento é o que designamos de supervisão humana. Uma vez \emph{treinado}, o algoritmo recebe uma foto, ou seja, uma nova consulta e então fornece a resposta, neste caso se essa é a foto de um gato, ou cachorro, ou qualquer outra resposta dentre aquelas que foram dadas como exemplos durante o treinamento.
+O ato de rotular previamente os dados que usamos no treinamento é o que designamos de supervisão humana. Uma vez \emph{treinado}, o algoritmo recebe uma foto, ou seja, uma nova consulta e então fornece a resposta, neste caso se essa é a foto de um gato, ou cachorro, ou qualquer outra resposta dentre aquelas que foram dadas como exemplos durante o treinamento.
 
-Dentro do aprendizado supervisionado temos duas técnicas principais. A primeira é a regressão, usada para prever valores, ou seja, fornecer respostas a consultas ainda inéditas, sejam dados do futuro ou valores de funções em pontos do domínio para os quais ainda não existem respostas. 
+Dentro do aprendizado supervisionado temos duas técnicas principais. A primeira é a \defi{classificação}, usada para rotular ou dividir os dados em classes pré-determinadas, a partir de exemplos, que é exatamente o caso dos exemplos descritos nos parágrafos anteriores, e ilustrada na figura \ref{fig:classify}.
 
-A segunda técnica é a classificação, usada para rotular ou dividir os dados em classes pré-determinadas, a partir de exemplos, que é exatamente o caso dos exemplos descritos nos parágrafos anteriores. Se as classes não são conhecidas deve-se utilizar um algoritmo de aprendizado não-supervisionado, descrito na próxima seção.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/classificacao}
+\caption{Tarefa de classificação.\footnote{Extraído de \citep{allen}}}
+\label{fig:classify}
+\end{figure}
 
-Enquanto isso, na \defi{aprendizagem não-supervisionada} não sabemos os rótulos dos dados que estamos lidando, assim o algoritmo poderá agrupar os dados de forma automática, por exemplo, se estivermos lidando com problemas de classificação. Aqui, as consultas podem ser coisas como ``quantos são os perfis dos clientes'' ou ``quantas espécies de flores existem nestas fotos'', e assim por diante.
+A segunda técnica é a \defi{regressão}, usada para prever valores, ou seja, fornecer respostas a consultas ainda inéditas, sejam dados do futuro ou valores de funções em pontos do domínio para os quais ainda não existem valores. Podemos entender a diferença, com a ajuda de Allen \citep{allen} se percebermos que na classificação as respostas são valores discretos, isto é, um `cachorro' ou um `gato'. 
 
-Alguns métodos não-supervisionados de aprendizado foram enumeradas por Géron \citep{hands}. O \textbf{agrupamento} de dados similares sob uma inspiração geométrica. Nesse caso os dados são agrupados conforme suas posições num determinado espaço e utiliza-se algoritmos como $k$-vizinhos, $k$-means, $k$-medians, etc. Exemplos de aplicações são agrupamento de produtos em supermercados, interesses comuns de clientes em sites de conteúdo digital, etc.
+Enquanto isso, na regressão as respostas são valores contínuos, um intervalo real de possibilidades. Como exemplo, Allen \citep{allen} ilustra na figura \ref{fig:regressao}, dado uma imagem radiológica, um modelo poderia prever em quantos anos uma pessoa poderia desenvolver alguma doença.
 
-Outra técnica é a \textbf{detecção de anomalias}, cujo objetivo é ter uma descrição de como os dados considerados ``normais'' se parecem, e usa-se esse agrupamento para detectar se novos dados estariam ``fora'' desse padrão. Um exemplo é a detecção de fraudes.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/regressao}
+\caption{Tarefa de regressão.\footnote{Extraído de \citep{allen}}}
+\label{fig:regressao}
+\end{figure}
 
-Também pode-se citar sobre a técnica de \textbf{estimação de densidades}, que tem como objetivo a estimação da função densidade de probabilidade de um conjunto de dados gerados por algum processo aleatório.
+No \defi{aprendizado não-supervisionado} não sabemos os rótulos dos dados que estamos lidando, isto é, não sabemos previamente respostas aos dados conhecidos, assim o algoritmo poderá agrupar os dados de forma automática, por exemplo, se estivermos lidando com problemas de classificação. Aqui, as consultas podem ser coisas como ``quantos são os perfis dos clientes'' ou ``quantas espécies de flores existem nestas fotos'', e assim por diante.
+
+Alguns métodos não-supervisionados de aprendizado foram enumeradas por Géron \citep{hands}. O \defi{agrupamento} de dados similares sob uma inspiração geométrica. Nesse caso os dados são agrupados conforme suas posições num determinado espaço e utiliza-se algoritmos como $k$-vizinhos, $k$-means, $k$-medians, etc. Exemplos de aplicações são agrupamento de produtos em supermercados, interesses comuns de clientes em sites de conteúdo digital, etc.
+
+Para ilustar, Allen \citep{allen} sugere que imaginemos um conjunto de artigos de texto que gostaríamos de organizar. Alguns poderiam ser sobre esportes, outros sobre história, outros sobre arte, etc. O objetivo seria identificar e classificar automaticamente os textos dentre alguns assuntos possíveis. Imaginando cada assunto provável como uma figura geométrica diferente, a tarefa seria realizada idealmente como na figura \ref{fig:clustering}.\footnote{Vale ressaltar que não sabemos \emph{a priori} os rótulos aqui representados a favor do entendimento.}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/clustering}
+\caption{Tarefa de clusterização.\footnote{Extraído de \citep{allen}}}
+\label{fig:clustering}
+\end{figure}
+
+Existe também o \defi{aprendizado semi-supervisionado} em que combinam-se vantagens de ambos os tipos anteriores. Um modelo utiliza dados sem rótulos para descobrir uma estrutura geral dos dados, enquanto usa alguns poucos rótulos conhecidos para ajudar na organização inicial dessa estrutura, o que auxilia na partida do agrupamento, que é um problema das técnicas não-supervisionadas.
+
+Essa técnica é também conhecida por \emph{aprendizagem fraca}, e conforme aponta Allen \citep{allen} possui a vantagem de precisar de menor quantidade de dados rotulados para que se alcançe um bom resultado em termos de qualidade do modelo, já que aprende parte do padrão dos dados a partir dos dados sem rótulos.
+
+Uma técnica já bem diferente das anteriores, é o \defi{aprendizado por reforço}. Allen \citep{allen} nos explica o conceito principal dessa abordagem, que consiste na existência de um ``agente'' que interage executando ações num ``ambiente'', que por sua vez dá um retorno (\eng{feedback}) a esse agente, usualmente na forma de uma ``recompensa''.
+
+Tal recompensa pode ser entendida especificamente como um contador. O objetivo do agente é maximizar esse contador. Nenhuma informação é dita ao agente sobre como ele aumenta esse contador, ou porquê ele conseguiu aumentar, ele irá definir suas ações de acordo com as respostas dadas pelo ambiente. 
+
+Assim, tudo que ele sabe é se houve a recompensa ou não, e irá preferir as ações que fizeram o contador aumentar e preterir aquelas que fizeram ele diminuir, sem nunca existir rótulos ou respostas esperadas.
+
+Outra técnica é a \defi{detecção de anomalias}, cujo objetivo é ter uma descrição de como os dados considerados ``normais'' se parecem, e usa-se esse agrupamento para detectar se novos dados estariam ``fora'' desse padrão. Um exemplo é a detecção de fraudes.
+
+Também pode-se citar a técnica de \defi{estimação de densidades}, que tem como objetivo a estimação da função densidade de probabilidade de um conjunto de dados gerados por algum processo aleatório.
+
+\subsection{O problema do sobreajuste dos modelos}
+
+O sobreajuste (\eng{overfitting}) é o primeiro desafio que deve ser enfrentado quando realizados uma tarefa de aprendizado de máquina. Um modelo de aprendizado de máquina só é considerado válido ou útil, se ele chega a um ponto de existir nenhum ou muito pouco sobreajuste.
+
+O sobreajuste ocorre quando um modelo foi treinado exageradamente para o conjunto de dados conhecidos, ou seja, o conjunto utilizado para o treino. De forma que, ao se deparar com dados novos, desconhecidos, perde a capacidade de saber o que fazer, ou seja, erra muito nas previsões. 
+
+Isto pode ocorrer tanto nas tarefas de classificação, quanto nas tarefas de regressão. Utilizando o exemplo dado por Allen \citep{allen}, imaginemos um modelo de classificação de fotos de animais. Um modelo $100\%$ sobreajustado irá \emph{decorar} as cores de cada um dos pixels dessa imagem, de forma que todos eles serão necessários para ele identificar se tal foto é um gato, ou um cachorro, etc.
+
+Mudando apenas a cor ou a posição de um dos pixels de uma das imagens, e supondo que essa imagem modificada não fazia parte do conjunto de imagens do treinamento, o modelo não será capaz de fornecer uma resposta válida ou confiável. A figura \ref{fig:over_class} ilustra esse exemplo.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/over_class}
+\caption{Sobreajuste num modelo de classificação.\footnote{Extraído de \citep{allen}}}
+\label{fig:over_class}
+\end{figure}
+
+Isto é o sobreajuste, o modelo fica perfeito para os dados de treino, mas fica totalmente cego para os dados do mundo real, desconhecidos. Ele também está presente nos modelos de regressão. Consideremos o exemplo dado por Allen \citep{allen}.
+
+Seja um gráfico que relaciona a metragem ao quadrado de terrenos, no eixo $X$ com o valor pago por eventuais compradores, no eixo $Y$. É um típico problema de regressão, já que queremos saber, para metragens de terrenos ainda desconhecidos, qual um valor esperado para sua compra ou venda. 
+
+O modelo mais simples seria o de uma regressão linear, explicado em detalhes na próxima seção, em que basicamente, traçamos uma reta do tipo $y = bx + a$, cujo valor $y$ irá servir de valor esperado para nosso modelo, para qualquer $x$ ainda desconhecido. Uma ilustração desse modelo hipotético está na figura \ref{fig:over_reg_1}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/over_reg_1}
+\caption{Modelo de regressão, ajuste linear.\footnote{Extraído de \citep{allen}}}
+\label{fig:over_reg_1}
+\end{figure}
+
+Podemos não ficar satisfeitos com esse ajuste linear, já que praticamente nenhum ponto está contido perfeitamente na reta ajustada. E assim, supomos um novo modelo, dessa vez de um polinômio quadrático, isto é, um modelo do tipo $y = cx^2 + bx + a$. 
+
+A diferença é que antes tínhamos $2$ parâmetros para ajustar, $a$ e $b$, e agora temos um terceiro parâmetro, $c$.\footnote{É importante mencionar que, em outros contextos, o número de parâmetros livres de um modelo é conhecido como o número de \emph{graus de liberdade} desse modelo.} Um ajuste possível, é ilustrado na figura \ref{fig:over_reg_2}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/over_reg_2}
+\caption{Modelo de regressão, polinômio quadrático.\footnote{Extraído de \citep{allen}}}
+\label{fig:over_reg_2}
+\end{figure}
+
+Aparentemente, esse modelo é melhor do que o anterior, pois a função está melhor ajustada aos dados conhecidos. Poderíamos pensar que quanto mais parâmetros, isto é, quanto maior o grau do polinômio a ser ajustado, mais adequado o modelo estará aos dados. 
+
+Isso pode chegar até o extremo em que, possuindo $n{+}1$ dados, tentamos ajustar um polinômio de grau $n$. Tal ajuste está ilustrado na figura \ref{fig:over_reg_3}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/over_reg_3}
+\caption{Modelo de regressão, polinômio de grau $n$.\footnote{Extraído de \citep{allen}}}
+\label{fig:over_reg_3}
+\end{figure}
+
+Com isso, teremos o caso extremo de um modelo de regressão $100\%$ sobreajustado. Ele está perfeitamente ajustado aos dados conhecidos, mas retornará resultados espúrios para qualquer outro $x$ que não pertença a esse conjunto, perdendo totalmente a capacidade de \emph{generalização}, conforme explicado por Allen \citep{allen}.
+
+O objetivo dessa discussão é apontar que devemos ser parcimoniosos na escolha do nosso modelo, tentando buscar o menor número possível de parâmetros a serem corretamente ajustados, de modo a dar ao mesmo tempo uma boa perfomance no conjunto de treinamento (mas não perfeita), e também uma capacidade igualmente boa de generalização para os dados desconhecidos.
 
 \section{Alguns algoritmos de aprendizagem}
 
-A ideia é descrever nessa ordem:
-- aprendizado de maquina
-- tipos de aprendizado: supervisionado, não-sup.., semi-sup. e por reforço.
-- estratégias com exemplos: vou descrever brevemente, um parágrafo, e exemplificar os que estão aqui \url{https://medium.com/machina-sapiens/algoritmos-de-aprendizagem-de-m%C3%A1quina-qual-deles-escolher-67040ad68737}
+Conhecendo os tipos mais comuns de aprendizagem, o próximo passo nesse caminho da ciência de dados é conhecer os diferentes algoritmos de aprendizagem, alguns sendo mais usados em tarefas supervisionadas, outros em tarefas não-supervisionadas e alguns podendo ser utilizados em ambos os tipos de tarefas.
+
+É importante também conhecer para quais tarefas do mundo real eles foram concebidos, pois essa etapa é muito importante, dentro do contexto humano da ciência de dados, para se adquirir intuição e auxiliar na escolha do algoritmo ou dos algoritmos mais úteis que possam modelar algum novo problema.
+
+\subsection{Regressão Linear}
+
+Um dos pioneiros e mais simples problemas de aprendizagem de máquina supervisionada. É, aliás, um método nascido e desenvolvido na \emph{estatística}, possuindo soluções fechadas, como por exemplo o método dos mínimos quadrados. 
+
+Porém, o uso de técnicas computacionais é muito bem-vinda, se estamos lidando com volumes de dados muito grandes, e que exigem manipulações aritméticas de matrizes, como multiplicação, inversão, diagonalização, etc.
+
+Formalmente, supomos um modelo de regressão linear múltipla, associando um conjunto de variáveis independentes $X_1, X_2, \ldots, X_p$, que representam os dados, a uma variável dependente $Y$, que representa a resposta esperada, escrevemos o seguinte modelo.
+
+\begin{equation}\label{algo:1}
+Y = \E(Y|X_1 = x_1, \ldots, X_p = x_p) + \epsilon = \beta_0 + \beta_1 X_1 + \ldots + \beta_p X_p + \epsilon
+\end{equation}
+onde $\epsilon$ é o erro aleatório, para o qual é assumido uma distribuição normal de média $0$.
+
+Temos portanto $p{+}1$ parâmetros a serem ajustados em nosso modelo. Uma solução conhecida para o caso univariado, retirada de Magalhães e Lima \citep{antonio} (páginas $332{-}336$), e que pode ser generalizada, é dada pelo método dos mínimos quadrados. 
+
+Se possuímos $n$ observações disponíveis, tanto das variáveis independentes $X_i$ quanto das variáveis dependentes $Y_i$, e denotando da seguinte maneira:
+
+\[
+Y = \left[ \begin{array}{c} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{array} \right], \;
+X = \left[ \begin{array}{cccc} 1 & x_{11} & \ldots & x_{1p} \\ 1 & x_{21} & \ldots & x_{2p} \\ \vdots & \vdots & \ddots & \vdots \\ 1 & x_{n1} & \ldots & x_{np} \end{array} \right], \;
+\beta = \left[ \begin{array}{c} \beta_0 \\ \beta_1 \\ \vdots \\ \beta_p \end{array} \right], \;
+\epsilon = \left[ \begin{array}{c} \epsilon_1 \\ \epsilon_2 \\ \vdots \\ \epsilon_n \end{array} \right]
+\]
+
+Usando essa notação, podemos reescrever a equação (\ref{algo:1}), para $n$ observações:
+
+\begin{equation}\label{algo:2}
+Y = X \beta + \epsilon
+\end{equation}
+
+Esse problema possui uma solução algébrica dada pelo método dos mínimos quadrados, que nos fornece uma estimativa do vetor $\beta$, que é:
+
+\begin{equation}\label{algo:3}
+\hat{\beta} = (X'X)^{-1}X'Y
+\end{equation}
+
+Que envolvem as operações de matrizes mencionadas acima. E que assume uma definição baseada na minimização da função de erro quadrático, feita de forma algébrica. 
+
+As técnicas de aprendizado de máquina entram em jogo se queremos utilizar uma outra função de erro, ou se queremos uma outra abordagem para a minimização da função de erro escolhida, como por exemplo o método do gradiente descendente, explicado em detalhes no Apêndice \ref{ap:gradiente}.
+
+A utilização do gradiente descendente ou de outro método de otimização qualquer é motivado pela maior eficiência computacional desses métodos em comparação com a inversão de matrizes de ordem $p{\times}p$ necessária no cálculo direto de \ref{algo:3}. A justificativa é facilmente verificada em problemas do mundo real, onde, na maioria dos casos, $p{>}1.000$.
+
+Outras técnicas também podem ser utilizadas quando estamos no contexto de aprendizado de máquina. Daniil Korbut \citep{korbut} citam as técnicas de regularização, que são úteis para se evitar o sobreajuste nos modelos de regressão. 
+
+A ideia da regularização é adicionar parâmetros sem importância prática às somas dos quadrados na função de erro quadrático, com o objetivo de minimizar os valores dos parâmetros de interesse. Explicações mais detalhadas podem ser encontradas em Géron \citep{hands} (páginas $196{-}205$).
+
+Só é possível verificar a necessidade dessas e outras técnicas \emph{sentindo na pele} quando estamos tentando resolver um problema de ciência de dados, e não é o objetivo deste trabalho esmiuçar os algoritmos de regressão linear em tais detalhes. 
+
+É possível utilizar a abordagem puramente estatística, lidando diretamente com as equações \ref{algo:2} e \ref{algo:3}, a vantagem de se utilizar técnicas computacionais eficientes permanece imprescindível quando $p$ é grande.
+
+\subsection{Regressão Logística}
+
+
+
+\subsection{Árvores de decisão}
+
+
+
+\subsection{$K$-médias}
+
 
 
 \section{As redes neurais e o \emph{perceptron}}
