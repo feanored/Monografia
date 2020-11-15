@@ -1,0 +1,31 @@
+digraph tree {
+    node[shape=msquare];
+    
+	no0 [label="Tem vasos condutores de seiva?"];
+	        
+	no1 [label="Briófitas
+	(Musgo)" style=filled];
+	     
+	no2 [label="Tem	sementes?"];
+	
+	no3 [label="Pteridófitas
+	(Samambaia)" style=filled];
+	     
+	no4 [label="Tem flores e frutos?"];
+	     
+	no5 [label="Gimnospermas
+	(Pinheiro)" style=filled];
+	     
+	no6 [label="Angiospermas"
+	style=filled];
+	
+	no0 -> no1[label="não"];
+	no0 -> no2[label="sim"];
+	
+	no2 -> no3[label="não"];
+	no2 -> no4[label="sim"];
+	
+	no4 -> no5[label="não"];
+	no4 -> no6[label="sim"];
+
+}

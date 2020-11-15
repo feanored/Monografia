@@ -31,7 +31,9 @@ onde escrevemos $a^{(L-1)}$ é a saída do neurônio da camada anterior, $w^{(L)
 
 Nota-se que internamente à função de ativação, um neurônio se comporta como uma transformação linear dos neurônios da camada anterior. Caso tivéssemos $n$ neurônios na camada anterior à de saída, teríamos então $n$ pesos, denotados com índice $i$ dessa forma: $\{ w_i^{(L)} \}_{i=1}^n$. Cabe assim à função de ativação, dar o comportamento não-linear à rede perceptron.
 
-Como o objetivo é minimizar $C_0$, temos que calcular a influência dos pesos e dos viéses nesse custo. Já sabemos que isso será obtido com o gradiente, isto é, a derivada dessa função em relação a esses parâmetros que, são os únicos que podemos otimizar. De forma mais clara, temos que no início do treinamento da rede, atribuímos valores aleatórios aos pesos e aos viéses, e então executamos o \eng{feedforward}, de forma que a rede irá calcular sequencialmente os valores de saída em todas as suas camadas, obtidos a partir dos dados de entrada, que serão fixos, e desses parâmetros inicialmente aleatórios. A partir daí, poderemos otimizar esses parâmetros, exatamente da forma que estamos construindo.
+Como o objetivo é minimizar $C_0$, temos que calcular a influência dos pesos e dos viéses nesse custo. Já sabemos que isso será obtido com o gradiente, isto é, a derivada dessa função em relação a esses parâmetros que, são os únicos que podemos otimizar. 
+
+De forma mais clara, temos que no início do treinamento da rede, atribuímos valores aleatórios aos pesos e aos viéses, e então executamos o \eng{feedforward}, de forma que a rede irá calcular sequencialmente os valores de saída em todas as suas camadas, obtidos a partir dos dados de entrada, que serão fixos, e desses parâmetros inicialmente aleatórios. A partir daí, poderemos otimizar esses parâmetros, exatamente da forma que estamos construindo.
 
 O cálculo dessas derivadas é feito segundo a regra da cadeia, e adicionalmente iremos denotar a transformação linear interna à função de ativação por $z^{(L)} = w^{(L)}~a^{(L-1)} + b^{(L)}$, de forma que $a^{(L)} = \sigma(z^{(L)})$. Assim, ficamos com as derivadas para a camada de saída:
 
@@ -71,7 +73,7 @@ O que resulta, fazendo todas as substituições, em:
 \frac{\del C_0}{\del b^{(L)}} = \sigma^{'}(z^{(L)})~ (a^{(L)} - y)
 \end{equation}
 
-Na equação \ref{retro:4} ocultamos o termo constante $2$ sob um símbolo de proporção, que a seguir iremos também ocultar, uma vez que usaremos o algoritmo do gradiente descendente, e assim, em seu lugar, e na verdade, todas as derivadas aqui mostradas serão multiplicadas pelo termo $\eta$, a \defi{taxa de aprendizagem}, conforme explicado no capítulo anterior. 
+Na equação \ref{retro:4} ocultamos o termo constante $2$ sob um símbolo de proporção, que a seguir iremos também ocultar, uma vez que usaremos o algoritmo do gradiente descendente, e assim, em seu lugar, e na verdade, todas as derivadas aqui mostradas serão multiplicadas pelo termo $\eta$, a \defi{taxa de aprendizagem}, conforme explicado no Apêndice \ref{ap:gradiente}. 
 
 Analogamente, podemos pensar numa forma de fazer esses cálculos para as camadas ocultas. A princípio, podemos calcular:
 
@@ -230,7 +232,7 @@ Como o método do gradiente tenta ajustar os valores dos pesos a partir dos valo
 
 Como podemos ver, a derivada retorna valores sempre menores do que $1$, e além disso aproxima-se de $0$ tão rapidamente quanto a \eng{sigmoid} aproxima-se de $1$. Isso faz com que atualizações para valores de saída que já estão muito altos não sejam efetivos para diminuí-los, pois justamente nessa região a derivada está muito próxima de $0$. Essa é a desvantagem da função \eng{sigmoid}.
 
-Um problema relacionado a este é que se a regra da cadeia em \ref{retro:1} e \ref{retro:2}, com as derivadas da função de ativação dadas em \ref{retro:5} multiplicadas através das várias camadas, pode resultar num número muito grande, se todas as derivadas resultarem em valores maiores do que $0$, ou resultar num número muito próximo de $0$ se todas as derivadas forem menores do que $0$. Isto faz com que atualizações dadas pelo gradiente sejam instáveis. Este é o problema descrito por Matheus Facure \citep{matheus_2} e nomeado como problema do gradiente explodindo/desvanecendo. (\eng{exploding/vanishing gradient problem}).
+Um problema relacionado a este é que se a regra da cadeia em \ref{retro:1} e \ref{retro:2}, com as derivadas da função de ativação dadas em \ref{retro:5} multiplicadas através das várias camadas, pode resultar num número muito grande, se todas as derivadas resultarem em valores maiores do que $0$, ou resultar num número muito próximo de $0$ se todas as derivadas forem menores do que $0$. Isto faz com que atualizações dadas pelo gradiente sejam instáveis. Este é o problema descrito por Matheus Facure \citep{matheus_2} e nomeado como problema do gradiente explodindo/desvanecendo.
 
 Assim, conforme nos diz Facure \citep{matheus}, a utilização da função \eng{sigmoid} não é mais recomendada em problemas que envolvam de redes neurais maiores, sendo bem comum o problema do gradiente explodindo, já que a derivada é sempre maior do que $0$. Porém, ele também diz que alguns modelos probabilísticos de variáveis binárias, modelagem de problemas biológicos onde ela é uma aproximação mais plausível da ativação elétrica-biológica, e também alguns modelos não supervisionados de redes tem restrições que fazem com que seja não só desejável como também necessário o uso da função \eng{sigmoid}.
 
@@ -805,15 +807,15 @@ A matriz de confusão permite relacionar as classes esperadas com as classes pre
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=10cm]{figuras/mnist_treino}
-\caption{Matriz de confusão, função de perda e acurácia do conjunto de treino da base MNIST $8\times8$.}
+\includegraphics[width=9cm]{figuras/mnist_treino}
+\caption{Matriz de confusão, MSE e acurácia do conjunto de treino da base MNIST ${8\times8}$.}
 \label{fig:mnist_treino}
 \end{figure}
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=10cm]{figuras/mnist_test}
-\caption{Matriz de confusão, função de perda e acurácia do conjunto de teste da base MNIST $8\times8$.}
+\includegraphics[width=9cm]{figuras/mnist_test}
+\caption{Matriz de confusão, MSE e acurácia do conjunto de teste da base MNIST ${8\times8}$.}
 \label{fig:mnist_test}
 \end{figure}
 
@@ -838,7 +840,9 @@ Todas essas implementações podem ser utilizadas em conjunto, na biblioteca con
 \label{fig:tensor_flow}
 \end{figure}
 
-Para entender o funcionamento e uso do Keras, criei uma rede com a mesma estrutura do Perceptron aqui implementado mas com algumas melhorias já disponíveis com a API, e com objetivo de classificar o mesmo conjunto de dados MNIST, só que agora com a versão oficial da base de dados, o que é possível já que a biblioteca está implementada com muita eficiência e funciona bem para bases maiores mesmo num ambiente pessoal de computação. 
+Para entender o funcionamento e uso do Keras, criei uma rede com a mesma estrutura do Perceptron aqui implementado, mas com algumas melhorias já inerentes à API, e com objetivo de classificar o mesmo conjunto de dados MNIST, para comparar a eficiência.
+
+A seguir, faço um teste com a versão oficial da base de dados, com mais pixels, o que é possível já que a biblioteca está implementada com muita eficiência e funciona bem para bases maiores mesmo num ambiente pessoal de computação.
 
 A importação da base é feita agora usando outra função da biblioteca \emph{sklearn}. Pode ser visto na listagem \ref{lst:keras_1}. A seguir os dados são divididos entre os conjuntos de treino e de teste, com as listas \texttt{x\_train, x\_test} e \texttt{y\_train, y\_test} contendo os pixels e as classficações respectivamente, como antes.
 

@@ -182,15 +182,111 @@ Só é possível verificar a necessidade dessas e outras técnicas \emph{sentind
 
 \subsection{Regressão Logística}
 
+Suponhamos agora que queremos prever a probabilidade de que algo ocorra ou não. Por exemplo, queremos decidir, a partir de uma base de dados de características de clientes conhecidos e de suas compras, se um novo cliente, dadas apenas suas características, irá ou não comprar um certo produto.
 
+Poderíamos, a princípio, utilizar uma regressão linear, se usarmos características independentes nada nos impediria de usar a modelagem vista anteriormente. O resultado seria uma função que dada a lista de características de um cliente novo, retornaria um número. Porém esse número sofreria de problemas de interpretação.
+
+Poderíamos supor que se esse número fosse grande, então há alta probabilidade do cliente comprar, ou se o número fosse muito pequeno, ou até mesmo negativo, que ele teria baixa probabilidade de comprar o produto. Mas essa linha de decisão seria ruim, pois, o que nos garantiria que essa interpretação representaria a realidade?
+
+Uma alternativa é modelarmos em termos de probabilidades reais, ou seja, um modelo cuja resposta fosse um número entre $0$ e $1$, de forma que a interpretação probabilística fosse muito mais natural. Esta é a motivação do modelo de regressão logística.
+
+Por causa da natureza da previsão, que irá retornar basicamente, sim ou não, este pode ser considerado um algoritmo de classificação, apesar do nome e do funcionamento interno que caracterizariam-na como uma regressão não-linear. Além disso, é um algoritmo supervisionado, já que nosso modelo é construído utilizando dados de compras de clientes já conhecidos.
+
+É uma regressão-classificação não-linear, pois o modelo é dado, por Grus \citep{data}, para cada par de características ($X_i$) e resposta ($Y_i$), por:
+
+\begin{equation}\label{log:f}
+Y_i = f(X_i \beta) + \epsilon
+\end{equation}
+
+em que $f$ é a função \emph{sigmóide} ou \emph{logística}, dada por:
+
+\[ f(x) =  \frac{1}{1 + e^{-x}} \]
+
+O que queremos fazer é maximizar as probabilidades de quando $Y_i = 1$ ou $Y_i = 0$. Ou seja, o objetivo é maximizar a probabilidade de que os dados com valores conhecidos assumam os valores esperados de $Y_i$. 
+
+Esta probabilidade é definida, em Grus \citep{data}, por:
+\begin{equation}\label{log:veros}
+P(y_i | x_i, \beta) = f(x_i \beta)^{y_i} (1 - f(x_i \beta))^{1-y_i}
+\end{equation}
+em que, $y_i = 1$ ou $y_i = 0$, para toda observação indexada por $i$.
+
+Uma vez que queremos maximizar essa probabilidade, dada uma amostra, o parâmetro a ser ajustado é $\beta$, o que configura a expressão (\ref{log:veros}) como uma \emph{verossimilhança}. Assim, desejamos um algoritmo que irá maximizar a verossimilhança, ou ainda a log-verossimilhança de nossa amostra, e irá retornar o $\hat{\beta}$ que o faça.
+
+Novamente, no contexto de aprendizado de máquina, o mais eficiente será utilizar algum algoritmo de gradiente descendente e estocástico, para realizar esse trabalho, motivo pelo qual é tratado como um algoritmo de aprendizagem, em oposição ao procedicimento do cálculo direto de $\hat{\beta}$.
+
+A seguir, com o $\hat{\beta}$ em mãos, poderemos classificar novos clientes, aplicando suas características de volta na expressão (\ref{log:f}), com o $\hat{\beta}$ ajustado. A resposta será uma probabilidade, para a qual poderemos definir um \emph{corte}, sendo o mais simples definir que, se essa probabilidade for maior do que $0.5$ diremos que o cliente irá comprar, se for menor, não irá comprar.
+
+Alternativamente, podemos ter como resposta a probabilidade diretamente, sem preocuparmos com não um mas vários \emph{cortes}, para então gerarmos estratégias distintas para clientes com \emph{alta}, \emph{média} ou \emph{baixa} probabilidade de compra de certo produto, por exemplo.
 
 \subsection{Árvores de decisão}
 
+Uma \defi{árvore de decisão} é outro exemplo de algoritmo supervisionado usado principalmente para classificação, mas que também podem ser usadas para regressão. É definida por Grus \citep{data} como sendo uma estrutura que representa um número de possíveis caminhos de decisão e um resultado para cada caminho.
 
+Apesar dessa definição genérica, um exemplo muito útil é lembrar da classificação das famílias pertencentes ao reino vegetal, vejamos na figura \ref{fig:plantas}, sem nos preocuparmos com os detalhes biológicos.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=8cm]{figuras/plantas}
+\caption{Árvore de decisão classificando famílias de plantas.}
+\label{fig:plantas}
+\end{figure}
+
+Pode-se notar a natureza didática das árvores de decisão, pois elas são de fato intuitivas. Dada uma planta, fizemos perguntas simples e diretas sobre suas características, que estão representadas pelos quadros de fundo branco de onde saem flechinhas indicando as respostas negativas e positivas, estes quadros são os \defi{nós de decisão}.
+
+Seguir as flechas, ou seja, as decisões de cada pergunta ou característica, nos permitirá classificar uma planta em alguma das famílias representadas pelos quadros de fundo cinza, de onde não saem mais flechinhas. Estes são os \defi{nós-folhas}, que são as respostas dadas por essa árvore de classificação.
+
+Isto nos leva ao funcionamento do algoritmo de uma árvore de decisão. Segundo Grus \citep{data}, para construir uma árvore de decisão, precisamos decidir quais perguntas fazer e em qual ordem. Cada pergunta irá separar as possibilidades restantes de acordo com as respostas. 
+
+Outro aspecto importante será decidir os \emph{cortes} de cada pergunta, ou seja, se estamos lidando com valores contínuos (por exemplo, o tamanho do caule), será preciso definir, como no caso da regressão logística, um valor que será o limiar entre uma resposta negativa e positiva para essa pergunta (por exemplo, \emph{o caule é grande?}).
+
+De acordo com Grus \citep{data}, seria útil escolher perguntas cujas respostas darão muita informação sobre o que a árvore deverá prever. Esta informação pode ser mensurada com o conceito de \defi{entropia}, que neste contexto, representa a incerteza associada aos dados.
+
+Seja um conjunto de dados $S$, para os quais pudéssemos rotular alguma dentre $n$ classes, $C_1, \ldots, C_n$. Se todos os dados de $S$ possuirem a mesma classe, a entropia $H$ de $S$ será zero. Se os pontos estiverem igualmente espalhados entre as classes, então a entropia será a máxima possível.
+
+De modo geral, se $p_i$ é a proporção de dados que pertencem à classe $C_i$, então a entropia de $S$ será:
+\begin{equation}\label{eq:entropia_1}
+H(S) = -p_1 \log_2 p_1 - \ldots - p_n \log_2 p_n
+\end{equation}
+onde Grus \citep{data} utiliza a convenção: $0 \log 0 = 0$.
+
+Se analisarmos rapidamente cada termo, como uma função $f(p) = {-p} \log p$, estendida com a convenção acima, vemos que é uma função que se aproxima de $0$ quando $p$ se aproxima de $0$ ou de $1$, e se afasta de $0$, caso contrário, isto é, tem uma concavidade negativa, cruzando o eixo nos pontos $p=0$ ou $p=1$.
+
+Assim, a entropia de $S$ será maior quando os dados estiverem mais espalhados, o que significa que há maior incerteza na base, enquanto que será menor quando os dados estiverem mais concentrados em poucas classes, o que indicaria menor incerteza, o que configura o comportamento que gostaríamos de obter.
+
+Sabendo computar a entropia do conjunto total $S$ que representa uma \emph{árvore}, o próximo passo é calcular a entropia de \emph{ramos} da árvore, que serão obtidas a partir de perguntas que irão separar o conjunto $S$ em dois ou mais subconjuntos.
+
+Se estamos lidando com características categóricas, cada valor assumido por essa característica é uma das respostas possíveis, gerando um ramo para cada, ou seja, uma seta de decisão. Se uma característica é numérica e contínua, daí há uma liberdade na escolha da pergunta, podendo ser usada por exemplo a média ou a mediana para separar os dados entre abaixo ou acima desse corte.
+
+Generalizando a mesma definição anterior, se dividirmos os dados de $S$ em subconjuntos $S_1, \ldots, S_m$, para uma característica com $m$ valores distintos possíveis, cada um contendo proporções $q_1, \ldots, q_m$ respectivas, então a entropia da árvore será a soma ponderada das entropias de cada ramo:
+
+\begin{equation}\label{eq:entropia_2}
+H(S) = q_1 H(S_1) + \ldots + q_m H(S_m)
+\end{equation}
+em que cada termo $H(S_i)$ é obtido normalmente por (\ref{eq:entropia_1}).
+
+A partir dessa definição, já podemos construir um primeiro algoritmo de árvore de decisão. De acordo com Grus \citep{data}, um algoritmo \emph{ganancioso}, pode ser construído como se segue. Dadas as características presentes em $S$, ou seja, as variáveis explicativas, computamos para cada uma o valor $H$ dado por (\ref{eq:entropia_2}).
+
+Escolhemos como nosso primeiro nó de decisão, a característica que nos der o menor valor de entropia $H$. Com isso, sabemos que essa característica é a que melhor separa as classes, que serão os nós folhas (as respostas), ao menos nesse momento.
+
+Assim obtemos $2$ ramos, e em cada um deles podemos repetir esse mesmo procedimento. Se fizermos isso para todas as características, então cada ramo de nossa árvore poderá eventualmente conter apenas uma das classes possíveis, o que seria perfeito para o conjunto de treino, mas seria péssimo para dados novos, pois nossa árvore estaria completamente \emph{sobreajustada}.
+
+É por isso que para um modelo de árvore de decisão, existem comumemente $2$ \defi{hiperparâmetros}\footnote{Parâmetros inerentes ao modelo e não aos dados, e que devem ser escolhidos durante a parte prática do treinamento do algoritmo.} muito importantes segundo Korbut \citep{korbut}, que são o número máximo de nós de decisão, ou seja, o número de perguntas e o número mínimo de nós folhas, ou seja, de classes por ramo.
+
+Ajustando esses parâmetros, podemos garantir que uma árvore não-perfeita mas boa o suficiente para o conjunto de treino e seja igualmente boa para o conjunto de teste, e dessa forma, para dados desconhecidos, para que ela seja útil para a tarefa de classificação proposta.
+
+Por fim, vale citar a ressalva de Korbut \citep{korbut} de que um modelo utilizando apenas uma árvore é raramente usado. Mas combinando várias árvores criamos os algoritmos chamados de \emph{Florestas aleatórias}, que estão dentre os mais versáteis e utilizados para tarefas de classificação.
 
 \subsection{$K$-médias}
 
+Este algoritmo é o ponto central de todas as tarefas de aprendizado não-supervisionadas conhecidas como \defi{agrupamento}. A ideia é agrupar os dados de acordo com um conceito de \emph{distância} e com a suposição de que \emph{proximidade} implica em \emph{similaridade} no espaço em que calculamos essas distâncias.
 
+O procedimento geral é agrupar os dados em $k$ agrupamentos, em que, cada grupo terá uma \emph{média} que irá caracterizar esse grupo, daí o nome do algoritmo. Segundo Korbut \citep{korbut}, podemos partir de $k$ pontos escolhidos aleatoriamente e nomeá-los como os centros (ou médias) de cada grupo.
+
+A seguir, calculamos as distâncias de cada ponto aos centros, e incluímos em cada grupo aqueles pontos que estão mais próximos de algum dos centros. Isto é, dado um ponto, incluímos ele no grupo que possui o centro que está mais próximo dele.
+
+Então, o centro real de cada grupo é calculado (a média, por exemplo), e o processo acima se repete. Esse ciclo é repetido, idealmente, até que haja convergência, ou seja, calcular a média dos grupos não altera a pertinência de mais nenhum ponto dentre os $k$ grupos.
+
+A maior questão aqui é, justamente, a escolha de $k$, que é a princípio desconhecido. Além disso, para $k$ pontos iniciais escolhidos, pode haver uma convergência local dos agrupamentos, e não global, análogo ao problema de maximização/minimização global de funções.
 
 \section{As redes neurais e o \emph{perceptron}}
 
