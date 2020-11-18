@@ -777,7 +777,7 @@ from sklearn.datasets import load_digits
 mnist = load_digits()
 
 # dividindo a base nos conjuntos de treino e de teste
-N = int(mnist.data.shape[0]*0.85)
+N = int(mnist.data.shape[0]*0.8)
 x_train, y_train = mnist.data[:N], mnist.target[:N].astype(np.uint8)
 x_test, y_test = mnist.data[N:], mnist.target[N:].astype(np.uint8)
 \end{lstlisting}
@@ -788,18 +788,20 @@ A implementação está tão fácil de utilizar, que para a tarefa de treinar a 
 \begin{scriptsize}
 \estiloR
 \begin{lstlisting}[caption={Trecho do script \eng{mnist\_test.py}}, label={lst:mnist_2}, escapeinside={\%}]
-perceptron = Perceptron(taxa=0.001, ativacao="l_relu", N=[48, 24])
-perceptron.treinar(x_train, y_train, M=25)
+perceptron = Perceptron(taxa=0.001, ativacao="elu", N=[48, 24])
+perceptron.treinar(x_train, y_train, M=20)
 
 y_train_pred = perceptron.prever(x_train)
-y_test_pred = perceptron.prever(x_test)
+score = Scores(y_train, y_train_pred)
+score.exibir_grafico("Dados de treino")
 
+y_test_pred = perceptron.prever(x_test)
 score = Scores(y_test, y_test_pred)
-score.exibir_grafico()
+score.exibir_grafico("Dados de teste")
 \end{lstlisting}
 \end{scriptsize}
 
-Basicamente, uma rede é criada com a estrutura de uma camada de entrada com $64$ neurônios, quantidade obtida automaticamente pela classe a partir das dimensões da lista de dados informada (\eng{y\_train}), duas camadas ocultas com $48$ e $24$ neurônios cada, com taxa de aprendizado $0.001$ e a função de ativação \eng{Leaky RELU}, ambos ajustados empiricamente sendo o que se saíram melhores em acurácia. A segunda linha realiza o treinamento com $25$ épocas, informando a lista de imagens e a lista das classificações conhecidas.
+Basicamente, uma rede é criada com a estrutura de uma camada de entrada com $64$ neurônios, quantidade obtida automaticamente pela classe a partir das dimensões da lista de dados informada (\eng{y\_train}), duas camadas ocultas com $48$ e $24$ neurônios cada, com taxa de aprendizado $0.001$ e a função de ativação \eng{ELU}, ambos ajustados empiricamente sendo o que se saíram melhores em acurácia. A segunda linha realiza o treinamento com $20$ épocas, informando a lista de imagens e a lista das classificações conhecidas.
 
 As duas últimas linhas dessa listagem fazem a comparação dos valores previstos com os valores já conhecidos da classificação, para conhecermos a acurácia de nosso modelo de aprendizado. Abaixo nas figuras \ref{fig:mnist_treino} e \ref{fig:mnist_test} está uma exibição gráfica com a função de erro MSE, a acurácia e a \defi{matriz de confusão}, a partir da qual podemos calcular a acurácia de nossa rede neural.
 
@@ -808,20 +810,20 @@ A matriz de confusão permite relacionar as classes esperadas com as classes pre
 \begin{figure}[htb]
 \centering
 \includegraphics[width=9cm]{figuras/mnist_treino}
-\caption{Matriz de confusão, MSE e acurácia do conjunto de treino da base MNIST ${8\times8}$.}
+\caption{Matriz de confusão e acurácia do conjunto de treino da base MNIST ${8\times8}$ pixels.}
 \label{fig:mnist_treino}
 \end{figure}
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=9cm]{figuras/mnist_test}
-\caption{Matriz de confusão, MSE e acurácia do conjunto de teste da base MNIST ${8\times8}$.}
+\caption{Matriz de confusão e acurácia do conjunto de teste da base MNIST ${8\times8}$ pixels.}
 \label{fig:mnist_test}
 \end{figure}
 
 Como os pesos da rede são inicializados aleatoriamente, cada treinamento pode obter resultados levemente diferentes, embora que, no geral os resultados irão convergir para um resultado médio, que dependem dos parâmetros utilizados, como a função de ativação, quantidade de camadas e de neurônios e de épocas de treinamento.
 
-Podemos notar que o conjunto de treino possui uma boa perfomance, obtendo mais de $93\%$ de acurácia, ou seja, de classificações corretas. Por outro lado, o conjunto de treino obteve apenas pouco mais de $81\%$, o que indica o problema de \eng{overfitting} em nossa rede, quando a classificação do treino está boa, o que é esperado dado que é a base utilizada para o ajuste dos parâmetros internos, mas quando a rede treinada tenta lidar com dados inéditos, o que é o papel do conjunto de teste, se sai consideravelmente pior.
+Podemos notar que o conjunto de treino possui uma boa perfomance, obtendo mais de $93.9\%$ de acurácia, ou seja, de classificações corretas. Por outro lado, o conjunto de treino obteve pouco mais de $83.6\%$, o que indica o problema de \eng{overfitting} em nossa rede, quando a classificação do treino está boa, o que é esperado dado que é a base utilizada para o ajuste dos parâmetros internos, mas quando a rede treinada tenta lidar com dados inéditos, o que é o papel do conjunto de teste, se sai consideravelmente pior.
 
 Está demonstrada a necessidade da utilização de alguma implementação mais robusta, e refinada com anos de contribuições da comunidade de programadores e cientistas de dados ao redor do planeta. E essa implementação, ou pelo menos uma delas, é a API Keras, que veremos na próxima seção, e que será utilizada no restante desse trabalho.
 
@@ -840,25 +842,78 @@ Todas essas implementações podem ser utilizadas em conjunto, na biblioteca con
 \label{fig:tensor_flow}
 \end{figure}
 
-Para entender o funcionamento e uso do Keras, criei uma rede com a mesma estrutura do Perceptron aqui implementado, mas com algumas melhorias já inerentes à API, e com objetivo de classificar o mesmo conjunto de dados MNIST, para comparar a eficiência.
+Para entender o funcionamento e uso do Keras, criei uma rede com a mesma estrutura do Perceptron aqui implementado, mas com algumas melhorias já inerentes à API, com objetivo de classificar o mesmo conjunto de dados MNIST, para comparar a eficiência. O primeiro passo é importar a base de dados, sendo a mesma que usamos anteriormente, então reutilizamos o mesmo trecho de código mostrado na listagem \ref{lst:mnist_1}.
 
-A seguir, faço um teste com a versão oficial da base de dados, com mais pixels, o que é possível já que a biblioteca está implementada com muita eficiência e funciona bem para bases maiores mesmo num ambiente pessoal de computação.
-
-A importação da base é feita agora usando outra função da biblioteca \emph{sklearn}. Pode ser visto na listagem \ref{lst:keras_1}. A seguir os dados são divididos entre os conjuntos de treino e de teste, com as listas \texttt{x\_train, x\_test} e \texttt{y\_train, y\_test} contendo os pixels e as classficações respectivamente, como antes.
+O próximo passo é criar a rede utilizando a API Keras, o que vemos na listagem \ref{lst:keras_1}. A primeira linha cria uma rede sequencial, isto é, uma rede \eng{feedforward}. A seguir, são adicionadas as camadas, a primeira camada é definida como \eng{Flatten} pois é a camada de entrada, então ela não aplica nenhuma transformação nos dados.
 
 \begin{scriptsize}
 \estiloR
-\begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}}, label={lst:keras_1}, escapeinside={\%}]
-from sklearn.datasets import fetch_openml
-mnist = fetch_openml('mnist_784', version=1) # versao 28x28
+\begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}},label={lst:keras_1},escapeinside={\%}]
+model = tf.keras.Sequential()
+layers = tf.keras.layers
+model.add(layers.Flatten())
+model.add(layers.Dense(48, activation='elu'))
+model.add(layers.Dense(24, activation='elu'))
+model.add(layers.Dense(10, activation='softmax'))
 \end{lstlisting}
 \end{scriptsize}
 
-O próximo passo é criar a rede utilizando a API Keras, o que vemos na listagem \ref{lst:keras_2}. A primeira linha cria uma rede sequencial, isto é, uma rede \eng{feedforward}. A seguir, são adicionadas as camadas, a primeira camada é definida como \eng{Flatten} pois é a camada de entrada, então ela não aplica nenhuma transformação nos dados. A base de dados é importada num formato matricial de $28\times28$ pixels, o que pode ser utilizado e tratado diretamente pela API.
+As próximas camadas são adicionadas com o tipo \eng{Dense}, o que significa uma conexão de todos os neurônios de uma camada com todos da próxima, dessa forma estamos criando um \eng{Perceptron} exatamente como aquele implementado. 
+
+As camadas ocultas utilizam a função de ativação \eng{ELU}, e a camada de saída utiliza a função \eng{softmax}, o que na API Keras significa que estamos classificando os dados de acordo com o valor máximo dos neurônios de saída, o que em nossa implementação foi papel da função \texttt{reinterpretar\_saidas}, que foi definida na listagem \ref{lst:percep_6}.
 
 \begin{scriptsize}
 \estiloR
-\begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}}, label={lst:keras_2}, escapeinside={\%}]
+\begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}},label={lst:keras_2},escapeinside={\%}]
+model.compile(optimizer=keras.optimizers.SGD(lr=0.001),
+              loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+\end{lstlisting}
+\end{scriptsize}
+
+Na listagem \ref{lst:keras_2}, definimos os parâmetros finais da rede. Define-se a função de otimização \eng{SGD} (\eng{Stocastic Gradient Descent}), quase idêntico à implementação do gradiente descendente implementada, mas ao invés de utilizar todas as imagens de treino numa época de treinamento, algumas são escolhidas aleatoriamente, e isso é feito um certo número de vezes, e os deltas são escolhidos para o conjunto aleatório que tenha se saído melhor, de acordo com a função de perda e métrica utilizada.
+
+A função de perda é escolhida com a opção \eng{sparse\_categorical\_crossentropy}, pois é a opção padrão do Keras para tarefas de classificação, não sendo possível utilizar a função MSE como antes, por limitações de projeto da API, o que significa que ela irá tratar as categorias de dados da forma que ela foi obtida, com as $10$ classes de $0$ a $9$, onde cada imagem pertence a apenas uma dessas classes. 
+
+Esse parâmetro seria diferente se fosse criada uma rede para classificação binária, por exemplo, ou então se nossos vetores \texttt{y\_train} e \texttt{y\_test} tivessem sido codificados em vetores do tipo $[0,\ldots,1,0,\ldots]$ da forma que foi feita na nossa implementação.
+
+Por fim a acurácia é escolhida como a métrica para avaliação da rede, e que será utilizada pelo gradiente estocástico para definir o melhor sub-conjunto de treino durante uma dada época de treinamento. Basta treinar a rede como o método \eng{fit}, especificando o número de épocas de treinamento desejado, neste caso $20$ foram suficientes, o que está feito na listagem \ref{lst:keras_3}.
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}},label={lst:keras_3},escapeinside={\%}]
+model.fit(x_train, y_train, epochs=20)
+# avaliando dados de treinamento
+model.evaluate(x_train, y_train, verbose=2)
+# avaliando os dados de teste
+model.evaluate(x_test, y_test, verbose=2)
+\end{lstlisting}
+\end{scriptsize}
+
+Nessa listagem também está a avaliação da rede, para o conjunto de treino e para o conjunto de teste. Os resultados obtidos após $20$ épocas de treinamento foram $99.0\%$ de acurácia para o conjunto de treino e $89.7\%$ para o conjunto de teste. 
+
+Por fim podemos fazer previsões com a rede treinada, nesse caso a API possui o método \eng{predict} que irá retornar os valores da camada de saída, ou seja, as probabilidades de cada imagem pertencer à uma das $10$ classes informadas durante o treinamento.
+
+Nas últimas linhas da listagem \ref{lst:keras_3}, está a lógica de obter a classificação predita para o conjunto de teste, utiliza a função \eng{argmax} para obter a classe que obteve a probabilidade máxima. E por fim exibe a matriz de confusão dessa predição, o que está na Figura \ref{fig:keras_test}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=9cm]{figuras/keras_test}
+\caption{Matriz de confusão, função de perda e acurácia do conjunto de teste da base MNIST ${8\times8}$ pixels, utilizando a API Keras.}
+\label{fig:keras_test}
+\end{figure}
+
+Vemos que a API produz melhores resultados, levando em conta a mesma base de dados, a mesma arquitetura de rede e o mesmo algoritmo de treinamento. A diferença será possivelmente devida a alguma estratégia interna de implementação, a princípio oculta aos usuários, que faz com que os resultados sejam melhores. 
+
+Mesmo assim, como não utilizamos diretamente outros recursos de melhoria disponíveis, ainda é possível notar o \eng{overfitting}, dado que a acurácia no conjunto de teste permanece menor que a acurácia no conjunto de treino. 
+
+A seguir, faço um teste com a versão oficial da base de dados, de dimensão maior de pixels (${28\times28}$), o que é possível já que a biblioteca está implementada com muita eficiência e funciona bem para bases maiores mesmo num ambiente pessoal de computação. O código está na íntegra na listagem \ref{lst:keras_4}.
+\newpage
+
+\begin{scriptsize}
+\estiloR
+\begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}},label={lst:keras_4},escapeinside={\%}]
+mnist = fetch_openml('mnist_784', version=1) # versao 28x28
+
 model = tf.keras.Sequential()
 layers = tf.keras.layers
 
@@ -870,48 +925,31 @@ model.add(layers.Dense(10, activation='softmax'))
 
 model.compile(optimizer=keras.optimizers.SGD(lr=0.001),
               loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-\end{lstlisting}
-\end{scriptsize}
 
-As próximas camadas são adicionadas com o tipo \eng{Dense}, o que significa uma conexão de todos os neurônios de uma camada com todos da próxima, dessa forma estamos criando um \eng{Perceptron} exatamente como aquele implementado. As camadas ocultas utilizam a função de ativação \eng{ELU}, e a camada de saída utiliza a função \eng{softmax}, o que na API Keras significa que estamos classificando os dados de acordo com o valor máximo dos neurônios de saída, o que em nossa implementação foi papel da função \texttt{reinterpretar\_saidas}, que foi definida na listagem \ref{lst:percep_6}.
-
-Na última linha da listagem \ref{lst:keras_2}, definimos os parâmetros finais da rede. Define-se a função de otimização \eng{SGD} (\eng{Stocastic Gradient Descent}), quase idêntico à implementação do gradiente descendente implementada, mas ao invês de utilizar sempre todos os dados de treino numa época de treinamento, alguns são escolhidos aleatoriamente, e isso é feito um certo número de vezes, e os deltas são escolhidos para o conjunto aleatorio que tenha se saído melhor, de acordo com a função de perda e métrica utilizada.
-
-A função de perda é escolhida com a opção \eng{sparse\_categorical\_crossentropy}, o que significa que a API irá tratar as categorias de dados da forma que ela foi obtida, com as $10$ classes de $0$ a $9$, onde cada imagem pertence a apenas uma dessas classes. Esse parâmetro seria diferente se fosse criada uma rede para classificação binária, por exemplo, ou então se nossos vetores \texttt{y\_train} e \texttt{y\_test} tivessem sido codificados em vetores do tipo $[0,\ldots,1,0,\ldots]$ da forma que foi feita na nossa implementação.
-
-Por fim a acurácia é escolhida como a métrica para avaliação da rede, e que será utilizada pelo gradiente estocástico para definir o melhor sub-conjunto de treino durante uma dada época de treinamento. Basta treinar a rede como o método \eng{fit}, especificando o número de épocas de treinamento desejado, neste caso $15$ foram suficientes, o que está feito na listagem \ref{lst:keras_3}.
-
-\begin{scriptsize}
-\estiloR
-\begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}}, label={lst:keras_3}, escapeinside={\%}]
 model.fit(x_train, y_train, epochs=15)
 
-test_loss, test_acc = model.evaluate(x_train, y_train, verbose=2)
-test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
-\end{lstlisting}
-\end{scriptsize}
+model.evaluate(x_train, y_train, verbose=2)
+model.evaluate(x_test, y_test, verbose=2)
 
-Nessa listagem também está a avaliação da rede, para o conjunto de treino e para o conjunto de teste. Os resultados obtidos após $15$ épocas de treinamento foram $99.9\%$ de acurácia para o conjunto de treino e $96.4\%$ para o conjunto de teste. Por fim podemos fazer previsões com a rede treinada, nesse caso a API possui o método \eng{predict} que irá retornar os valores da camada de saída, ou seja, as probabilidades de cada imagem pertencer à uma das $10$ classes informadas durante o treinamento.
-
-\begin{scriptsize}
-\estiloR
-\begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}}, label={lst:keras_4}, escapeinside={\%}]
 y_pred = np.argmax(model.predict(x), axis=-1)
 
 # usando a minha propria classe de validação
-# e que mostra a acuracia e a matriz de confusão
 score = Scores(y_test, y_pred)
 score.exibir_grafico("Dados de teste")
 \end{lstlisting}
 \end{scriptsize}
 
-Na listagem \ref{lst:keras_4}, está a lógica de obter a classificação predita para o conjunto de teste, utliza a função \eng{argmax} para obter a classe que obteve a probabilidade máxima. E por fim exibe a matriz de confusão dessa predição, o que está na Figura \ref{fig:keras_test}.
+A importação da base é feita agora usando outra função da biblioteca \emph{sklearn}. A seguir, os dados são divididos entre os conjuntos de treino e de teste, com as listas \texttt{x\_train, x\_test} e \texttt{y\_train, y\_test} contendo os pixels e as classficações respectivamente, como antes.
+
+Dessa vez, a rede é criada de acordo com o tamanho da base utilizada, como a camada de entrada é bem maior, já que são ${28\times28 = 784}$ pixels. Crio $3$ camadas ocultas, com os valores progressivamente menores, mas usando ainda a mesma estrutura densa e com a camada final novamente com $10$ neurônios representando os diferentes algarismos.
+
+Por fim, obtemos da mesma forma que no caso anterior, a classificação predita para o conjunto de teste. Dessa vez os resultados são $99.9\%$ de acurácia no conjunto de treino e $96.4\%$ de acurácia no conjunto de teste, conforme pode ser visto na figura \ref{fig:keras_test_2}, junto com a matriz de confusão.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=10cm]{figuras/keras_test}
-\caption{Matriz de confusão, função de perda e acurácia do conjunto de teste da base MNIST $28\times28$, utilizando a API Keras.}
-\label{fig:keras_test}
+\includegraphics[width=9cm]{figuras/keras_test_2}
+\caption{Matriz de confusão, função de perda e acurácia do conjunto de teste da base MNIST ${28\times28}$ pixels, utilizando a API Keras.}
+\label{fig:keras_test_2}
 \end{figure}
 
 É notável a eficiência da API em comparação à nossa implementação simples. A rede é treinada em menos de $2$ minutos, mesmo sendo utilizada a base MNIST original que possui muito mais pixels e também muito mais imagens, $60$ mil em comparação às $2$ mil da base menor utilizada anteriormente. 
