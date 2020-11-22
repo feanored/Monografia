@@ -100,7 +100,7 @@ A partir deste comportamento geral, podemos testar nosso problema-alvo, verifica
 
 De forma a estabilizar a variância de séries temporais financeiras, faz-se necessária a aplicação de transformações não-lineares à série original, de forma a modelar a série transformada com os modelos $ARIMA$, que assumem uma variância constante, mesmo quando a média possui algumas tendências que podem ser compensadas aplicando-se diferenças, conforme visto no Capítulo \ref{cap:series}.
 
-A transformação a seguir, criada por George Edward Pelham Box e David Roxbee Cox \citep{cox}, e conhecida por transformação de Box-Cox, é uma generalização da transformação logarítmica. Fada uma série temporal $Z_t$, ela é definida por:
+A transformação a seguir, criada por George Edward Pelham Box e David Roxbee Cox \citep{cox}, e conhecida por transformação de Box-Cox, é uma generalização da transformação logarítmica. Dada uma série temporal $Z_t$, a transformação é definida por:
 
 \begin{equation}\label{eq:cox}
 Z_t^{(\lambda)} = \left\{ \begin{array}{lr}\dfrac{Z_t^\lambda - 1}{\lambda},& \text{se } \lambda \neq 0\\\log{Z_t},& \text{se } \lambda = 0\end{array} \right.
