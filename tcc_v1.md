@@ -4,7 +4,7 @@
 
 * Ajustar código do Sarima para usar propriedades aprendidas sobre os modelos temporais para treinar (ok)
 * Criar lógica para treinar vários tamanhos de séries para comparar MSE e MAE
-* Criar mesma lógica para treinar as redes neurais (para vários hiperparâmetros da rede, talvez?)
+* Criar mesma lógica para treinar as redes neurais
 * Criar gráficos e tabelas mostrando os resultados dessas simulações
 
 ### Parte escrita
