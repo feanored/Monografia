@@ -485,7 +485,7 @@ Estão listados na Tabela \ref{tabela:teste_ano_1} os resultados de todos os mod
 \end{center}
 \end{table}
 
-É importante lembrar que a otimização dos modelos ARIMA foi feita separadamente para cada janela de dados de teste, assim como as médias-móveis, por definição, capturam a tendência central de cada janela, enquanto que no caso das Redes Neurais, todo um período fixado do passado é utilizado como treinamento e as previsões foram feitas a partir dos parâmetros ajustados apenas no passado.
+É importante lembrar que a otimização dos modelos ARIMA foi feita separadamente para cada janela de dados de teste, assim como as médias-móveis, por definição, capturam a tendência central de cada janela, enquanto que no caso das Redes Neurais, todo um período fixado do passado é utilizado como treinamento e as previsões foram feitas a partir destes parâmetros assim ajustados.
 
 Os demais modelos, que não tiveram bons desempenhos, o Perceptron e o modelo de Média-Móvel $30$ dias que troca de lugar com o de $7$ dias que desta vez ficou entre os melhores, estão nos gráficos da Figura \ref{fig:previsoes_ano_2}.
 
@@ -510,7 +510,7 @@ Por fim, é interessante mostrar que no caso do modelo ARIMA, há um intervalo d
 
 Uma última medida importante a ser comparada, neste tipo de tarefa, diz respeito ao tempo de processamento dos algoritmos de treinamento. Todos os procedimentos foram feitos num ambiente \eng{Jupyter notebook}, que possui comandos muito simples que podem ser utilizados para essa medição\footnote{Foi utilizado o comando $\%\%time$}.
 
-Foi produzida a Tabela \ref{tabela:desempenho} que contém o tempo de processamento do treinamento dos modelos principais aqui comparados, para cada um dos três testes realizados neste capítulo. Nesta tabela estão contabilizados o tempo do \eng{grid search}, no caso do ARIMA, e das épocas de treinamento para os dois modelos de redes neurais.
+A Tabela \ref{tabela:desempenho} contém o tempo de processamento do treinamento dos modelos principais aqui comparados, para cada um dos três testes realizados neste capítulo. Nesta tabela estão contabilizados o tempo do \eng{grid search}, no caso do ARIMA, e das épocas de treinamento para os dois modelos de redes neurais.
 
 \begin{table}[]
 \begin{center}
