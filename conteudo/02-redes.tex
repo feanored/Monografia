@@ -21,62 +21,58 @@ Um algoritmo de \defi{aprendizado supervisionado} é usado quando conhecemos car
 
 O ato de rotular previamente os dados que usamos no treinamento é o que designamos de supervisão humana. Uma vez \emph{treinado}, o algoritmo recebe uma foto, ou seja, uma nova consulta e então fornece a resposta, neste caso se essa é a foto de um gato, ou cachorro, ou qualquer outra resposta dentre aquelas que foram dadas como exemplos durante o treinamento.
 
-Dentro do aprendizado supervisionado temos duas técnicas principais. A primeira é a \defi{classificação}, usada para rotular ou dividir os dados em classes pré-determinadas, a partir de exemplos, que é exatamente o caso dos exemplos descritos nos parágrafos anteriores, e ilustrada na figura \ref{fig:classify}.
+Dentro do aprendizado supervisionado dois tipos principais de problemas. O primeiro é a \defi{classificação}, que é usada para rotular ou dividir os dados em classes pré-determinadas, a partir de exemplos, que é exatamente o caso dos exemplos descritos nos parágrafos anteriores, e ilustrada na Figura \ref{fig:classify}.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=8cm]{figuras/classificacao}
-\caption{Tarefa de classificação.\footnote{Extraído de \citep{allen}}}
+\caption{Tarefa de classificação de fotos de animais. As duas primeiras colunas ilustram o treinamento, e as duas últimas a previsão, de valores discretos, ou seja, ``classes''.\footnote{Extraído de \citep{allen}}}
 \label{fig:classify}
 \end{figure}
 
-A segunda técnica é a \defi{regressão}, usada para prever valores, ou seja, fornecer respostas a consultas ainda inéditas, sejam dados do futuro ou valores de funções em pontos do domínio para os quais ainda não existem valores. Podemos entender a diferença, com a ajuda de Allen \citep{allen} se percebermos que na classificação as respostas são valores discretos, isto é, um `cachorro' ou um `gato'. 
-
-Enquanto isso, na regressão as respostas são valores contínuos, um intervalo real de possibilidades. Como exemplo, Allen \citep{allen} ilustra na figura \ref{fig:regressao}, dado uma imagem radiológica, um modelo poderia prever em quantos anos uma pessoa poderia desenvolver alguma doença.
+O segundo tipo de problema é a \defi{regressão}, usada para prever valores, ou seja, fornecer respostas a consultas ainda inéditas, sejam dados do futuro ou valores de funções em pontos do domínio para os quais ainda não existem valores. Podemos entender a diferença, com a ajuda de Allen \citep{allen} se percebermos que na classificação as respostas são valores discretos, isto é, um `cachorro' ou um `gato'. Enquanto isso na regressão, as respostas são valores contínuos, um intervalo real de possibilidades. Como exemplo, Allen \citep{allen} ilustra na Figura \ref{fig:regressao}, dado uma imagem radiológica, um modelo poderia prever em quantos anos uma pessoa poderia desenvolver alguma doença.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=8cm]{figuras/regressao}
-\caption{Tarefa de regressão.\footnote{Extraído de \citep{allen}}}
+\caption{Tarefa de regressão, mostrando novamente as fases de treinamento de de previsão, lidando com quantidades contínuas.\footnote{Extraído de \citep{allen}}}
 \label{fig:regressao}
 \end{figure}
 
-No \defi{aprendizado não-supervisionado} não sabemos os rótulos dos dados que estamos lidando, isto é, não sabemos previamente respostas aos dados conhecidos, assim o algoritmo poderá agrupar os dados de forma automática, por exemplo, se estivermos lidando com problemas de classificação. Aqui, as consultas podem ser coisas como ``quantos são os perfis dos clientes'' ou ``quantas espécies de flores existem nestas fotos'', e assim por diante.
+Por outro lado, no \defi{aprendizado não-supervisionado} não sabemos os rótulos dos dados que estamos lidando, isto é, não sabemos previamente respostas aos dados conhecidos, assim o algoritmo deverá deduzir respostas de forma automática, como por exemplo agrupar dados em certo número a princípio desconhecido de classes, no caso de uma tarefa de classificação. Aqui, as consultas podem ser coisas como ``quantos são os perfis dos clientes'' ou ``quantas cores existem nestas fotos'', e assim por diante.
 
-Alguns métodos não-supervisionados de aprendizado foram enumeradas por Géron \citep{hands}. O \defi{agrupamento} de dados similares sob uma inspiração geométrica. Nesse caso os dados são agrupados conforme suas posições num determinado espaço e utiliza-se algoritmos como $k$-vizinhos, $k$-means, $k$-medians, etc. Exemplos de aplicações são agrupamento de produtos em supermercados, interesses comuns de clientes em sites de conteúdo digital, etc.
+Alguns métodos não-supervisionados de aprendizado foram enumerados por Géron \citep{hands}. Em especial o \defi{agrupamento} (\eng{clustering}) de dados similares de acordo com suas distâncias num determinado espaço, onde utiliza-se algoritmos como $k$-vizinhos, $k$-means, $k$-medians, etc. Exemplos de aplicações são a organização de produtos nas prateleiras dos supermercados, interesses comuns de clientes em sites de conteúdo digital, etc.
 
-Para ilustar, Allen \citep{allen} sugere que imaginemos um conjunto de artigos de texto que gostaríamos de organizar. Alguns poderiam ser sobre esportes, outros sobre história, outros sobre arte, etc. O objetivo seria identificar e classificar automaticamente os textos dentre alguns assuntos possíveis. Imaginando cada assunto provável como uma figura geométrica diferente, a tarefa seria realizada idealmente como na figura \ref{fig:clustering}.\footnote{Vale ressaltar que não sabemos \emph{a priori} os rótulos aqui representados a favor do entendimento.}
+Para ilustrar, Allen \citep{allen} sugere que imaginemos um conjunto de artigos de texto que gostaríamos de organizar. Alguns poderiam ser sobre esportes, outros sobre história, outros sobre arte, etc. O objetivo seria identificar e classificar automaticamente os textos dentre alguns assuntos possíveis. Imaginando cada assunto provável como uma figura geométrica diferente, a tarefa seria realizada idealmente como na Figura \ref{fig:clustering}.\footnote{Vale ressaltar que não sabemos \emph{a priori} os rótulos aqui representados a favor do entendimento.}
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=8cm]{figuras/clustering}
-\caption{Tarefa de clusterização.\footnote{Extraído de \citep{allen}}}
+\caption{Tarefa de clusterização. Não há uma distinção entre etapas de treinamento e de previsão. O algoritmo agrupa os dados a ele fornecidos e dá a resposta diretamente.\footnote{Extraído de \citep{allen}}}
 \label{fig:clustering}
 \end{figure}
 
-Existe também o \defi{aprendizado semi-supervisionado} em que combinam-se vantagens de ambos os tipos anteriores. Um modelo utiliza dados sem rótulos para descobrir uma estrutura geral dos dados, enquanto usa alguns poucos rótulos conhecidos para ajudar na organização inicial dessa estrutura, o que auxilia na partida do agrupamento, que é um problema das técnicas não-supervisionadas.
+Outra técnica do aprendizado não-supervisionado é a \defi{detecção de anomalias}, cujo objetivo é ter uma descrição de como os dados considerados ``normais'' se parecem, e usa-se esse agrupamento para detectar se novos dados estariam ``fora'' desse padrão. Um exemplo é a detecção de fraudes.
 
-Essa técnica é também conhecida por \emph{aprendizagem fraca}, e conforme aponta Allen \citep{allen} possui a vantagem de precisar de menor quantidade de dados rotulados para que se alcançe um bom resultado em termos de qualidade do modelo, já que aprende parte do padrão dos dados a partir dos dados sem rótulos.
+Por último, pode-se citar a técnica de \defi{estimação de densidades}, que tem como objetivo a estimação da função densidade de probabilidade de um conjunto de dados gerados por algum processo aleatório.
 
-Uma técnica já bem diferente das anteriores, é o \defi{aprendizado por reforço}. Allen \citep{allen} nos explica o conceito principal dessa abordagem, que consiste na existência de um ``agente'' que interage executando ações num ``ambiente'', que por sua vez dá um retorno (\eng{feedback}) a esse agente, usualmente na forma de uma ``recompensa''.
+Existe também o \defi{aprendizado semi-supervisionado} em que combinam-se vantagens de ambos os tipos anteriores. Um modelo utiliza dados sem rótulos para descobrir uma estrutura geral dos dados, enquanto usa alguns poucos rótulos conhecidos para ajudar na organização inicial dessa estrutura, o que auxilia na partida do agrupamento, que é um exemplo de problema não-supervisionado.
 
-Tal recompensa pode ser entendida especificamente como um contador. O objetivo do agente é maximizar esse contador. Nenhuma informação é dita ao agente sobre como ele aumenta esse contador, ou porquê ele conseguiu aumentar, ele irá definir suas ações de acordo com as respostas dadas pelo ambiente. 
+Essa técnica é também conhecida por \emph{aprendizagem fraca}, e conforme aponta Allen \citep{allen} possui a vantagem de precisar de menor quantidade de dados rotulados para que se alcance um bom resultado em termos de qualidade do modelo, já que aprende parte do padrão dos dados a partir dos dados sem rótulos. Na prática, pode-se e deve-se testar várias abordagens, e a escolha é mais baseada nos resultados do que na teoria de que uma técnica ou outra irá se sair melhor para um problema específico.
 
-Assim, tudo que ele sabe é se houve a recompensa ou não, e irá preferir as ações que fizeram o contador aumentar e preterir aquelas que fizeram ele diminuir, sem nunca existir rótulos ou respostas esperadas.
+Uma técnica já bem diferente das anteriores, é o \defi{aprendizado por reforço} (\eng{reinforcement learning}). Allen \citep{allen} nos explica o conceito principal dessa abordagem, que consiste na existência de um ``agente'' que interage executando ações num ``ambiente'', que dá um retorno (\eng{feedback}) a esse agente, usualmente na forma de uma ``recompensa''. Tal recompensa pode ser entendida especificamente como um contador. 
 
-Outra técnica é a \defi{detecção de anomalias}, cujo objetivo é ter uma descrição de como os dados considerados ``normais'' se parecem, e usa-se esse agrupamento para detectar se novos dados estariam ``fora'' desse padrão. Um exemplo é a detecção de fraudes.
-
-Também pode-se citar a técnica de \defi{estimação de densidades}, que tem como objetivo a estimação da função densidade de probabilidade de um conjunto de dados gerados por algum processo aleatório.
+O objetivo do agente é maximizar esse contador. Nenhuma informação é dita ao agente sobre como ele aumenta esse contador, ou porquê ele conseguiu aumentar, ele irá definir suas ações de acordo com as respostas dadas pelo ambiente. Assim, tudo que ele sabe é se houve a recompensa ou não, e irá preferir as ações que fizeram o contador aumentar e preterir aquelas que fizeram ele diminuir, sem nunca existir rótulos ou respostas esperadas.
 
 \subsection{O problema do sobreajuste dos modelos}
 
-O sobreajuste (\eng{overfitting}) é o primeiro desafio que deve ser enfrentado quando realizados uma tarefa de aprendizado de máquina. Um modelo de aprendizado de máquina só é considerado válido ou útil, se ele chega a um ponto de existir nenhum ou muito pouco sobreajuste.
+O sobreajuste (\eng{overfitting}) é o primeiro desafio que deve ser enfrentado quando realizados uma tarefa de aprendizado de máquina. Um modelo de aprendizado de máquina só é considerado válido ou útil, quando está treinado de forma que sofre de pouquíssimo, ou, idealmente, nenhum sobreajuste.
 
-O sobreajuste ocorre quando um modelo foi treinado exageradamente para o conjunto de dados conhecidos, ou seja, o conjunto utilizado para o treino. De forma que, ao se deparar com dados novos, desconhecidos, perde a capacidade de saber o que fazer, ou seja, erra muito nas previsões. 
+O sobreajuste ocorre quando um modelo foi treinado exageradamente para o conjunto de dados conhecidos, ou seja, o conjunto utilizado para o treino. De forma que, ao se deparar com dados novos, desconhecidos, perde a capacidade de saber o que fazer, ou seja, erra muito nas previsões ao mesmo tempo que está com um desempenho quase perfeito no conjunto de treino. 
 
-Isto pode ocorrer tanto nas tarefas de classificação, quanto nas tarefas de regressão. Utilizando o exemplo dado por Allen \citep{allen}, imaginemos um modelo de classificação de fotos de animais. Um modelo $100\%$ sobreajustado irá \emph{decorar} as cores de cada um dos pixels dessa imagem, de forma que todos eles serão necessários para ele identificar se tal foto é um gato, ou um cachorro, etc.
+Isto pode ocorrer em qualquer tarefa de aprendizado supervisionado, tanto nas de classificação, quanto nas de regressão. Utilizando o exemplo dado por Allen \citep{allen}, imaginemos um modelo de classificação de fotos de animais. Um modelo $100\%$ sobreajustado irá \emph{decorar} as cores de cada um dos pixels dessa imagem, de forma que todos eles serão necessários para ele identificar se tal foto é um gato, ou um cachorro, etc.
 
-Mudando apenas a cor ou a posição de um dos pixels de uma das imagens, e supondo que essa imagem modificada não fazia parte do conjunto de imagens do treinamento, o modelo não será capaz de fornecer uma resposta válida ou confiável. A figura \ref{fig:over_class} ilustra esse exemplo.
+Mudando apenas a cor ou a posição de um dos pixels de uma das imagens, e supondo que essa imagem modificada não fazia parte do conjunto de imagens do treinamento, o modelo não será capaz de fornecer uma resposta válida ou confiável. A Figura \ref{fig:over_class} ilustra esse exemplo.
 
 \begin{figure}[htb]
 \centering
@@ -89,7 +85,7 @@ Isto é o sobreajuste, o modelo fica perfeito para os dados de treino, mas fica 
 
 Seja um gráfico que relaciona a metragem ao quadrado de terrenos, no eixo $X$ com o valor pago por eventuais compradores, no eixo $Y$. É um típico problema de regressão, já que queremos saber, para metragens de terrenos ainda desconhecidos, qual um valor esperado para sua compra ou venda. 
 
-O modelo mais simples seria o de uma regressão linear, explicado em detalhes na próxima seção, em que basicamente, traçamos uma reta do tipo $y = bx + a$, cujo valor $y$ irá servir de valor esperado para nosso modelo, para qualquer $x$ ainda desconhecido. Uma ilustração desse modelo hipotético está na figura \ref{fig:over_reg_1}.
+O modelo mais simples seria o de uma regressão linear, explicado em detalhes na próxima seção, em que basicamente, traçamos uma reta do tipo $y = bx + a$, cujo valor $y$ irá servir de valor esperado para nosso modelo, para qualquer $x$ ainda desconhecido. Uma ilustração desse modelo hipotético está na Figura \ref{fig:over_reg_1}.
 
 \begin{figure}[htb]
 \centering
@@ -100,7 +96,7 @@ O modelo mais simples seria o de uma regressão linear, explicado em detalhes na
 
 Podemos não ficar satisfeitos com esse ajuste linear, já que praticamente nenhum ponto está contido perfeitamente na reta ajustada. E assim, supomos um novo modelo, dessa vez de um polinômio quadrático, isto é, um modelo do tipo $y = cx^2 + bx + a$. 
 
-A diferença é que antes tínhamos $2$ parâmetros para ajustar, $a$ e $b$, e agora temos um terceiro parâmetro, $c$.\footnote{É importante mencionar que, em outros contextos, o número de parâmetros livres de um modelo é conhecido como o número de \emph{graus de liberdade} desse modelo.} Um ajuste possível, é ilustrado na figura \ref{fig:over_reg_2}.
+A diferença é que antes tínhamos $2$ parâmetros para ajustar, $a$ e $b$, e agora temos um terceiro parâmetro, $c$.\footnote{É importante mencionar que, em outros contextos, o número de parâmetros livres de um modelo é conhecido como o número de \emph{graus de liberdade} desse modelo.} Um ajuste possível, é ilustrado na Figura \ref{fig:over_reg_2}.
 
 \begin{figure}[htb]
 \centering
@@ -111,7 +107,7 @@ A diferença é que antes tínhamos $2$ parâmetros para ajustar, $a$ e $b$, e a
 
 Aparentemente, esse modelo é melhor do que o anterior, pois a função está melhor ajustada aos dados conhecidos. Poderíamos pensar que quanto mais parâmetros, isto é, quanto maior o grau do polinômio a ser ajustado, mais adequado o modelo estará aos dados. 
 
-Isso pode chegar até o extremo em que, possuindo $n{+}1$ dados, tentamos ajustar um polinômio de grau $n$. Tal ajuste está ilustrado na figura \ref{fig:over_reg_3}.
+Isso pode chegar até o extremo em que, possuindo $n{+}1$ dados, tentamos ajustar um polinômio de grau $n$. Tal ajuste está ilustrado na Figura \ref{fig:over_reg_3}.
 
 \begin{figure}[htb]
 \centering
@@ -122,9 +118,11 @@ Isso pode chegar até o extremo em que, possuindo $n{+}1$ dados, tentamos ajusta
 
 Com isso, teremos o caso extremo de um modelo de regressão $100\%$ sobreajustado. Ele está perfeitamente ajustado aos dados conhecidos, mas retornará resultados espúrios para qualquer outro $x$ que não pertença a esse conjunto, perdendo totalmente a capacidade de \emph{generalização}, conforme explicado por Allen \citep{allen}.
 
-O objetivo dessa discussão é apontar que devemos ser parcimoniosos na escolha do nosso modelo, tentando buscar o menor número possível de parâmetros a serem corretamente ajustados, de modo a dar ao mesmo tempo uma boa perfomance no conjunto de treinamento (mas não perfeita), e também uma capacidade igualmente boa de generalização para os dados desconhecidos.
+O objetivo dessa discussão é apontar que devemos ser parcimoniosos na escolha do nosso modelo, tentando buscar aquele com o menor número possível de parâmetros a serem ajustados, de modo a buscar ao mesmo tempo uma boa performance no conjunto de treinamento (mas não perfeita), e também uma capacidade igualmente boa de generalização para os dados desconhecidos.
 
-\section{Alguns algoritmos de aprendizagem}
+Outras técnicas também podem ser utilizadas quando estamos lidando com o sobreajuste de modelos. Daniil Korbut \citep{korbut} citam as técnicas de regularização, que são úteis para se evitar o sobreajuste nos modelos de aprendizado.
+
+\section{Algoritmos básicos de aprendizagem}
 
 Conhecendo os tipos mais comuns de aprendizagem, o próximo passo nesse caminho da ciência de dados é conhecer os diferentes algoritmos de aprendizagem, alguns sendo mais usados em tarefas supervisionadas, outros em tarefas não-supervisionadas e alguns podendo ser utilizados em ambos os tipos de tarefas.
 
@@ -172,11 +170,7 @@ As técnicas de aprendizado de máquina entram em jogo se queremos utilizar uma 
 
 A utilização do gradiente descendente ou de outro método de otimização qualquer é motivado pela maior eficiência computacional desses métodos em comparação com a inversão de matrizes de ordem $p{\times}p$ necessária no cálculo direto de \ref{algo:3}. A justificativa é facilmente verificada em problemas do mundo real, onde, na maioria dos casos, $p{>}1.000$.
 
-Outras técnicas também podem ser utilizadas quando estamos no contexto de aprendizado de máquina. Daniil Korbut \citep{korbut} citam as técnicas de regularização, que são úteis para se evitar o sobreajuste nos modelos de regressão. 
-
-A ideia da regularização é adicionar parâmetros sem importância prática às somas dos quadrados na função de erro quadrático, com o objetivo de minimizar os valores dos parâmetros de interesse. Explicações mais detalhadas podem ser encontradas em Géron \citep{hands} (páginas $196{-}205$).
-
-Só é possível verificar a necessidade dessas e outras técnicas \emph{sentindo na pele} quando estamos tentando resolver um problema de ciência de dados, e não é o objetivo deste trabalho esmiuçar os algoritmos de regressão linear em tais detalhes. 
+As técnicas de regularização, já citadas anteriormente, tem um papel importante no ajuste de modelos de regressão. A ideia é adicionar parâmetros sem importância prática às somas dos quadrados na função de erro quadrático, com o objetivo de minimizar os valores dos parâmetros de interesse. Explicações mais detalhadas podem ser encontradas em Géron \citep{hands} (páginas $196{-}205$).
 
 É possível utilizar a abordagem puramente estatística, lidando diretamente com as equações \ref{algo:2} e \ref{algo:3}, a vantagem de se utilizar técnicas computacionais eficientes permanece imprescindível quando $p$ é grande.
 
@@ -190,9 +184,9 @@ Poderíamos supor que se esse número fosse grande, então há alta probabilidad
 
 Uma alternativa é modelarmos em termos de probabilidades reais, ou seja, um modelo cuja resposta fosse um número entre $0$ e $1$, de forma que a interpretação probabilística fosse muito mais natural. Esta é a motivação do modelo de regressão logística.
 
-Por causa da natureza da previsão, que irá retornar basicamente, sim ou não, este pode ser considerado um algoritmo de classificação, apesar do nome e do funcionamento interno que caracterizariam-na como uma regressão não-linear. Além disso, é um algoritmo supervisionado, já que nosso modelo é construído utilizando dados de compras de clientes já conhecidos.
+Por causa da natureza da previsão, que irá retornar basicamente, sim ou não, este pode ser considerado um algoritmo de classificação, apesar do nome e do funcionamento interno que caracterizariam-na como uma regressão. Além disso, é um algoritmo supervisionado, já que nosso modelo é construído utilizando dados de compras de clientes já conhecidos.
 
-É uma regressão-classificação não-linear, pois o modelo é dado, por Grus \citep{data}, para cada par de características ($X_i$) e resposta ($Y_i$), por:
+É uma regressão não-linear, pois o modelo é dado, por Grus \citep{data}, para cada par de características ($X_i$) e resposta ($Y_i$), por:
 
 \begin{equation}\label{log:f}
 Y_i = f(X_i \beta) + \epsilon
@@ -212,7 +206,7 @@ em que, $y_i = 1$ ou $y_i = 0$, para toda observação indexada por $i$.
 
 Uma vez que queremos maximizar essa probabilidade, dada uma amostra, o parâmetro a ser ajustado é $\beta$, o que configura a expressão (\ref{log:veros}) como uma \emph{verossimilhança}. Assim, desejamos um algoritmo que irá maximizar a verossimilhança, ou ainda a log-verossimilhança de nossa amostra, e irá retornar o $\hat{\beta}$ que o faça.
 
-Novamente, no contexto de aprendizado de máquina, o mais eficiente será utilizar algum algoritmo de gradiente descendente e estocástico, para realizar esse trabalho, motivo pelo qual é tratado como um algoritmo de aprendizagem, em oposição ao procedicimento do cálculo direto de $\hat{\beta}$.
+Novamente, no contexto de aprendizado de máquina, o mais eficiente será utilizar algum algoritmo de gradiente descendente estocástico, para realizar esse trabalho, motivo pelo qual é tratado como um algoritmo de aprendizagem, em oposição ao procedimento do cálculo direto de $\hat{\beta}$.
 
 A seguir, com o $\hat{\beta}$ em mãos, poderemos classificar novos clientes, aplicando suas características de volta na expressão (\ref{log:f}), com o $\hat{\beta}$ ajustado. A resposta será uma probabilidade, para a qual poderemos definir um \emph{corte}, sendo o mais simples definir que, se essa probabilidade for maior do que $0.5$ diremos que o cliente irá comprar, se for menor, não irá comprar.
 
@@ -222,7 +216,7 @@ Alternativamente, podemos ter como resposta a probabilidade diretamente, sem pre
 
 Uma \defi{árvore de decisão} é outro exemplo de algoritmo supervisionado usado principalmente para classificação, mas que também podem ser usadas para regressão. É definida por Grus \citep{data} como sendo uma estrutura que representa um número de possíveis caminhos de decisão e um resultado para cada caminho.
 
-Apesar dessa definição genérica, um exemplo muito útil é lembrar da classificação das famílias pertencentes ao reino vegetal, vejamos na figura \ref{fig:plantas}, sem nos preocuparmos com os detalhes biológicos.
+Apesar dessa definição genérica, um exemplo muito útil é lembrar da classificação das famílias pertencentes ao reino vegetal, vejamos na Figura \ref{fig:plantas}, sem nos preocuparmos com os detalhes biológicos.
 
 \begin{figure}[htb]
 \centering
@@ -241,7 +235,7 @@ Outro aspecto importante será decidir os \emph{cortes} de cada pergunta, ou sej
 
 De acordo com Grus \citep{data}, seria útil escolher perguntas cujas respostas darão muita informação sobre o que a árvore deverá prever. Esta informação pode ser mensurada com o conceito de \defi{entropia}, que neste contexto, representa a incerteza associada aos dados.
 
-Seja um conjunto de dados $S$, para os quais pudéssemos rotular alguma dentre $n$ classes, $C_1, \ldots, C_n$. Se todos os dados de $S$ possuirem a mesma classe, a entropia $H$ de $S$ será zero. Se os pontos estiverem igualmente espalhados entre as classes, então a entropia será a máxima possível.
+Seja um conjunto de dados $S$, para os quais pudéssemos rotular alguma dentre $n$ classes, $C_1, \ldots, C_n$. Se todos os dados de $S$ possuírem a mesma classe, a entropia $H$ de $S$ será zero. Se os pontos estiverem igualmente espalhados entre as classes, então a entropia será a máxima possível.
 
 De modo geral, se $p_i$ é a proporção de dados que pertencem à classe $C_i$, então a entropia de $S$ será:
 \begin{equation}\label{eq:entropia_1}
@@ -270,15 +264,15 @@ Escolhemos como nosso primeiro nó de decisão, a característica que nos der o 
 
 Assim obtemos $2$ ramos, e em cada um deles podemos repetir esse mesmo procedimento. Se fizermos isso para todas as características, então cada ramo de nossa árvore poderá eventualmente conter apenas uma das classes possíveis, o que seria perfeito para o conjunto de treino, mas seria péssimo para dados novos, pois nossa árvore estaria completamente \emph{sobreajustada}.
 
-É por isso que para um modelo de árvore de decisão, existem comumemente $2$ \defi{hiperparâmetros}\footnote{Parâmetros inerentes ao modelo e não aos dados, e que devem ser escolhidos durante a parte prática do treinamento do algoritmo.} muito importantes segundo Korbut \citep{korbut}, que são o número máximo de nós de decisão, ou seja, o número de perguntas e o número mínimo de nós folhas, ou seja, de classes por ramo.
+É por isso que para um modelo de árvore de decisão, existem comumente $2$ \defi{hiperparâmetros}\footnote{Parâmetros inerentes ao modelo e não aos dados, e que devem ser escolhidos durante a parte prática do treinamento do algoritmo.} muito importantes segundo Korbut \citep{korbut}, que são o número máximo de nós de decisão, ou seja, o número de perguntas e o número mínimo de nós folhas, ou seja, de classes por ramo.
 
 Ajustando esses parâmetros, podemos garantir que uma árvore não-perfeita mas boa o suficiente para o conjunto de treino e seja igualmente boa para o conjunto de teste, e dessa forma, para dados desconhecidos, para que ela seja útil para a tarefa de classificação proposta.
 
-Por fim, vale citar a ressalva de Korbut \citep{korbut} de que um modelo utilizando apenas uma árvore é raramente usado. Mas combinando várias árvores criamos os algoritmos chamados de \emph{Florestas aleatórias}, que estão dentre os mais versáteis e utilizados para tarefas de classificação.
+Por fim, vale citar a ressalva de Korbut \citep{korbut} de que um modelo utilizando apenas uma árvore é raramente usado. Mas combinando várias árvores criamos os algoritmos chamados de \emph{Florestas aleatórias} (\eng{random forests}), que estão dentre os mais versáteis e utilizados para tarefas de classificação.
 
 \subsection{$K$-médias}
 
-Este algoritmo é o ponto central de todas as tarefas de aprendizado não-supervisionadas conhecidas como \defi{agrupamento}. A ideia é agrupar os dados de acordo com um conceito de \emph{distância} e com a suposição de que \emph{proximidade} implica em \emph{similaridade} no espaço em que calculamos essas distâncias.
+O $k$-médias (\eng{$k$-means}) é o ponto central de todas as tarefas de aprendizado não-supervisionadas conhecidas como \defi{agrupamento}. A ideia é agrupar os dados de acordo com um conceito de \emph{distância} e com a suposição de que \emph{proximidade} implica em \emph{similaridade} no espaço em que calculamos essas distâncias.
 
 O procedimento geral é agrupar os dados em $k$ agrupamentos, em que, cada grupo terá uma \emph{média} que irá caracterizar esse grupo, daí o nome do algoritmo. Segundo Korbut \citep{korbut}, podemos partir de $k$ pontos escolhidos aleatoriamente e nomeá-los como os centros (ou médias) de cada grupo.
 
@@ -286,25 +280,25 @@ A seguir, calculamos as distâncias de cada ponto aos centros, e incluímos em c
 
 Então, o centro real de cada grupo é calculado (a média, por exemplo), e o processo acima se repete. Esse ciclo é repetido, idealmente, até que haja convergência, ou seja, calcular a média dos grupos não altera a pertinência de mais nenhum ponto dentre os $k$ grupos.
 
-A maior questão aqui é, justamente, a escolha de $k$, que é a princípio desconhecido. Além disso, para $k$ pontos iniciais escolhidos, pode haver uma convergência local dos agrupamentos, e não global, análogo ao problema de maximização/minimização global de funções.
+A maior questão aqui é, justamente, a escolha de $k$, que é a princípio desconhecido. Khyati Mahendru \citep{means} explica dois métodos que podem ser úteis na escolha do melhor $k$: o \emph{método do cotovelo} (\eng{Elbow method}), e o \emph{método da silhueta} (\eng{Silhouette method}). Ela explica que ambos os métodos são ferramentas complementares, isto é, não alternativas entre si, sendo utilizadas em conjunto para uma escolha mais confiável de $k$.
+
+Além disso, para $k$ pontos iniciais escolhidos, pode haver uma convergência local dos agrupamentos, e não global, análogo ao problema de maximização/minimização global de funções.
 
 \section{As redes neurais e o \emph{perceptron}}
 
 De acordo com Géron \citep{hands}, as primeiras redes artificiais foram introduzidas em 1943 pelo neurofisiologista Warren McCulloch e o matemático Walter Pits através de um modelagem computacional do funcionamento conjunto de neurônios no cérebro de animais, enquanto realizam computações complexas de lógica. Esta foi a primeira \defi{arquitetura} de uma rede neural artificial.
 
-Esse começo promissor levou as pessoas a acreditarem que logo haveriam máquinas realmente inteligentes, o que ficou registrado na cultura da época, principalmente em séries televisivas de ficção científica como \eng{Star Trek} e outras, mas conforme aponta Géron \citep{hands}, essa promessa logo se mostrou inalcansável, ao menos era o que parecia ao final dos anos 60. 
+Esse começo promissor levou as pessoas a acreditarem que logo haveriam máquinas realmente inteligentes, o que ficou registrado na cultura da época, principalmente em séries televisivas de ficção científica como \eng{Star Trek} e outras, mas conforme aponta Géron \citep{hands}, essa promessa logo se mostrou inalcançável, ao menos era o que parecia ao final dos anos 60. 
 
-A partir dos anos 80, surgiram novas arquiteturas e melhores técnicas de aprendizagem, embora sua evolução fosse lenta devido ao poder computacional limitado da época. Atualmente, no entanto, isto mudou: há poder computacional em casa e na nuvem, há a internet e fórums de compartilhamento de códigos e conhecimentos em programação e ciência de dados, em resumo o mundo atual está consolidado numa era digital. 
+A partir dos anos 80, surgiram novas arquiteturas e melhores técnicas de aprendizagem, embora sua evolução fosse lenta devido ao poder computacional limitado da época. Atualmente, no entanto, isto mudou: há poder computacional em casa e na nuvem, há a internet e fóruns de compartilhamento de códigos e conhecimentos em programação e ciência de dados, em resumo o mundo atual está consolidado numa era digital. 
 
 Por essa razão Géron \citep{hands} nos diz que estamos numa nova onda de entusiasmo sobre as redes neurais artificiais, sendo que esse entusiasmo leva o nome de \defi{Deep Learning}, ou aprendizado profundo, e o uso desse adjetivo ajuda a descrever as redes neurais, constituídas de milhares de neurônios, que são utilizadas em várias aplicações de nosso dia-a-dia na internet.
 
-Podemos citar a classificação de bilhões de imagens realizadas pelo \emph{Google}, reconhecimento de fala realizado pela \emph{Siri} da \emph{Apple}, o sistema de recomendações de vídeos do \emph{Youtube} e da \emph{Netflix} e outras plataformas de \emph{streaming}, e até mesmo os jogadores artificiais de xadrex ou do jogo \emph{Go}. As redes neurais artificiais estão vivas em nosso mundo. Mas como funcionam na prática, por detrás dessa aparência de ficção científica?
+Podemos citar a classificação de bilhões de imagens realizadas pelo \emph{Google}\footnote{\url{https://developers.google.com/earth-engine}}, reconhecimento de fala realizado pela \emph{Siri} da \emph{Apple}\footnote{\url{https://machinelearning.apple.com/research/siri-voices}}, o sistema de recomendações de vídeos em plataformas de \emph{streaming}, como \emph{Youtube} e \emph{Netflix}\footnote{\url{https://towardsdatascience.com/deep-dive-into-netflixs-recommender-system-341806ae3b48}}, e até mesmo os jogadores artificiais de xadrez\footnote{\url{https://www.nytimes.com/2018/12/26/science/chess-artificial-intelligence.html}}. As redes neurais artificiais estão vivas em nosso mundo. Mas como funcionam na prática, por detrás dessa aparência de ficção científica?
 
-Uma definição para uma rede neural artificial dada por Rosangela Ballini \citep{doutorado} é a de um sistema de processamento paralelo e distribuído contruído em um formato e com funcionalidade que se parece com o arranjo de um sistema nervoso biológico, sendo compostos por elementos computacionais chamados neurônios, que são organizados e interligados em padrões semelhantes aos neurônios biológicos.
+Uma definição para uma rede neural artificial dada por Rosangela Ballini \citep{doutorado} é a de um sistema de processamento paralelo e distribuído construído em um formato e com funcionalidade que se parece com o arranjo de um sistema nervoso biológico, sendo compostos por elementos computacionais chamados neurônios, que são organizados e interligados em padrões semelhantes aos neurônios biológicos.
 
-Uma rede neural artificial é um dentre vários métodos de classificação, ou seja, de aprendizado supervisionado, embora ela também possa ser usada para aplicações de aprendizado não supervisionado. De acordo com Kopec \citep{classic}, ele é utilizado como um classificador não-linear, e por isso pode ser utilizado para classificar ou prever quaisquer tipos de funções, que podem ou não ter uma relação linear com o tempo ou com qualquer outro domínio no qual estejam definidas.
-
-Na figura~\ref{fig:neuron} está uma representação de um neurônio biológico. Ele recebe impulsos elétricos de entrada através dos dentritos, que são transmitidos ou não através do núcleo, caso sejam ativados por ele, para os terminais de saída dos axônios. Os neurônios se comunicam através de sinapses, que são ligações entre os dentritos de um e os axônios de outro que realizam a transmissão dos sinais. 
+Na figura~\ref{fig:neuron} está uma representação de um neurônio biológico. Ele recebe impulsos elétricos de entrada através dos dendritos, que são transmitidos ou não através do núcleo, caso sejam ativados por ele, para os terminais de saída dos axônios. Os neurônios se comunicam através de sinapses, que são ligações entre os dendritos de um e os axônios de outro que realizam a transmissão dos sinais. 
 
 \begin{figure}[htb]
 \centering
@@ -313,20 +307,20 @@ Na figura~\ref{fig:neuron} está uma representação de um neurônio biológico.
 \label{fig:neuron}
 \end{figure}
 
-Dá-se o nome de \eng{perceptron} de camada única (\eng{single-layer perceptron}) ou simplesmente \eng{perceptron} a uma das simples arquiteturas de rede neural artificial, criada em 1957 por Frank Rosenblatt \citep{frank}. Uma ilustração conceitual dela está na figura~\ref{fig:perceptron}. Existem atualmente diversas outras arquiteturas de redes neurais, mas a extensão mais imediata que podemos citar de um perceptron constituído de uma camada de neurônios são as redes \eng{perceptron} multi-camadas (\eng{multi-layer perceptron}). 
+Dá-se o nome de \eng{perceptron} de camada única (\eng{single-layer perceptron}) ou simplesmente \eng{perceptron} a uma das mais simples arquiteturas de rede neural artificial, criada em 1957 por Frank Rosenblatt \citep{frank}. Uma ilustração conceitual dela está na Figura~\ref{fig:perceptron}. Existem atualmente diversas outras arquiteturas de redes neurais, mas a extensão mais imediata que podemos citar de um \eng{perceptron} constituído de uma camada de neurônios são as redes \eng{perceptron} multi-camadas (\eng{multi-layer perceptron}). 
 
 Os neurônios são representados por círculos, dentro deles há um valor numérico que intuitivamente podemos atribuir ao nível ou grau de ativação do neurônio, mesmo que no caso biológico se restrinja aos valores $0$ e $1$, ou seja, ativados ou não. Cada coluna de neurônios representa uma camada, nesse caso, da esquerda para a direita temos a camada de entrada, a camada oculta e a camada de saída. As linhas representam as ligações entre os neurônios, sendo que cada neurônio de uma camada está ligado a todos da camada anterior.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=5cm]{figuras/perceptron}
-\caption{Rede neural simples, o perceptron de camada única.}
+\caption{Rede neural simples, o \eng{perceptron} de camada única.}
 \label{fig:perceptron}
 \end{figure}
 
-O perceptron de camada única consiste de uma camada de neurônios de entrada, uma camada oculta de neurônios usados na otimização, e uma camada de saída, que irá conter os dados previstos, ou ainda as probabilidades do dado pertencer a alguma das classes que a rede poderá classificá-lo. E é o fato de haver uma camada oculta nesta rede que a define como sendo de ``camada única''. Caso houvessem mais do que uma camada oculta, ela seria do tipo ``multi-camadas'' mencionada acima.
+O \eng{perceptron} de camada única consiste de uma camada de neurônios de entrada, uma camada oculta de neurônios usados na otimização, e uma camada de saída, que irá conter os dados previstos, ou ainda as probabilidades do dado pertencer a alguma das classes que a rede poderá classificá-lo. E é o fato de haver uma camada oculta nesta rede que a define como sendo de ``camada única''. Caso houvessem mais do que uma camada oculta, ela seria do tipo ``multi-camadas'' mencionada acima.
 
-De modo a entendermos as bases matemáticas do algoritmo, podemos começar de uma rede ainda mais básica, a partir um \eng{perceptron} que seja constituído de apenas $1$ neurônio na única camada oculta. Esta rede super simplificada, que está na figura~\ref{fig:neuronio}, pode ser útil para para o entendimento uma vez que neste caso será possível acompanhar graficamente o resultado da execução do algoritmo.
+De modo a entendermos as bases matemáticas do algoritmo, podemos começar de uma rede ainda mais básica, a partir um \eng{perceptron} que seja constituído de apenas $1$ neurônio na única camada oculta. Esta rede super simplificada, que está na Figura~\ref{fig:neuronio}, pode ser útil para para o entendimento uma vez que neste caso será possível acompanhar graficamente o resultado da execução do algoritmo.
 
 \begin{figure}[htb]
 \centering
@@ -344,23 +338,23 @@ Esta rede possui $2$ neurônios na camada de entrada, que são os números reais
 \label{fig:neuron_model}
 \end{figure}
 
-Temos os sinais de entrada (como o $x_1$) vindos como viriam os sinais dos axônios de outros neurônios. Eles entram pela camada de entrada da rede, ou dentritos do neurônio. A camada oculta processa as entradas com os pesos, definindo o formato final do sinal através de sua função de ativação, que aqui pode ser uma função real qualquer, mas com funcionalidade similar ao do núcleo do neurônio que ativa/transmite ou não o sinal recebido por ele. Por fim o sinal é enviado à camada de saída, ou aos axônios do neurônio, concluíndo o processamento.
+Temos os sinais de entrada (como o $x_1$) vindos como viriam os sinais dos axônios de outros neurônios. Eles entram pela camada de entrada da rede, ou dendritos do neurônio. A camada oculta processa as entradas com os pesos, definindo o formato final do sinal através de sua função de ativação, que aqui pode ser uma função real qualquer, mas com funcionalidade similar ao do núcleo do neurônio que ativa/transmite ou não o sinal recebido por ele. Por fim o sinal é enviado à camada de saída, ou aos axônios do neurônio, concluindo o processamento.
 
 A partir desta analogia podemos compreender o funcionamento básico da rede artificial \eng{perceptron}. Ela recebe uma lista de valores como entrada, que podemos representar por um vetor real $x$. O neurônio oculto representa uma transformação linear neste vetor, que podemos escrever como o produto escalar por um outro vetor real, o vetor de \defi{pesos} $w$, ou seja, $<w.x>$, que é o produto escalar usual dos números reais. A seguir, somamos um outro número real $b$ que é chamado de \defi{viés}, que possui o mesmo papel que a constante de interceptação da reta com o eixo vertical de um ajuste linear.
 
-Por fim, é aplicada uma função de ativação não-linear sobre esta transformação, o que configura a saída deste neurônio: $f({<w.x>} + b)$, que é transmitida ao neurônio de saída, que pode aplicar uma transformação semelhante ou outra qualquer, dependendo da função de ativação utilizada em cada camada da rede. Por simplicidade mostramos uma rede bem simples, mas na prática podem haver muito mais camadas ocultas, e cada uma delas assim como a camada de saída, podem ter muitos neurônios cada.
+Por fim, é aplicada uma função de ativação não-linear sobre esta transformação, o que configura a saída deste neurônio: $f({<w.x>} + b)$, que é transmitida ao neurônio de saída, que pode aplicar uma transformação semelhante ou outra qualquer, dependendo da função de ativação utilizada em cada camada da rede. Por simplicidade mostramos uma rede bem simples, mas na prática podem haver muito mais camadas ocultas, e cada uma delas, assim como a camada de saída, podem conter muitos neurônios cada.
 
 Este processo de entrada, processamento e saída da rede é chamado de \defi{feedforward}, e consiste no nível mais fundamental do \eng{perceptron}. A partir daí, a forma como a rede será treinada, é o que define se ela será utilizada para um aprendizado supervisionado ou não-supervisionado.
 
-Uma vez que estamos lidando com o aprendizado supervisionado, dever ser utilizado um algoritmo de treinamento que forneça à rede pares conhecidos de vetores de entradas e saídas esperadas, e um \defi{critério de avaliação} de quão boa é a performance da rede para aproximar as suas saídas das saídas esperadas. 
+Uma vez que estamos lidando com o aprendizado supervisionado, deve ser utilizado um algoritmo de treinamento que forneça à rede pares conhecidos de vetores de entradas e saídas esperadas, e um \defi{critério de avaliação} de quão boa é a performance da rede para aproximar as suas saídas às saídas esperadas.
 
 Este critério é uma função que fornece uma medida da distância entre as saídas obtidas pela rede e as saídas esperadas, que é genericamente chamada de função de custo (\eng{cost function}). Se denotarmos por $y$ uma saída conhecida, e por $a^{(L)}$ uma saída obtida pela última camada, exemplos comumente usados são as normas usuais como a distância euclidiana ($(a^{(L)^2} + y^2)^{1/2}$), a função de erro absoluto ($|a^{(L)} - y|$), e a função de erro quadrático médio ($(a^{(L)} - y)^2$) , (\eng{mean square error}, MSE), que é a usada no algoritmo descrito por Kopec \citep{classic} e que será usado neste trabalho.
 
-Um dos algoritmos de treinamento que minimizam uma função de custo é o gradiente descendente (\eng{gradient descent}), que segundo Géron \citep{hands} é um algoritmo muito geral e que serve para encontrar soluções ótimas para uma grande variedade de problemas de otimização. Detalhes de seu funcionamento podem ser vistos no Apêndice \ref{ap:gradiente}.
+Um dos algoritmos de treinamento que minimizam uma função de custo é o gradiente descendente (\eng{gradient descent}), que segundo Géron \citep{hands} é um algoritmo que serve para encontrar soluções ótimas para uma grande variedade de problemas de otimização. Detalhes de seu funcionamento podem ser vistos no Apêndice \ref{ap:gradiente}.
 
 \section{Outras arquiteturas de redes neurais}
 
-Existem dezenas de arquiteturas de redes neurais artificiais, uma breve olhada na quantidade de arquiteturas listadas no website \emph{The neural network zoo}\footnote{\url{https://www.asimovinstitute.org/neural-network-zoo/}} demonstra que essa brincadeira é levada muito a sério. A representação gráfica ali criada é útil para o entendimento das características das diversas arquiteturas, graças aos padrões de cores e de formas geométricas utilizadas.
+Existem dezenas de arquiteturas de redes neurais artificiais, uma breve olhada na quantidade de arquiteturas listadas no website \emph{The neural network zoo}\footnote{\url{https://www.asimovinstitute.org/neural-network-zoo/}} demonstra que esse assunto é levado muito a sério. A representação gráfica ali criada é útil para o entendimento das características das diversas arquiteturas, graças aos padrões de cores e de formas geométricas utilizadas.
 
 A primeira estrutura é o \eng{perceptron} simples, de apenas um neurônio, que processa $n$ entradas através de uma transformação linear seguida de uma função de ativação. É exibido no canto superior esquerdo da Figura \ref{fig:estrutura_p}.
 
@@ -375,7 +369,7 @@ No canto superior direito está a versão \eng{feedforward}, possuindo uma camad
 
 As características em comum das arquiteturas derivadas da rede \eng{perceptron}, chamadas de \defi{redes neurais sequenciais}, são a conexão que existe entre cada neurônios de uma camada com todos os neurônios da camada anterior, e a forma que a informação é transmitida da rede, num sentido único, da camada de entrada(os círculos amarelos) para a camada de saída(os círculos vermelhos).
 
-A próxima arquitetura em destaque define o que são as \defi{redes neurais recorrentes}, ilustrada na Figura \ref{fig:estrutura_r}. Nesse tipo de rede a informação pode ir para frente e para trás, além disso pode passar pelo mesmo neurônio oculto mais de uma vez, o que determina o nome recorrente. Esses neurônios são representados pela cor azul na figura.
+A próxima arquitetura em destaque define o que são as \defi{redes neurais recorrentes}, ilustrada na Figura \ref{fig:estrutura_r}. Nesse tipo de rede a informação pode ir para frente e para trás, além disso pode passar pelo mesmo neurônio oculto mais de uma vez, o que determina o nome recorrente. Esses neurônios são representados pela cor azul na Figura.
 
 \begin{figure}[htb]
 \centering
@@ -384,9 +378,9 @@ A próxima arquitetura em destaque define o que são as \defi{redes neurais reco
 \label{fig:estrutura_r}
 \end{figure}
 
-Esse tipo de rede, segundo Kopec \citep{classic} é o mais usado em problemas em que os dados utilizados possuem uma dependência da ordem em que são obtidos e possuem entradas contínuas, por exemplo, os dados de uma série temporal de dados, ou seja, em que a previsão de um dado , o que representaria o futuro, depende da ordem em que estão os dados já conhecidos, o que representaria os dados do passado.
+Esse tipo de rede, segundo Kopec \citep{classic} é o mais usado em problemas em que os dados utilizados possuem uma dependência da ordem em que são obtidos e possuem entradas contínuas, por exemplo, os dados de uma série temporal de dados, ou seja, em que a previsão de um dado, o que representaria o futuro, depende da ordem em que estão os dados já conhecidos, o que representaria os dados do passado.
 
-Outra arquitetura muito utilizada é o das \defi{redes neurais covolucionais}, ilustradas na Figura \ref{fig:estrutura_c}.  Segundo Kopec \citep{classic} essas redes foram projetadas e usadas com sucesso para classificação de imagens ``pesadas'', como fotos de galáxias obtidas em telescópios.
+Outra arquitetura muito utilizada em séries temporais é o das \defi{redes neurais convolucionais}, ilustradas na Figura \ref{fig:estrutura_c}.  Segundo Kopec \citep{classic} essas redes foram projetadas e usadas com sucesso para classificação de imagens ``pesadas'', como fotos de galáxias obtidas em telescópios.
 
 \begin{figure}[htb]
 \centering
@@ -409,3 +403,5 @@ Existem ainda outras dezenas de arquiteturas, algumas bem alternativas no format
 \end{figure}
 
 As conexões ocorrem de forma não-sequencial, e até mesmo aleatória entre as camadas ocultas, configurando um exemplo curioso de arquitetura, e discussões sobre essas outras arquiteturas não fazem parte do escopo desse trabalho.
+
+Este trabalho irá lidar principalmente com duas arquiteturas. Primeiramente com as redes sequenciais (ou \eng{perceptron}), numa abordagem didática, em que seu funcionamento será detalhado através de uma implementação completa dessa arquitetura no Capítulo \ref{cap:perceptron}. E a seguir, numa abordagem prática, serão utilizadas as redes convolucionais, durante os experimentos de previsões de séries temporais, no Capítulo \ref{cap:comparacao}.

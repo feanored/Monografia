@@ -339,7 +339,7 @@ distclean: $(addsuffix -distclean,$(ALL_TARGETS))
 		$(foreach ext,$(FLS_TMP_EXTENSIONS),$*.$(ext)) \
 		$(foreach ext,$(TMP_EXTENSIONS),$*.$(ext)-current) \
 		$(foreach ext,$(FLS_TMP_EXTENSIONS),$*.$(ext)-current) \
-		$*.ps-current $*.pdf-current $*.dvi-current
+		$*.ps-current $*.pdf-current $*.dvi-current $*.synctex.gz
 
 ifeq ($(SHOW_PDF_AFTER_COMPILATION), true)
 

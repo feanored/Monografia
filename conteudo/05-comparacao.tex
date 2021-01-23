@@ -5,11 +5,29 @@
 \chapter{Procedimentos de comparação e resultados}
 \label{cap:comparacao}
 
-Neste capítulo serão definidos procedimentos de modelagem alternativos às séries temporais financeiras de taxas de câmbio. Um dos modelos é o modelo paramétrico \eng{ARIMA}, estudado no Capítulo \ref{cap:series}. 
+Neste capítulo serão definidos procedimentos de modelagem às séries temporais financeiras de taxas de câmbio. Um dos modelos que será utilizado é o modelo paramétrico \eng{ARIMA}, estudado no Capítulo \ref{cap:series}. 
 
-O outro será um modelo não-paramétrico criado com redes neurais, estudadas no Capítulo \ref{cap:perceptron}, sendo utilizadas redes neurais recorrentes, devido à sua arquitetura mais condizente com o problema em questão, de acordo com Kopec \citep{classic} e Géron \citep{hands}.
+O outro será um modelo não-paramétrico criado com redes neurais, estudadas no Capítulo \ref{cap:perceptron}, sendo utilizado um modelo sequencial de redes neurais convolucionais, numa abordagem que é utilizada na documentação do \eng{TensorFlow}\footnote{\url{https://www.tensorflow.org/tutorials/structured_data/time_series}} para a previsão de séries temporais. Mais detalhes do modelo utilizado serão dados mais adiante.
 
-A seguir, serão feitas comparações entre os modelos preditivos de séries temporais, através de medidas de desempenho comuns como as funções de erros RMSE\footnote{Raiz do erro quadrático médio} e MAE\footnote{Erro absoluto médio} e o coeficiente de correlação de \eng{Pearson}  entre os valores previstos e conhecidos do conjunto de teste.
+A seguir, serão feitas comparações entre os modelos preditivos de séries temporais, através de medidas de desempenho comuns como as funções de erros RMSE (raiz do erro quadrático médio) e MAE (erro absoluto médio) e o coeficiente de correlação de \eng{Pearson} entre os valores previstos e conhecidos do conjunto de teste.
+
+Sejam $n$ observações reais de uma série temporal $Z$, sendo a $i$-ésima denotada por $z_i$, e sejam $n$ estimações de um modelo $\hat{Z}$ para cada uma das observações, denotadas por $\hat{z}_i$. Dessa forma, o erro RMSE desse modelo será:
+
+\begin{equation}\label{eq:rmse}
+RMSE(\hat{Z}) = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (\hat{z}_i - z_i)^2}
+\end{equation}
+
+Nas mesmas condições, o erro MAE do modelo $\hat{Z}$ será dado por:
+
+\begin{equation}\label{eq:mae}
+MAE(\hat{Z}) = \frac{1}{n} \sum_{i=1}^{n} |\hat{z}_i - z_i|
+\end{equation}
+
+E, nas mesmas condições, define-se o coeficiente de correlação de \eng{Pearson} ($\rho$) por:
+
+\begin{equation}\label{eq:rho}
+\rho(\hat{Z}, Z) = \frac{\Cov (\hat{Z}, Z)}{\sqrt{\Var({\hat{Z}})\Var({Z})}}
+\end{equation}
 
 \section{Modelagem e procedimentos gerais}
 
@@ -37,11 +55,11 @@ Neste primeiro teste filtrei os dados para um período específico, que vai de J
 
 De forma a treinar os modelos de forma mais justa, foi definido que serão utilizadas janelas de $30$ dias de valores de câmbios passados para prever o valor de câmbio do dia imediatamente a seguir. Por exemplo, suponha que tenhamos uma janela com valores dos $30$ dias de Junho, essa janela será uma série temporal que será modelada e então cada modelo irá prever a taxa de câmbio do dia $1$° de Julho.
 
-Isto não está exato, pois a série não possui dados para cada dia do ano, apenas para dias úteis, pulando finais de semana e feriados. Na prática, escolhi para esse primeiro teste, prever os valores da série no período que vai de $16/08/2017$ até $24/08/2017$. 
+A série escolhida não possui dados para cada dia do ano, apenas para dias úteis, pulando finais de semana e feriados. Na prática escolhi, para esse primeiro teste, prever os valores da série no período que vai de $16/08/2017$ até $24/08/2017$.
 
 Dessa forma, utilizando as janelas de $30$ dias passados, de acordo com os dias úteis disponíveis, criei as $7$ janelas, sendo que a primeira tem seus $30$ valores contidos no período de $05/07/2017$ a $15/08/2017$, e assim sucessivamente para as próximas janelas.
 
-Realizei os procedimentos de treinamento, tanto para o modelo ARIMA, quanto para os modelos de redes neurais. Um deles utilizando o \eng{Keras} e outro utilizando a implementação própria do \eng{Perceptron}. Adicionalmente, foram incluídos dois simples modelos de referência, a partir da média móvel, uma com $7$ dias e a outra com $30$ dias, como sendo a previsão para o próximo dia. 
+Realizei os procedimentos de treinamento, tanto para o modelo ARIMA, quanto para os modelos de redes neurais. Um deles utilizando o \eng{Keras} e outro utilizando a minha implementação do \eng{Perceptron}. Adicionalmente, foram incluídos dois simples modelos de referência (\eng{baselines}), a partir da média móvel, isto é, a média de cada janela móvel de dias, uma com janelas de $7$ dias e a outra com as janelas de $30$ dias já definidas acima, como sendo a previsão para o dia seguinte à cada janela.
 
 Cada modelo possui suas particularidades na fase de treinamento. Para listá-las e deixar claro as diferenças entre os modelos ARIMA e do Keras, foi construída a Tabela \ref{tabela:params_0}.
 
@@ -54,20 +72,90 @@ Cada modelo possui suas particularidades na fase de treinamento. Para listá-las
 \hline
 \hline
 \multirow{2}{*}{\textbf{Treino do modelo}} 
-& - Nenhuma janela anterior (Apenas os $30$ dias de cada janela); & - $253$ janelas anteriores de $30$ dias cada e mais o próximo dia conhecido;  \\
+& - $30$ dias de cada janela; & - $253$ janelas anteriores de $30$ dias cada e mais o próximo dia conhecido;  \\
 & - Calibração automática dos parâmetros (autocorrelação). & - Calibração manual dos parâmetros. \\
 \hline
 \textbf{Teste do modelo} 
-& - $7$ dias futuros ($1$ dia de cada uma das janelas de treino). & - $7$ janelas de $30$ dias cada. \\
+& \multicolumn{2}{c|}{- Previsão dos $7$ dias úteis futuros, de $16/08/2017$ a $24/08/2017$).}\\
 \hline
 \end{tabular}}
 \caption{Especificação dos dados de treino e de teste ($7$ dias).}\label{tabela:params_0}
 \end{center}
 \end{table}
 
-Tais previsões foram realizadas por modelos que foram treinados após a configuração dos hiperparâmetros de cada modelo. No caso do ARIMA é possível identificá-los utilizando a função de autocorrelação, já nos modelos de redes neurais é feito por tentativa-e-erro com algum conhecimento prévio do tipo de dado usado, nesse caso, financeiros, o que já determina para o Keras o modelo de redes recorrentes, por exemplo. 
+Tais previsões foram realizadas por modelos que foram treinados após a configuração dos hiperparâmetros de cada modelo. No caso do ARIMA é possível identificá-los utilizando a função de autocorrelação, já nos modelos de redes neurais é feito por tentativa-e-erro com algum conhecimento prévio do assunto. Neste caso foi utilizado um tutorial\footnote{Tutorial completo disponível em: \url{https://www.tensorflow.org/tutorials/structured_data/time_series}} disponível num artigo sobre previsões de séries temporais na documentação do TensorFlow.
 
-Para todos os modelos também seria possível realizar uma busca exaustiva de parâmetros (\eng{grid search}) de forma que o melhor conjunto de parâmetros é escolhido a partir de alguma métrica do treinamento, isto é, o conjunto que se sai melhor nessa métrica. 
+Neste tutorial foram testadas várias arquiteturas, desde modelos lineares, modelos de redes sequenciais (\eng{Perceptron}), de redes recorrentes e de redes convolucionais. Além disso, camadas de vários tipos são combinadas, e após isso os hiperparâmetros são testados e escolhidos para o problema em questão, que no tutorial são dados meteorológicos. Os resultados foram comparados, e o modelo de redes convolucionais foi o que se saiu melhor, e por essa razão, optei por utilizar um modelo desse tipo.
+
+Mesmo que cotações do Dólar e temperaturas sejam dados de tipos diferentes, ainda são séries temporais, e pelo visto no tutorial, a série meteorológica é estacionária, o que é um ponto de semelhança grande o suficiente para ser um bom ponto de partida, ao menos neste trabalho de cunho didático. Utilizando a arquitetura utilizada no tutorial como exemplo, criei uma similar, que é melhor explicada diretamente pelo código-fonte que a define, presente na listagem \ref{lst:rede_keras}.
+\newline
+\estiloR
+\begin{lstlisting}[caption={Definição da arquitetura da rede neural convolucional}, label={lst:rede_keras}, escapeinside={\%}]
+model = keras.Sequential()
+model.add(keras.layers.Conv1D(filters=64, kernel_size=3, activation='elu', padding="causal", input_shape=(30, 1)))
+model.add(keras.layers.MaxPooling1D(pool_size=3))
+model.add(keras.layers.Flatten())
+model.add(keras.layers.Dense(30, activation='elu'))
+model.add(keras.layers.Dense(1))
+model.compile(optimizer='adam', loss='mse')
+\end{lstlisting}
+
+Em primeiro lugar, o modelo é criado como sendo um objeto do tipo sequencial da biblioteca Keras. Isto é porque a rede convolucional é uma rede em que as informações são propagadas da camada de entrada para a camada de saída sequencialmente, analogamente à rede \eng{Perceptron}.
+
+A seguir, é adicionada a camada convolucional de entrada, com a classe \texttt{keras.layers.Conv1D}\footnote{Documentação disponível em: \url{https://keras.io/api/layers/convolution_layers/convolution1d/}.}. Ela possui vários hiperparâmetros que devem ser ajustados durante o treinamento do modelo, que após o ajuste (após algumas tentativas) foram listados na Tabela \ref{tabela:params_2}.
+
+\begin{table}[]
+\begin{center}
+\begin{tabular}{|ll|c|}
+\hline
+\multicolumn{2}{|c|}{\textbf{Hiperparâmetros do Modelo}} & \multirow{2}{*}{\textbf{Valor}} \\
+\multicolumn{2}{|c|}{\textbf{Neural Convolucional}} & \\
+\hline
+\hline
+\eng{filters} & Qtde de filtros & $64$ \\
+\eng{kernel$\_$size} & Qtde de neurônios por filtro & $3$ \\
+\eng{activation} & Função de ativação & `elu' \\
+\eng{padding} & Ordem dos dados & `causal' \\
+\eng{input$\_$shape} & Formato de entrada e saída & $(30, 1)$ \\
+\eng{pool$\_$size} & Unidades de votação & $3$ \\
+\eng{optimizer} & Método de otimização & `adam' \\
+\eng{loss} & Função de perda & `mse' \\
+\eng{epochs} & Épocas de treinamento & $15$ \\
+\hline
+\end{tabular}
+\caption{Hiperparâmetros do modelo neural Keras.}\label{tabela:params_2}
+\end{center}
+\end{table}
+
+Uma camada convolucional é formada por um conjunto de camadas paralelas, isto é, que não interagem entre si, sendo a quantidade definida pelo parâmetro \texttt{filters}, onde cada uma recebe de forma aleatória uma amostra (com reposição) dos dados de entrada, com uma mesma quantidade de neurônios cada, definida pelo parâmetro \texttt{kernel$\_$size}. A seguir, define-se que a função de ativação dessa camada é a função \emph{ELU}, e por fim definimos a dimensão dos dados de entrada, que é definida pelo tamanho da janela de dados, um vetor coluna de $30$ linhas.
+
+A seguir temos uma camada de votação, da classe \texttt{keras.layers.MaxPooling1D}\footnote{\url{https://keras.io/api/layers/pooling_layers/max_pooling1d/}}, cujo papel de cada neurônio é selecionar neurônios de cada uma das camadas convolucionais, num número definido pelo parâmetro \texttt{pool$\_$size}, e filtrar dentre eles o máximo valor encontrado que será o valor de saída deste neurônio. Esta camada também é paralela e definida automaticamente pelo tamanho da camada convolucional.
+
+A próxima camada, do tipo \texttt{keras.layers.Flatten()}\footnote{\url{https://keras.io/api/layers/reshaping_layers/flatten/}}, faz o produto cartesiano das camadas paralelas de votação, ou seja, lista todos os neurônios sequencialmente para a próxima camada, que por sua vez é uma camada do tipo \texttt{keras.layers.Dense}\footnote{\url{https://keras.io/api/layers/core_layers/dense/}}, que tem esse nome por ser uma camada que é totalmente conectada à camada anterior (como já visto, configura o tipo \eng{Perceptron}), com um parâmetro que define a quantidade de neurônios a ser ajustada no treinamento e outro parâmetro que é a função de ativação a ser utilizada.
+
+Por fim, conectamos uma camada \texttt{keras.layers.Dense} de saída, com exatamente um neurônio que irá fornecer a previsão de um dia no futuro para a janela de dados fornecida na entrada. Na última linha da listagem \ref{lst:rede_keras} está a escolha do método de otimização, chamado de \eng{Adam}\footnote{Para mais detalhes: \url{https://keras.io/api/optimizers/adam/}} que é uma versão melhorada do SGD, e a função de perda que escolhemos para ser a MSE, que difere da RMSE apenas pela ausência da operação de raiz quadrada, irrelevante numa tarefa de minimização\footnote{O $x_0$ que minimiza $f(x)$ é o mesmo $x_0$ que minimiza $\sqrt{f(x)}$, já que a operação derivada é um limite e a função raiz quadrada é contínua e monótona.}.
+
+Por sua vez, os hiperparâmetros que foram escolhidos durante o treinamento da rede \eng{Perceptron} implementada, estão listados na Tabela \ref{tabela:params_3}.
+
+\begin{table}[]
+\begin{center}
+\begin{tabular}{|ll|c|}
+\hline
+\multicolumn{2}{|c|}{\textbf{Hiperparâmetros do}} & \multirow{2}{*}{\textbf{Valor}} \\
+\multicolumn{2}{|c|}{\textbf{Modelo Neural (\eng{Perceptron})}} & \\
+\hline
+\hline
+\eng{taxa} & Taxa de aprendizado & $0.001$ \\
+\eng{ativacao} & Função de ativação & `elu' \\
+\eng{N} & Arquitetura da rede & $[20, 10, 1]$ \\
+\eng{M} & Épocas de treinamento & $25$ \\
+\hline
+\end{tabular}
+\caption{Hiperparâmetros do modelo neural \eng{Perceptron}.}\label{tabela:params_3}
+\end{center}
+\end{table}
+
+Para ambos os modelos, ARIMA e de redes neurais, seria possível realizar uma busca exaustiva de parâmetros (\eng{grid search})\footnote{\url{https://scikit-learn.org/stable/modules/grid_search.html}} de forma que o melhor conjunto de parâmetros é escolhido automaticamente a partir de alguma métrica do treinamento, isto é, o conjunto que se sai melhor nessa métrica. 
 
 Esse procedimento foi realizado para o modelo ARIMA, e ele identificou os mesmos parâmetros que as funções de autocorrelação identificaram, e eles foram os mesmos para as $7$ janelas de teste, e estão listados na Tabela \ref{tabela:params_1}.
 
@@ -88,50 +176,6 @@ Esse procedimento foi realizado para o modelo ARIMA, e ele identificou os mesmos
 \end{center}
 \end{table}
 
-Por sua vez, os hiperparâmetros das redes neurais Keras estão listados na Tabela \ref{tabela:params_2}, e da rede Perceptron implementada, estão listados na Tabela \ref{tabela:params_3}.
-
-\begin{table}[]
-\begin{center}
-\begin{tabular}{|ll|c|}
-\hline
-\multicolumn{2}{|c|}{\textbf{Hiperparâmetros do}} & \multirow{2}{*}{\textbf{Valor}} \\
-\multicolumn{2}{|c|}{\textbf{Modelo Neural (Keras)}} & \\
-\hline
-\hline
-\eng{filters} & Qtde de filtros & $64$ \\
-\eng{kernel$\_$size} & Qtde de neurônios por filtro & $3$ \\
-\eng{activation} & Função de ativação & `elu' \\
-\eng{padding} & Ordem dos dados & `causal' \\
-\eng{input$\_$shape} & Formato de entrada e saída & $(30, 1)$ \\
-\eng{pool$\_$size} & Unidades de votação & $3$ \\
-\eng{optimizer} & Método de otimização & `adam' \\
-\eng{loss} & Função de perda & `mse' \\
-\eng{epochs} & Épocas de treinamento & $15$ \\
-\hline
-\end{tabular}
-\caption{Hiperparâmetros do modelo neural Keras.}\label{tabela:params_2}
-\end{center}
-\end{table}
-
-
-\begin{table}[]
-\begin{center}
-\begin{tabular}{|ll|c|}
-\hline
-\multicolumn{2}{|c|}{\textbf{Hiperparâmetros do}} & \multirow{2}{*}{\textbf{Valor}} \\
-\multicolumn{2}{|c|}{\textbf{Modelo Neural (Perceptron)}} & \\
-\hline
-\hline
-\eng{taxa} & Taxa de aprendizado & $0.001$ \\
-\eng{ativacao} & Função de ativação & `elu' \\
-\eng{N} & Arquitetura da rede & $[20, 10, 1]$ \\
-\eng{M} & Épocas de treinamento & $25$ \\
-\hline
-\end{tabular}
-\caption{Hiperparâmetros do modelo neural Perceptron.}\label{tabela:params_3}
-\end{center}
-\end{table}
-
 Ao final dos treinamentos e previsões, listei na Tabela \ref{tabela:teste_7} os resultados de cada modelo, e nas últimas linhas as métricas de avaliação já definidas acima.
 
 \begin{table}[]
@@ -139,11 +183,11 @@ Ao final dos treinamentos e previsões, listei na Tabela \ref{tabela:teste_7} os
 \resizebox{\textwidth}{!}{
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-\multirow{2}{*}{\textbf{Dia}} & \multirow{2}{*}{\textbf{Cotação}} 
+\multirow{2}{*}{\textbf{Dia}} & \textbf{Cotação} 
 & \textbf{Média-Móvel} & \textbf{Média-Móvel}
 & \multirow{2}{*}{\textbf{ARIMA}} 
 & \textbf{Rede Neural} & \textbf{Rede Neural} \\
-&& \textbf{(7 dias)} & \textbf{(30 dias)}
+& \textbf{Real} & \textbf{(7 dias)} & \textbf{(30 dias)}
 && \textbf{(Keras)} & \textbf{(Perceptron)} \\
 \hline
 \hline
@@ -165,7 +209,17 @@ Ao final dos treinamentos e previsões, listei na Tabela \ref{tabela:teste_7} os
 \end{center}
 \end{table}
 
-A seguir, na Figura \ref{fig:series_previsoes_7_1}, estão os gráficos dos modelos desses $7$ dias de previsão para os modelos que se saíram melhores, ou seja, Rede Neural Keras, Média-Móvel $30$ dias e ARIMA.
+A partir dos resultados vimos que, para estas $7$ janelas de treino, o modelo Keras foi o que se saiu melhor apesar de empatar com o modelo de Média-Móvel 30 dias nas métricas MAE e RMSE e ter sido quase que imperceptivelmente melhor na correlação, configurando assim um empate técnico. 
+
+Enquanto isso, o modelo \eng{Perceptron} foi o que se saiu pior em todas as métricas, o que era esperado já que não foi construído para tarefas de regressão, mas para tarefas de classificação, devido a restrições que foram implementadas na camada de saída, o que invalida a previsão de valores contínuos.
+
+O ARIMA saiu-se melhor que o \eng{Perceptron}, mas nem tão bom quanto o modelo neural convolucional, isto em todas as métricas. O modelo neural não utilizou pressupostos sobre os dados, apenas uma grande quantidade de dados de treinamento, o que é um dos requisitos para seu funcionamento e utilização.
+
+Apesar disso, o modelo de referência, a Média-Móvel $30$ dias de cada janela, saiu-se tão bem quanto o modelo neural Keras. Indicação que o modelo poderia se sair ainda melhor, se tivesse sido fornecido a ele ainda mais dados, uma vez que ele é de fato um modelo de aprendizagem profunda, funcionando tão bem quanto mais dados há disponíveis.
+
+Já o modelo de Média-Móvel $7$ dias foi o pior dentre todos os modelos, com seus valores previstos estando em outro patamar, por exemplo a única correlação negativa, sendo inclusive pior em média do que o \eng{Perceptron}.
+
+A seguir, na Figura \ref{fig:series_previsoes_7_1}, estão os gráficos dos modelos desses $7$ dias de previsão para os modelos que se saíram melhores, ou seja, Rede Neural Keras, Média-Móvel $30$ dias e ARIMA. Já na Figura \ref{fig:series_previsoes_7_2} estão os gráficos dos modelos que não tiveram um bom desempenho, o Média-Móvel $7$ dias e o Rede Neural \eng{Perceptron}.
 
 \begin{figure}[htb]
 \centering
@@ -174,22 +228,12 @@ A seguir, na Figura \ref{fig:series_previsoes_7_1}, estão os gráficos dos mode
 \label{fig:series_previsoes_7_1}
 \end{figure}
 
-Já na Figura \ref{fig:series_previsoes_7_2} estão os gráficos dos modelos que não tiveram um bom desempenho, o Média-Móvel $7$ dias e o Rede Neural Perceptron.
-
 \begin{figure}[htb]
 \centering
 \includegraphics[width=14cm]{figuras/series_previsoes_7_2}
-\caption{Previsões de $7$ dias do modelo de rede Perceptron e de Média-Móvel de $7$ dias das janelas de cotações do Dólar.}
+\caption{Previsões de $7$ dias do modelo de rede \eng{Perceptron} e de Média-Móvel de $7$ dias das janelas de cotações do Dólar.}
 \label{fig:series_previsoes_7_2}
 \end{figure}
-
-A partir dos resultados vimos que, para estas $7$ janelas de treino, o modelo Keras foi o que se saiu melhor, enquanto que o modelo Perceptron se saiu bem pior do que ele, o que era de certa forma esperado, já que utiliza uma arquitetura não otimizada para o problema em questão, o que já serviu de verificação deste fato.
-
-O ARIMA saiu-se melhor que o Perceptron, mas nem tão bom quanto o modelo neural recorrente do Keras. O modelo neural não utilizou pressupostos sobre os dados, apenas uma grande quantidade de dados de treinamento, o que é requisito para seu funcionamento e utilização.
-
-Apesar disso, o modelo de referência, a Média-Móvel $30$ dias de cada janela, saiu-se tão bem quanto o modelo neural Keras. Indicação que o modelo poderia se sair ainda melhor, se tivesse sido fornecido a ele ainda mais dados, uma vez que ele é de fato um modelo de aprendizagem profunda, funcionando tão bem quanto mais dados há disponíveis.
-
-Já o modelo de Média-Móvel $7$ dias foi o pior dentre todos os modelos, com seus valores previstos estando em outro patamar, sendo inclusive pior em média do que o Perceptron.
 
 Não há como treinar um modelo de redes neurais sem uma quantidade razoável de exemplos, nesse caso, de janelas de dados do passado. Na verdade, como foram utilizadas janelas correspondentes a quase um ano de dados do passado, o percentual entre dados de teste $/$ dados de treino foi pouco menor de $3\%$, ou seja, a eficiência do modelo, apesar de impressionante, era de certa forma esperada.
 
@@ -220,11 +264,11 @@ A tabela de especificação dos dados de treino e teste é também similar à do
 \hline
 \hline
 \multirow{2}{*}{\textbf{Treino do modelo}} 
-& - Nenhuma janela anterior (Apenas os $30$ dias de cada janela); & - $253$ janelas anteriores de $30$ dias cada e mais o próximo dia conhecido;  \\
+& - $30$ dias de cada janela; & - $253$ janelas anteriores de $30$ dias cada e mais o próximo dia conhecido;  \\
 & - Calibração automática dos parâmetros (\eng{grid search}). & - Calibração manual dos parâmetros. \\
 \hline
 \textbf{Teste do modelo} 
-& - $30$ dias futuros ($1$ dia de cada uma das janelas de treino). & - $30$ janelas de $30$ dias cada. \\
+& \multicolumn{2}{c|}{- Previsão dos $30$ dias úteis futuros, de $16/08/2017$ a $27/09/2017$).}\\
 \hline
 \end{tabular}}
 \caption{Especificação dos dados de treino e de teste ($30$ dias).}\label{tabela:params_5}
@@ -258,11 +302,11 @@ Estão listados na Tabela \ref{tabela:teste_30} os resultados de cada modelo, e 
 
 \captionlistentry{Previsões para $30$ dias e métricas dos modelos das janelas de cotações do Dólar.}\label{tabela:teste_30}
 
-\multirow{2}{*}{\textbf{Dia}} & \multirow{2}{*}{\textbf{Cotação}} 
+\multirow{2}{*}{\textbf{Dia}} & \textbf{Cotação} 
 & \textbf{Média-Móvel} & \textbf{Média-Móvel}
 & \multirow{2}{*}{\textbf{ARIMA}} 
 & \textbf{Rede Neural} & \textbf{Rede Neural} \\
-&& \textbf{(7 dias)} & \textbf{(30 dias)}
+& \textbf{Real} & \textbf{(7 dias)} & \textbf{(30 dias)}
 && \textbf{(Keras)} & \textbf{(Perceptron)} \\
 \hline
 
@@ -322,7 +366,11 @@ Estão listados na Tabela \ref{tabela:teste_30} os resultados de cada modelo, e 
 % \end{table}
 \normalsize
 
-A seguir, na Figura \ref{fig:series_previsoes_30_1}, estão os gráficos dos modelos dos $30$ dias de previsão, os quais se sairam melhores de acordo com as métricas na tabela acima. Na Figura \ref{fig:series_previsoes_30_2}, estão os gráficos dos demais modelos utilizados para previsão, que não tiveram desempenho tão bom quanto os anteriores.
+Nota-se que a previsão de $30$ dias no futuro, partindo do mesmo ponto que no teste anterior, colocou o modelo \eng{ARIMA} em primeiro lugar, sendo que em segundo ficou a rede neural Keras praticamente empatado com a Média-Móvel $30$ dias.
+
+% comentar métricas aqui
+
+A seguir, na Figura \ref{fig:series_previsoes_30_1}, estão os gráficos dos modelos dos $30$ dias de previsão, os quais se saíram melhores de acordo com as métricas na tabela acima. Na Figura \ref{fig:series_previsoes_30_2}, estão os gráficos dos demais modelos utilizados para previsão, que não tiveram desempenho tão bom quanto os anteriores.
 
 \begin{figure}[htb]
 \centering
@@ -334,7 +382,7 @@ A seguir, na Figura \ref{fig:series_previsoes_30_1}, estão os gráficos dos mod
 \begin{figure}[htb]
 \centering
 \includegraphics[width=14cm]{figuras/series_previsoes_30_2}
-\caption{Previsões de $30$ dias do modelo de rede Perceptron e de Média-Móvel de $7$ dias das janelas de cotações do Dólar.}
+\caption{Previsões de $30$ dias do modelo de rede \eng{Perceptron} e de Média-Móvel de $7$ dias das janelas de cotações do Dólar.}
 \label{fig:series_previsoes_30_2}
 \end{figure}
 
@@ -346,8 +394,6 @@ Novamente é exibido, na Figura \ref{fig:series_previsoes_30_3}, o gráfico com 
 \caption{Previsões de $30$ dias do modelo ARIMA com o intervalo de $95\%$ de confiança para cada previsão.}
 \label{fig:series_previsoes_30_3}
 \end{figure}
-
-Nota-se que a previsão de $30$ dias no futuro, partindo do mesmo ponto que no teste anterior, colocou o modelo \eng{ARIMA} em primeiro lugar, sendo que em segundo ficou a rede neural Keras praticamente empatado com a Média-Móvel $30$ dias.
 
 Se observarmos na Figura \ref{fig:series_previsoes_30_1}, há um vale nos valores de cotação próximo ao dia $08/09/2017$, e apenas as previsões do \eng{ARIMA} acompanham esse vale, o que faz com que seus resultados médios sejam superiores aos demais modelos, nesse caso. Os demais modelos tiveram os mesmos resultados, na mesma ordenação que no teste anterior.
 
@@ -374,11 +420,11 @@ A tabela de especificação dos dados de treino e teste foi feita nos moldes dos
 \hline
 \hline
 \multirow{2}{*}{\textbf{Treino do modelo}} 
-& - Nenhuma janela anterior (Apenas os $30$ dias de cada janela); & - $722$ janelas anteriores de $30$ dias cada e mais o próximo dia conhecido;  \\
+& - $30$ dias de cada janela; & - $722$ janelas anteriores de $30$ dias cada e mais o próximo dia conhecido;  \\
 & - Calibração automática dos parâmetros (\eng{grid search}). & - Calibração manual dos parâmetros. \\
 \hline
 \textbf{Teste do modelo} 
-& - $250$ dias futuros ($1$ dia de cada uma das janelas de treino). & - $250$ janelas de $30$ dias cada. \\
+& \multicolumn{2}{c|}{- Previsão dos $250$ dias úteis futuros, de $01/03/2017$ a $01/03/2018$).}\\
 \hline
 \end{tabular}
 \caption{Especificação dos dados de treino e de teste ($1$ ano).}\label{tabela:params_ano_1}
@@ -409,7 +455,7 @@ Realizando o \eng{grid search}, o modelo otimizou sua métrica em cada janela, f
 
 Nota-se que, exceto por alguns \eng{outliers}, a componente autoregressiva de primeira ordem foi selecionada, i.e. $p = 1$, na grande maioria das janelas. A componente de diferenciação foi nula, i.e. $d = 0$. Para a componente de médias-móveis, houve uma distribuição entre os valores $q = 0, 1, 2$, com maior concentração de zeros. Por se tratar da mesma série que os testes anteriores, são valores condizentes.
 
-A seguir, os hiperparâmetros, ajustados manualmente após algumas tentativas, das redes neurais Keras estão listados na Tabela \ref{tabela:params_ano_2}, e da rede Perceptron implementada, estão listados na Tabela \ref{tabela:params_ano_3}.
+A seguir, os hiperparâmetros, ajustados manualmente após algumas tentativas, das redes neurais Keras estão listados na Tabela \ref{tabela:params_ano_2}, e da rede \eng{Perceptron} implementada, estão listados na Tabela \ref{tabela:params_ano_3}.
 
 \begin{table}[]
 \begin{center}
@@ -448,18 +494,10 @@ A seguir, os hiperparâmetros, ajustados manualmente após algumas tentativas, d
 \eng{M} & Épocas de treinamento & $25$ \\
 \hline
 \end{tabular}
-\caption{Hiperparâmetros do modelo neural Perceptron para o terceiro teste.}\label{tabela:params_ano_3}
+\caption{Hiperparâmetros do modelo neural \eng{Perceptron} para o terceiro teste.}\label{tabela:params_ano_3}
 \end{center}
 \end{table}
 
-Após a execução dos treinamentos e das previsões, os gráficos de todas as previsões foram analisadas, e figuras separadas foram criadas, uma com os modelos que tiveram um melhor desempenho nas métricas e portanto se aproximaram mais também no visual dos gráficos ao gráfico dos valores reais das cotações. Eles estão na Figura \ref{fig:previsoes_ano_1}.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=14cm]{figuras/series_previsoes_ano_1}
-\caption{Previsões de um ano dos modelos ARIMA, Rede Neural Keras e Média-Móvel $7$ dias das janelas de cotações do Dólar.}
-\label{fig:previsoes_ano_1}
-\end{figure}
 
 Estão listados na Tabela \ref{tabela:teste_ano_1} os resultados de todos os modelos utilizados, com as métricas de avaliação utilizadas. A partir desses resultados podemos ver que o modelo ARIMA foi o melhor, seguido pelo modelo de Média-Móvel $7$ dias, e em terceiro a Rede Neural Keras, com valores muito próximos entre esses dois últimos.
 
@@ -487,16 +525,27 @@ Estão listados na Tabela \ref{tabela:teste_ano_1} os resultados de todos os mod
 
 É importante lembrar que a otimização dos modelos ARIMA foi feita separadamente para cada janela de dados de teste, assim como as médias-móveis, por definição, capturam a tendência central de cada janela, enquanto que no caso das Redes Neurais, todo um período fixado do passado é utilizado como treinamento e as previsões foram feitas a partir destes parâmetros assim ajustados.
 
-Os demais modelos, que não tiveram bons desempenhos, o Perceptron e o modelo de Média-Móvel $30$ dias que troca de lugar com o de $7$ dias que desta vez ficou entre os melhores, estão nos gráficos da Figura \ref{fig:previsoes_ano_2}.
+% comentar sobre as metricas (ou nao)
+
+Novamente, os gráficos de todas as previsões foram analisadas, e figuras separadas foram criadas, uma com os modelos que tiveram um melhor desempenho nas métricas e portanto se aproximaram mais também no visual dos gráficos ao gráfico dos valores reais das cotações. Eles estão na Figura \ref{fig:previsoes_ano_1}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=14cm]{figuras/series_previsoes_ano_1}
+\caption{Previsões de um ano dos modelos ARIMA, Rede Neural Keras e Média-Móvel $7$ dias das janelas de cotações do Dólar.}
+\label{fig:previsoes_ano_1}
+\end{figure}
+
+Os demais modelos, que não tiveram bons desempenhos, o \eng{Perceptron} e o modelo de Média-Móvel $30$ dias, estão nos gráficos da Figura \ref{fig:previsoes_ano_2}.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=14cm]{figuras/series_previsoes_ano_2}
-\caption{Previsões de um ano do modelo de rede Perceptron e de Média-Móvel de $30$ dias das janelas de cotações do Dólar.}
+\caption{Previsões de um ano do modelo de rede \eng{Perceptron} e de Média-Móvel de $30$ dias das janelas de cotações do Dólar.}
 \label{fig:previsoes_ano_2}
 \end{figure}
 
-Por fim, é interessante mostrar que no caso do modelo ARIMA, há um intervalo de confiança que é gerado para cada previsão, sendo o padrão do modelo utilizado um nível de confiança de $95\%$, que pode ser visualizado, sombreado ao redor do gráfico das previsões, na Figura \ref{fig:series_arima_ano}.
+Por fim, é interessante mostrar que no caso do modelo ARIMA, há um intervalo de confiança que é gerado para cada previsão, com nível de confiança de $95\%$, que pode ser visualizado pelo sombreado ao redor do gráfico das previsões, na Figura \ref{fig:series_arima_ano}.
 
 \begin{figure}[htb]
 \centering
@@ -505,10 +554,11 @@ Por fim, é interessante mostrar que no caso do modelo ARIMA, há um intervalo d
 \label{fig:series_arima_ano}
 \end{figure}
 
+Nota-se uma região do gráfico (entre Maio e Julho de 2017) em que o intervalo de confiança de cada previsão está grande em comparação ao restante do gráfico, já que no início dessa região (meados de Maio de 2017) há uma variação brusca do valor da cotação do Dólar, e uma vez que o intervalo de confiança calculado depende da variância dos dados, vemos a propagação desse efeito pelo mês seguinte.
 
 \section{Tempos de processamento}
 
-Uma última medida importante a ser comparada, neste tipo de tarefa, diz respeito ao tempo de processamento dos algoritmos de treinamento. Todos os procedimentos foram feitos num ambiente \eng{Jupyter notebook}, que possui comandos muito simples que podem ser utilizados para essa medição\footnote{Foi utilizado o comando $\%\%time$}.
+Uma última medida importante a ser comparada, neste tipo de tarefa, diz respeito ao tempo de processamento dos algoritmos de treinamento. Todos os procedimentos foram feitos num ambiente \eng{Jupyter notebook}, disponível online\footnote{\url{https://github.com/feanored/Perceptron/blob/master/Keras_Arima_Perceptron.ipynb}}, que possui comandos muito simples que podem ser utilizados para essa medição\footnote{Foi utilizado o comando $\%\%time$}.
 
 A Tabela \ref{tabela:desempenho} contém o tempo de processamento do treinamento dos modelos principais aqui comparados, para cada um dos três testes realizados neste capítulo. Nesta tabela estão contabilizados o tempo do \eng{grid search}, no caso do ARIMA, e das épocas de treinamento para os dois modelos de redes neurais.
 

@@ -40,7 +40,7 @@ Assim, podemos dizer que a direção de minimização da função está na dire�
 \begin{equation}\label{grad_2}
 dx = - \eta \nabla f(x)
 \end{equation}
-onde $\eta$ é a constante de proporcionalidade, que é conhecida como \defi{taxa de aprendizado}, que tem por objetivo tornar a velocidade do treinamento ajustável durante a execução do algoritmo, sendo tarefa do cientista de dados testar e obter os valores que dêem os melhores resultados caso-a-caso. 
+onde $\eta$ é a constante de proporcionalidade, que é conhecida como \defi{taxa de aprendizado}, que tem por objetivo tornar a velocidade do treinamento ajustável durante a execução do algoritmo, sendo tarefa do cientista de dados testar e obter os valores que dão os melhores resultados caso-a-caso. 
 
 Podemos observar as diferenças de utilizar uma taxa de aprendizado fixa ou variável (que mude a cada iteração do treinamento, por exemplo), utilizando gráficos. Suponha que estamos querendo minimizar uma função quadrática do tipo $f(x) = x^2$, essa restrição é particularmente útil uma vez que a função de custo que será utilizada, a MSE, é uma função quadrática deste tipo. 
 
@@ -79,7 +79,7 @@ A outra abordagem é utilizar valores variáveis, sendo o caso mais comum utiliz
 \label{fig:grad_3}
 \end{figure}
 
-Qualquer que seja o tipo de taxa de apredizado que venha a ser utilizado, permanece como melhor estratégia testar qual deles irá gerar o melhor resultado, analisando diretamente os valores candidatos a mínimo obtidos pelo algoritmo como função do número do passo, criando assim outro tipo de gráfico, no qual não precisamos saber o formato da função objetivo, o que é razoável uma vez que não precisariamos de um método numérico para obter seu ponto de mínimo.
+Qualquer que seja o tipo de taxa de aprendizado que venha a ser utilizado, permanece como melhor estratégia testar qual deles irá gerar o melhor resultado, analisando diretamente os valores candidatos a mínimo obtidos pelo algoritmo como função do número do passo, criando assim outro tipo de gráfico, no qual não precisamos saber o formato da função objetivo, o que é razoável uma vez que não precisaríamos de um método numérico para obter seu ponto de mínimo.
 
 Podemos observar este comportamento genérico para os 4 casos acima mencionados, na Figura \ref{fig:grad_4} temos os gráficos de valores hipotéticos de candidatos a mínimo gerados por (a) taxa de aprendizado fixa e grande, (b) taxa de aprendizado fixa e pequena, (c) taxa de aprendizado fixa e mediana, (d) taxa de aprendizado decrescente.
 

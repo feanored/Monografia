@@ -18,7 +18,7 @@ Na verdade, Morettin e Singer \citep{apostila} citam que na década de 80 houve 
 
 Para entender um pouco mais de seu escopo, David M. Blei e Padhraic Smyth \citep{blei} discutem ciência de dados sob as visões estatística, computacional e humana. Eles argumentam que é a combinação desses três componentes que formam a essência do que ela é e, assim como, do conhecimento que ela é capaz de produzir.
 
-Pode-se extender e observar essa ideia de uma visão em conjunto dos aspectos estatísticos, computacionais e humanos com um diagrama de Venn. Por exemplo, seja o diagrama criado por Andrew Silver \citep{venn} e mostrado a seguir na figura \ref{fig:venn}.
+Pode-se estender e observar essa ideia de uma visão em conjunto dos aspectos estatísticos, computacionais e humanos com um diagrama de Venn. Por exemplo, seja o diagrama criado por Andrew Silver \citep{venn} e mostrado a seguir na Figura \ref{fig:venn}.
 
 \begin{figure}[htb]
 \centering
@@ -33,7 +33,7 @@ Além disso, podemos ver, nas intersecções entre os aspectos, as definições 
 
 Uma pesquisa tradicional utiliza o conhecimento de um profissional da área aliado com habilidades e ferramentas estatísticas. Um software tradicional, por sua vez, é criado por profissionais de tecnologia para o uso de profissionais de outras áreas. 
 
-A ciência de dados, portanto, é a junção desses aspectos, aliando modelagem estatística, automação computacional, validade, e intuição. As áreas perigosas mostradas na figura \ref{fig:venn}, refletem o que pode ocorrer quando algum dos três aspectos é negligenciado numa empreitada de ciência de dados.
+A ciência de dados, portanto, é a junção desses aspectos, aliando modelagem estatística, automação computacional, validade, e intuição. As áreas perigosas mostradas na Figura \ref{fig:venn}, refletem o que pode ocorrer quando algum dos três aspectos é negligenciado numa empreitada de ciência de dados.
 
 Algoritmos de \emph{aprendizado de máquina} vem sendo utilizados em grande parte dos modelos de ciência de dados. Mas o que é aprendizado de máquina? Ou então, o que significa dizer que o computador, neste caso a ``máquina'', está \emph{aprendendo}?
 
@@ -45,17 +45,17 @@ Exemplos, além do filtro de \eng{spams} podem ser: detectar transações de cr�
 
 Como ficará claro ao longo deste trabalho, o aprendizado consiste na utilização de dados já conhecidos para ajustar parâmetros de modelos. Uma vez ajustados os parâmetros, o algoritmo que descreve o modelo passa a ser usado para responder às consultas. Essa fase de ajuste de parâmetros é chamada de aprendizado ou treinamento. 
 
-Uma \defi{rede neural} é um exemplo de modelo preditivo de aprendizado de máquina que foi criado com inspiração no funcionamento do cérebro biológico. David Kopec \citep{classic} descreve que apesar de terem sido as primeiras a serem criadas, elas vem ganhando nova importância na última década, graças ao avanço computacional, uma vez que exigem muito processamento, e também porque podem ser usadas para resolver problemas de aprendizagem dos mais variados tipos.
+Uma \defi{rede neural artificial} é um exemplo de modelo preditivo de aprendizado de máquina que foi criado com inspiração no funcionamento do cérebro biológico. David Kopec \citep{classic} explica que apesar desse modelo ter sido criado há várias décadas, ele vem ganhando nova importância recentemente, graças ao avanço computacional e à crescente disponibilidade de dados, o que criou um novo paradigma conhecido como \defi{aprendizagem profunda}, que foi aplicado e se mostrou útil em diversas áreas, como a bioinformática, o reconhecimento de imagens e sons, etc.
 
-Atualmente existem vários tipos de redes neurais, porém este trabalho lida principalmente com aquele tipo que foi originalmente criado sob a inspiração do funcionamento do cérebro, chamado de \defi{perceptron}, e que portanto tenta imitar o comportamento dos neurônios e suas conexões, aprendendo padrões a partir de dados existentes e tentando prever o comportamento de dados novos a partir do padrão aprendido.
+Atualmente existem vários tipos de redes neurais, porém este trabalho tem como objetivo explicar principalmente aquele tipo que foi originalmente criado sob a inspiração do funcionamento do cérebro, chamado de \defi{perceptron}, e que portanto tenta imitar, de forma mais simples, o comportamento dos neurônios e suas conexões, aprendendo padrões a partir de dados existentes e tentando prever o comportamento de dados novos a partir do padrão aprendido.
 
 Uma visão geral da arquitetura do aprendizado de máquina, situando a posição das redes neurais e do algoritmo \eng{perceptron} em toda esta estrutura, assim como exemplos de aplicações em cada uma das suas ramificações, estão no Capítulo \ref{cap:redes}.
 
-Neste trabalho é utilizada como base didática uma versão simples do algoritmo \eng{perceptron} feita e explicada por Kopec \citep{classic}, e a partir desta base, foram criados novos métodos de treinamento e de validação com algumas estratégias, como uma tentativa de automatizar e otimizar o processo de treinamento do algoritmo, que é comumente feito de forma heurística. Detalhes dessa implementação estão no Capítulo \ref{cap:perceptron}.
+Neste trabalho é utilizada como base didática uma versão simples do algoritmo \eng{perceptron} feita e explicada por Kopec \citep{classic}, e a partir desta base, foram criados novos métodos de treinamento e de validação com uma estratégia de otimização de erros, como uma tentativa de automatizar e otimizar o processo de treinamento do algoritmo, que é comumente feito de forma heurística. Detalhes dessa implementação e da estratégia de otimização estão no Capítulo \ref{cap:perceptron}.
 
 São apresentados os conceitos e usos das séries temporais de dados não-lineares no Capítulo \ref{cap:series}, assim como alguns exemplos de aplicações na área financeira. As técnicas tradicionais de análise e de previsão de séries temporais de dados serão brevemente apresentadas neste capítulo.
 
 Para servir de validação e aplicação do algoritmo criado, no Capítulo \ref{cap:comparacao} serão feitas comparações de desempenho entre o \eng{perceptron} e os modelos tradicionais de previsões de séries temporais apresentados no capítulo anterior, como o \defi{SARIMA} (\eng{seasonal auto regressive integrated moving average}). Tais comparações usam como inspiração trabalhos similares como o de Alsmadi, Omar, Noah e Almarashdah \citep{4809024}.
 
-Ao final concluo sobre os modelos de previsões aqui estudados e comparados, destacando a qualidade e eficiência dos métodos de redes neurais, tão bons e às vezes melhores do que os métodos tradicionais estatísticos.
+Ao final concluo sobre os modelos de previsões aqui estudados e comparados, avaliando a qualidade e eficiência dos métodos estatísticos tradicionais e dos métodos de redes neurais, e deixando as dúvidas aqui levantadas como uma base de mais ideias para comparações e testes futuros.
 

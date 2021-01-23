@@ -8,7 +8,7 @@
 \chapter{Séries temporais}
 \label{cap:series}
 
-Neste capítulo são apresentados os conceitos básicos de séries temporais. Também são discutidos brevemente os modelos tradicionais de análise e descrição das séries, ou de previsões de valores futuros, de acordo com o objetivo do estudo. Tais modelos são, por exemplo, baseados em médias móveis, tendências e sazonalidades presentes nos dados.
+O segundo objetivo deste trabalho é testar a utilização das redes neurais na previsão de séries temporais financeiras, e para isso são apresentados neste capítulo os conceitos básicos de séries temporais. Também são discutidos brevemente os modelos tradicionais de análise e descrição das séries, ou de previsões de valores futuros, de acordo com o objetivo do estudo. Tais modelos são, por exemplo, baseados em médias móveis, tendências e sazonalidades presentes nos dados.
 
 De acordo com Pedro A. Morettin e Clélia M C. Toloi \citep{morettin}, uma série temporal é qualquer conjunto de observações ordenadas no tempo. São exemplos: valores diários de poluição de uma cidade, valores mensais de temperatura, índices diários da bolsa de valores, número médio anual de manchas solares e registro de marés em portos e estuários.
 
@@ -33,11 +33,9 @@ Há dois tipos básicos de modelos que lidam com séries temporais, de acordo co
 
 Dentre os modelos paramétricos, destacam-se os modelos \emph{ARIMA} (\emph{autorregressivos integrados de médias móveis}), disponíveis como bibliotecas das linguagens \eng{Python} e \eng{R}, enquanto que entre os modelos não-paramétricos destaca-se a \emph{análise espectral}, também denominada de \emph{análise de Fourier}, já que as ferramentas utilizadas são as transformadas de Fourier e suas variações.
 
-Na última seção desse capítulo, uma estrutura de uma rede neural recorrente, implementada com a API Keras, é proposta como um modelo \defi{semiparamétrico}, ou seja, estimando parâmetros inerentes às redes neurais, mas não utilizando parâmetros ou suposições específicas sobre os dados, para a realização de previsões de valores futuros de séries temporais financeiras, com enfoque nas séries históricas de cotações de moedas estrangeiras.\footnote{Tais séries estão disponíveis para \eng{download} no site do Banco Central do Brasil: \url{https://www.bcb.gov.br/}}.
-
 \section{Processos estocásticos}
 
-De acordo com Morettin e Toloi \citep{morettin}, um \defi{processo estocástico} é uma familia $Z = \{ Z(t), t \in \mathcal{T} \}$, onde o conjunto $\mathcal{T}$ é normalmente tomado como $\mathcal{T} = \mathbb{Z}$ ou $\mathcal{T} = \mathbb{R}$, tal que, para cada $t \in \mathcal{T}$, $Z(t)$ é uma variável aleatória (v.a.). 
+De acordo com Morettin e Toloi \citep{morettin}, um \defi{processo estocástico} é uma família $Z = \{ Z(t), t \in \mathcal{T} \}$, onde o conjunto $\mathcal{T}$ é normalmente tomado como $\mathcal{T} = \mathbb{Z}$ ou $\mathcal{T} = \mathbb{R}$, tal que, para cada $t \in \mathcal{T}$, $Z(t)$ é uma variável aleatória (v.a.). 
 
 Portanto, um processo estocástico é uma família de variáveis aleatórias reais $Z(t),\; t \in \mathcal{T}$, definidas num mesmo espaço de probabilidades $(\Omega, \mathcal{A}, \mathcal{P})$, e portanto $Z(t)$ é uma função de dois argumentos, isto é, $Z(t, \omega),\; t \in \mathcal{T},\; \omega \in \Omega$.
 
@@ -48,13 +46,13 @@ Por outro lado, para cada $\omega_i \in \Omega$ fixado, denotamos $Z(t, \omega_i
 \begin{figure}[htb]
 \centering
 \includegraphics[width=10cm]{figuras/trajetorias}
-\caption{Processo estocástico como uma família de trajetórias, isto é, de séries temporais.\footnote{Extraído de Morettin e Toloi, 2019, pág 27.}}
+\caption{Processo estocástico como uma família de trajetórias, isto é, de séries temporais.\footnote{  de \citep{morettin}, pág 27.}}
 \label{fig:trajetorias}
 \end{figure}
 
 Estaremos interessados em processos univariados tanto em $\mathcal{T}$ quanto em $\Omega$, isto é, séries temporais de apenas um argumento temporal, e com um evento $\omega \in \Omega$ fixado e portanto omitido, o que simplifica a notação de $\{Z^{(i)}(t), t \in \mathcal{T}\}$ para $\{Z(t), t \in \mathcal{T}\}$, o que definem as \emph{séries temporais univariadas}, que descrevem como uma v.a. real evolui no domínio temporal $\mathcal{T}$.
 
-Além disso, para as séries e modelos aqui tratados iremos restringir $\mathcal{T} = \mathbb{Z}$, assim omitiremos a definição de um domínio geral e fixaremos a notação como sendo $\{Z(t), t \in \mathbb{Z}\}$ ou ainda $\{Z_t, t \in \mathbb{Z}\}$, para denotar as \emph{séries temporais discretas univariadas}, que além de discretas são equiespaçadas no tempo. A partir de agora, serão chamadas simplesmente de \defi{séries temporais}, pois são os únicos processos estocásticos de interesse neste trabalho.
+Além disso, para as séries e modelos aqui tratados iremos restringir $\mathcal{T} = \mathbb{Z}$, assim omitiremos a definição de um domínio geral e fixaremos a notação como sendo $\{Z(t), t \in \mathbb{Z}\}$ ou ainda $\{Z_t, t \in \mathbb{Z}\}$, para denotar as \emph{séries temporais discretas univariadas}, que além de discretas são equidistantes no tempo. A partir de agora, serão chamadas simplesmente de \defi{séries temporais}, pois são os únicos processos estocásticos de interesse neste trabalho.
 
 \subsection{Definições}
 
@@ -82,7 +80,7 @@ O momento de primeira ordem, isto é, a \defi{média} de $Z$ é definida por:
 \mu(1; t) = \mu(t) = \E\{Z(t)\} = \int_{-\infty}^{\infty} z f(z;t)dz, t \in \mathcal{T}
 \end{equation}
 
-Define-se, a partir dos momentos de primeira ordem, a \defi{função de autocovariância} (facv) de $Z$:
+Define-se, a partir dos momentos de primeira ordem, a \defi{função de autocovariância} (\emph{facv}) de $Z$:
 
 \begin{equation}\label{series:2.6}
 \gamma(t_1, t_2) = \mu(1,1; t_1,t_2) - \mu(1; t_1)\mu(1; t_2) = \Cov\{Z(t_1),Z(t_2)\}
@@ -106,7 +104,7 @@ Formalmente, um processo estocástico $Z = \{Z(t), t \in \mathcal{T}\}$ é \defi
 
 	(iii) $\gamma(t_1, t_2) = \Cov\{Z(t_1), Z(t_2)\}$ é uma função de $|t_1 - t_2|, \;\;\; \forall~ t_1, t_2 \in \mathcal{T}.$
 
-Dessa forma, podemos dizer que processos estacionários de segunda ordem desenvolvem-se em torno de uma média constante, ou seja, ao redor de uma mesma tendência ou reta. É possível citar dois tipos de não-estacionaridade. 
+Dessa forma, podemos dizer que processos estacionários de segunda ordem desenvolvem-se em torno de uma média constante, ou seja, ao redor de uma mesma tendência ou reta. É possível citar dois tipos de não-estacionariedade. 
 
 Existem os processos \emph{homogêneos}, que apresentam uma estacionariedade inicial mas que depois sofrem uma mudança de tendência e então tornam-se estacionárias novamente, mas não necessariamente ao redor da mesma média inicial, e que segundo Morettin e Toloi \citep{morettin} podem se tornar estacionários se tomarmos diferenças sucessivas da série original.
 
@@ -129,15 +127,15 @@ Para exemplificar esses conceitos, considere a Figura \ref{fig:exe_estac}. Temos
 \begin{figure}[htb]
 \centering
 \includegraphics[width=14cm]{figuras/exemplo_estac}
-\caption{Esquerda: Índices mensais do Ibovespa. Direita: Log-diferença do Ibovespa.\footnote{Extraído de Morettin e Toloi, 2019, pág 7.}}
+\caption{Esquerda: Índices mensais do Ibovespa. Direita: Log-diferença do Ibovespa.\footnote{Extraído de \citep{morettin}, pág 7.}}
 \label{fig:exe_estac}
 \end{figure}
 
-O segundo tipo de não-estacionaridade é chamada de \emph{explosiva}. Um exemplo de um processo não-estacionário explosivo é uma série temporal que descreve o crescimento de uma população de bactérias. Não tratamos de processos deste tipo neste trabalho.
+O segundo tipo de não-estacionariedade é chamada de \emph{explosiva}. Um exemplo de um processo não-estacionário explosivo é uma série temporal que descreve o crescimento de uma população de bactérias. Não tratamos de processos deste tipo neste trabalho.
 
 \subsection{Função de autocorrelação}
 
-Seja $\{ X_t, t \in \mathbb{Z} \}$ um processo estacionário real com tempo discreto, de média $\mu = 0$ e facv $\gamma_\tau = \E\{ X_t, X_{t+\tau} \}$. Sob essas condições, Morettin e Toloi \citep{morettin} demonstram que a facv $\gamma_\tau$ satisfaz as propriedades:
+Seja $\{ X_t, t \in \mathbb{Z} \}$ um processo estacionário real com tempo discreto, de média $\mu = 0$ e \emph{facv} $\gamma_\tau = \E\{ X_t, X_{t+\tau} \}$. Sob essas condições, Morettin e Toloi \citep{morettin} demonstram que a \emph{facv} $\gamma_\tau$ satisfaz as propriedades:
 
 	(i) $\gamma_0 > 0$,
 
@@ -149,13 +147,13 @@ Seja $\{ X_t, t \in \mathbb{Z} \}$ um processo estacionário real com tempo disc
 
 	(v) $\lim_{|\tau| \to \infty}  \gamma_\tau = 0$.
 
-Define-se a \defi{função de autocorrelação} (fac) de um processo estocástico por:
+Define-se a \defi{função de autocorrelação} (\emph{fac}) de um processo estocástico por:
 
 \begin{equation}\label{series:2.14}
 \rho_\tau = \frac{\gamma_\tau}{\gamma_0}
 \end{equation}
 
-A fac de um processo estacionário possui todas as propriedades da facv acima listadas e, em particular, $\rho_0 = 1$. O mais interessante é a ressalva de Morettin e Toloi \citep{morettin} de que a recíproca é verdadeira, isto é, dado um processo cuja fac ou facv possuem essas propriedades, então ele é estacionário. Dessa forma, temos um arcabouço teórico que nos permite investigar a existência da propriedade estacionária de uma série temporal dada.
+A \emph{fac} de um processo estacionário possui todas as propriedades da \emph{facv} acima listadas e, em particular, $\rho_0 = 1$. O mais interessante é a ressalva de Morettin e Toloi \citep{morettin} de que a recíproca é verdadeira, isto é, dado um processo cuja \emph{fac} ou \emph{facv} possuem essas propriedades, então ele é estacionário. Dessa forma, temos um arcabouço teórico que nos permite investigar a existência da propriedade estacionária de uma série temporal dada.
 
 \subsection{Exemplos de processos estocásticos}
 
@@ -168,15 +166,15 @@ Se simplificarmos esse caso geral para o caso de uma sequência $\{ X_n , n \geq
 
 \[ P\{X_1 = a_1, \ldots, X_n = a_n\} = P\{X_1 = a_1\}\times\ldots\times P\{X_n = a_n\} \]
 
-E se, além disso, todas as v.a. dessa sequência tiverem a mesma distribuição de probabilidades, elas serão portanto independentes e identicamente distribuidas (i.i.d.), o que configura $X_n = \{ X_n , n \geq 1 \}$, uma sequência de v.a. i.i.d., como um processo estocástico estacionário.
+E se, além disso, todas as v.a. dessa sequência tiverem a mesma distribuição de probabilidades, elas serão portanto independentes e identicamente distribuídas (i.i.d.), o que configura $X_n = \{ X_n , n \geq 1 \}$, uma sequência de v.a. i.i.d., como um processo estocástico estacionário.
 
-Definindo $\E\{X_n\} = \mu$, $\Var\{X_n\} = \sigma^2$, para todo $n \geq 1$, teremos que a facv de $X_n$ será dada por:
+Definindo $\E\{X_n\} = \mu$, $\Var\{X_n\} = \sigma^2$, para todo $n \geq 1$, teremos que a \emph{facv} de $X_n$ será dada por:
 
 \begin{equation}\label{series:2.19}
 \gamma_\tau = \Cov\{X_n, X_{n+\tau}\} = \left\{\begin{array}{lr} \sigma^2, & \text{ se } \tau = 0 \\ 0, & \text{ se } \tau \neq 0 \end{array}\right.
 \end{equation}
 
-E, a fac de $X_n$, será tal que:
+E, a \emph{fac} de $X_n$, será tal que:
 
 \begin{equation}\label{series:2.20}
 \rho_\tau = \left\{\begin{array}{lr} 1, & \text{ se } \tau = 0 \\ 0, & \text{ se } \tau \neq 0 \end{array}\right.
@@ -184,12 +182,12 @@ E, a fac de $X_n$, será tal que:
 
 Um segundo exemplo de processo estocástico, e muito mais útil para os estudos de séries temporais, é o de \defi{ruído branco}. Morettin e Toloi \citep{morettin} definem que a sequência $\{\epsilon_t,\; t \in \mathbb{Z}\}$ é um \emph{ruído branco discreto} se as v.a. $\epsilon_t$ não são correlacionadas, ou seja, $\Cov\{\epsilon_t, \epsilon_s\} = 0, t \neq s$.
 
-Esse processo será estacionário se $\E\{\epsilon_t\} = \mu_\epsilon$ e $\Var\{\epsilon-t\} = \sigma_\epsilon^2$, para todo $t \in \mathbb{Z}$. Dessa forma, as facv e fac de um ruído branco serão dadas, respectivamente e analogamente, por (\ref{series:2.19}) e (\ref{series:2.20}). Tipicamente representa-se o gráfico de uma função de autocorrelação conforme o exemplo do fac de um ruído branco, dado na Figura \ref{fig:fac_ruido}.
+Esse processo será estacionário se $\E\{\epsilon_t\} = \mu_\epsilon$ e $\Var\{\epsilon-t\} = \sigma_\epsilon^2$, para todo $t \in \mathbb{Z}$. Dessa forma, as \emph{facv} e \emph{fac} de um ruído branco serão dadas, respectivamente e analogamente, por (\ref{series:2.19}) e (\ref{series:2.20}). Tipicamente representa-se o gráfico de uma função de autocorrelação conforme o exemplo do \emph{fac} de um ruído branco, dado na Figura \ref{fig:fac_ruido}.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=8cm]{figuras/fac_ruido}
-\caption{Função de autocorrelação (fac) de um ruído branco.\footnote{Extraído de Morettin e Toloi, 2019, pág 35.}}
+\caption{Função de autocorrelação (\emph{fac}) de um ruído branco.\footnote{Extraído de \citep{morettin}, pág 35.}}
 \label{fig:fac_ruido}
 \end{figure}
 
@@ -213,15 +211,15 @@ Se temos uma série temporal discreta $Z = \{ Z_t, t \in \mathbb{Z} \}$, que ass
 f(\omega) = \frac{1}{2\pi} \sum_{\tau=-\infty}^{\infty} \gamma_\tau e^{-i\omega\tau}, \;\;\; -\pi\leq\omega\leq\pi.
 \end{equation}
 
-Ora, isto permite uma definição alternativa para a função de autocovariância (facv), como sendo a \emph{anti-transformada} de $Z$, pois:
+Ora, isto permite uma definição alternativa para a função de autocovariância (\emph{facv}), como sendo a \emph{anti-transformada} de $Z$, pois:
 
 \begin{equation}\label{series:2.34}
 \gamma_\tau = \int_{-\pi}^{\pi} e^{i\omega\tau} f(\omega) d\omega, \;\;\; \tau \in \mathbb{Z}.
 \end{equation}
 
-Embora úteis para a construção de modelos de engenharia e física, Morettin e Toloi \citep{morettin} ressaltam que usar o espectro ou a facv para modelar uma série temporal é mais factível no contexto de processos industriais, e que o uso mais prático em outros contextos, como o de séries financeiras é o papel que desempenham nos modelos paramétricos como o ARIMA.
+Embora úteis para a construção de modelos de engenharia e física, Morettin e Toloi \citep{morettin} ressaltam que usar o espectro ou a \emph{facv} para modelar uma série temporal é mais factível no contexto de processos industriais, e que o uso mais prático em outros contextos, como o de séries financeiras é o papel que desempenham nos modelos paramétricos como o ARIMA.
 
-Isto vem do fato de que os modelos paramétricos tem comportamentos esperados, com valores de facv, em alguns casos, muito bem definidos e que podem ser testados e usados como uma validação ao modelo que pretende-se estimar a série temporal de estudo.
+Isto vem do fato de que os modelos paramétricos tem comportamentos esperados, com valores de \emph{facv}, em alguns casos, muito bem definidos e que podem ser testados e usados como uma validação ao modelo que pretende-se estimar a série temporal de estudo.
 
 Os modelos ARIMA correspondem a um conjunto de modelos, alguns mais básicos e outros que são formados pelo agrupamento de 2 ou 3 dos modelos básicos. A metodologia mais usada, inclusive por Morettin e Toloi \citep{morettin}, para a análise desses modelos paramétricos é aquela conhecida como abordagem de Box e Jenkins \citep{box}.
 
@@ -309,7 +307,7 @@ Assim, combinando (\ref{series:5.7}) e (\ref{series:5.3}), obtemos uma relação
 \phi(B) = \psi^{-1}(B)
 \end{equation}
 
-Esse tipo de modelo é um ponto de partida, a partir do qual complicações são adicionadas para criar os outros modelos, mas que já serve para modelar, por exemplo, passeios aleatórios. Morettin e Toloi \citep{morettin} definem alguns conceitos adicionais como a estacionaridade e a invertibilidade desses processos, mas que configuram detalhes que fogem do escopo deste trabalho.
+Esse tipo de modelo é um ponto de partida, a partir do qual complicações são adicionadas para criar os outros modelos, mas que já serve para modelar, por exemplo, passeios aleatórios. Morettin e Toloi \citep{morettin} definem alguns conceitos adicionais como a estacionariedade e a invertibilidade desses processos, mas que configuram detalhes que fogem do escopo deste trabalho.
 
 
 \subsection{Modelos autorregressivos (AR)}
@@ -332,7 +330,7 @@ Pode-se escrever (\ref{series:5.14}) como:\footnote{Neste caso, o operador $\phi
 \phi(B)\tilde{Z}_t = a_t
 \end{equation}
 
-Tomando o exemplo mais simples possível de um modelo $AR$ poderemos investigar a estacionaridade desse modelo. Quando $\tilde{Z}_t \sim AR(1)$:
+Tomando o exemplo mais simples possível de um modelo $AR$ poderemos investigar a estacionariedade desse modelo. Quando $\tilde{Z}_t \sim AR(1)$:
 
 \begin{equation}\label{series:5.17}
 \tilde{Z}_t = \phi \tilde{Z}_{t-1} + a_t 
@@ -417,7 +415,7 @@ Assim, Morettin e Toloi \citep{morettin} mostram que, da mesma forma que no mode
 
 Essa generalização é bem útil quando temos que decidir se uma série dada é ou não estacionária. Há testes estatísticos específicos que testam, para uma série real, a hipótese nula que é a existência de raízes no círculo unitário, o que a configura como uma série não estacionária, contra a hipótese alternativa da não-existência de raízes unitárias, caracterizando-a então como uma série estacionária.
 
-Dentre os testes de estacionaridade existentes, Morettin e Toloi \citep{morettin} apresentam-nos o teste de \emph{Dickey e Fuller}, que utiliza uma estatística de teste com distribuição tabelada, e que será utilizado na parte prática do trabalho, a partir de bibliotecas disponíveis na linguagem \eng{python}, durante a estimação dos modelos paramétricos para as séries temporais aqui estudadas.
+Dentre os testes de estacionariedade existentes, Morettin e Toloi \citep{morettin} apresentam-nos o teste de \emph{Dickey e Fuller}, que utiliza uma estatística de teste com distribuição tabelada, e que será utilizado na parte prática do trabalho, a partir de bibliotecas disponíveis na linguagem \eng{python}, durante a estimação dos modelos paramétricos para as séries temporais aqui estudadas.
 
 
 \subsection{Os modelos integrados não-estacionários (ARIMA)}
@@ -463,7 +461,7 @@ Uma das transformações mais usadas, nesse caso, é a logarítmica, ou uma vers
 
 O \defi{segundo passo}, é tomar diferenças da série, já transformada (se houve necessidade), um número de vezes que for necessária a torná-la estacionária, caso ela não seja. Este número de vezes será o parâmetro $d$ do modelo $ARIMA$, de forma que a nova série, dada por $\Delta^d Z_t$ poderá ser dada por um modelo $ARMA(p, q)$.
 
-A escolha apropriada de $d$ será feita com a ajuda do teste de estacionaridade, conforme explicado no item anterior, de forma iterativa. Assim, fazendo o teste para a série original, se este identificar a presença de raízes unitárias, uma vez que o teste de Dickey-Fuller testa se há \emph{alguma} raiz unitária, então a série não é estacionária. 
+A escolha apropriada de $d$ será feita com a ajuda do teste de estacionariedade, conforme explicado no item anterior, de forma iterativa. Assim, fazendo o teste para a série original, se este identificar a presença de raízes unitárias, uma vez que o teste de Dickey-Fuller testa se há \emph{alguma} raiz unitária, então a série não é estacionária. 
 
 Assim tomamos uma diferença na série e realizamos o teste novamente. Se ele ainda apontar a existência de alguma raiz unitária, tomamos nova diferença. Repetimos até que o teste dê evidência de que não há mais raízes unitárias.
 
@@ -477,13 +475,13 @@ Essas estimativas deverão imitar o comportamento das quantidades teóricas dess
 
 O comportamento das funções de autocorrelação dos modelos $AR(p)$, $MA(q)$ e $ARMA(p, q)$ são listados por Morettin e Toloi \citep{morettin} como se segue:
  
-(i) A fac de um modelo $AR(p)$ decai exponencialmente, ou de acordo com senóides amortecidas, possuindo uma extensão infinita de valores não-nulos.
+(i) A \emph{fac} de um modelo $AR(p)$ decai exponencialmente, ou de acordo com senoides amortecidas, possuindo uma extensão infinita de valores não-nulos.
 
-(ii) A fac de um modelo $MA(q)$ é finita, no sentido que seu valor é zerado após o \emph{lag}\footnote{Lembramos que o \emph{lag} de ordem $\tau$, é um deslocamento temporal da série, isto é, $Z_{t{+}\tau}$, a partir do qual as funções de autocovariância/autocorrelação são calculadas.} temporal de ordem $q$.
+(ii) A \emph{fac} de um modelo $MA(q)$ é finita, no sentido que seu valor é zerado após o \emph{lag}\footnote{Lembramos que o \emph{lag} de ordem $\tau$, é um deslocamento temporal da série, isto é, $Z_{t{+}\tau}$, a partir do qual as funções de autocovariância/autocorrelação são calculadas.} temporal de ordem $q$.
 
-(iii) A fac de um modelo $ARMA(p, q)$ é infinita em extensão, e decai exponencialmente após o \emph{lag} $q{-}p$.
+(iii) A \emph{fac} de um modelo $ARMA(p, q)$ é infinita em extensão, e decai exponencialmente após o \emph{lag} $q{-}p$.
 
-Como pode ser complicada a análise de apenas a função de autocorrelação, Box e Jenkins \citep{box} derivaram a \defi{função de autocorrelação parcial} (facp) a partir da fac de um modelo $AR(k)$, da seguinte maneira:
+Como pode ser complicada a análise de apenas a função de autocorrelação, Box e Jenkins \citep{box} derivaram a \defi{função de autocorrelação parcial} (\emph{facp}) a partir da \emph{fac} de um modelo $AR(k)$, da seguinte maneira:
 
 \begin{equation}\label{eq:facp}
 \varphi(k) = \dfrac{|\mathbf{P}_k^*|}{|\mathbf{P}_k|}
@@ -491,20 +489,26 @@ Como pode ser complicada a análise de apenas a função de autocorrelação, Bo
 
 Onde, $\mathbf{P}_k$ é a matriz de autocorrelações do modelo $AR(k)$, e $\mathbf{P}_k^*$ é a mesma matriz mas com a última coluna substituída pelo vetor de autocorrelações do modelo. As definições detalhadas de ambos, e a derivação da equação (\ref{eq:facp}) podem ser vistas no Apêndice \ref{ap:facp}.
 
-Dessa forma, a facp, dada pela quantidade $\varphi(k)$ é uma função do parâmetro $k$, que será o \emph{lag}, e para a qual é demonstrada em Box e Jenkins \citep{box} o seguinte comportamento:
+Dessa forma, a \emph{facp}, dada pela quantidade $\varphi(k)$ é uma função do parâmetro $k$, que será o \emph{lag}, e para a qual é demonstrada em Box e Jenkins \citep{box} o seguinte comportamento:
 
-(i) A facp de um modelo $AR(p)$ é tal que $\varphi(k) \neq 0$, para $k \leq p$ e $\varphi(k) = 0$, para \emph{lags} $k > p$.
+(i) A \emph{facp} de um modelo $AR(p)$ é tal que $\varphi(k) \neq 0$, para $k \leq p$ e $\varphi(k) = 0$, para \emph{lags} $k > p$.
 
-(ii) A facp de um modelo $MA(q)$ tem comportamento análogo ao fac de um modelo $AR(p)$, ou seja, com decaimento exponencial ou por senóides amortecidas e infinita em extensão.
+(ii) A \emph{facp} de um modelo $MA(q)$ tem comportamento análogo ao \emph{fac} de um modelo $AR(p)$, ou seja, com decaimento exponencial ou por senoides amortecidas e infinita em extensão.
 
-(iii) A facp de um modelo $ARMA(p, q)$ tem um comportamento similar ao comportamento da facp de um modelo $MA(q)$.
+(iii) A \emph{facp} de um modelo $ARMA(p, q)$ tem um comportamento similar ao comportamento da \emph{facp} de um modelo $MA(q)$.
 
-Pode ser bem complicada a análise de modelos com parâmetros $p$, $q$ ou $d$ muito grandes. Para uma tentativa de ilustração, temos na Figura \ref{fig:parciais} abaixo, exemplos de fac e facp dos modelos $AR(1)$, $MA(1)$ e $ARMA(1, 1)$.
+Pode ser bem complicada a análise de modelos com parâmetros $p$, $q$ ou $d$ muito grandes. Para uma tentativa de ilustração, temos na Figura \ref{fig:parciais} abaixo, exemplos de \emph{fac} (na coluna esquerda) e \emph{facp} (na coluna direita) dos modelos $AR(1)$, $MA(1)$ e $ARMA(1, 1)$.
+
+O gráfico da \emph{fac} do modelo $AR(1)$ mostra como a autocorrelação começa em $1$ e vai decaindo lentamente, enquanto que a sua \emph{facp} só tem valores significativos até o \emph{lag} $1$, o que está de acordo com a seu parâmetro ($p=1$), e demonstra que para o modelo $AR(p)$ a \emph{facp} pode ser mais útil para a identificação do parâmetro $p$.
+
+Já gráfico da \emph{fac} do modelo $MA(1)$ também mostra o comportamento esperado, com valores significativos até o \emph{lag} $1$, enquanto a \emph{facp} decai com uma senoide amortecida sem tender a zero, assim, no caso do modelo $MA(q)$ a \emph{fac} seria mais útil para a identificação do parâmetro $q$.
+
+Por fim, tanto o gráfico da \emph{fac} quanto o da \emph{facp} do modelo  $ARMA(1, 1)$ tem um comportamento mais parecido com aqueles do modelo $AR(1)$, exceto talvez por um valor significativo no \emph{lag} $2$ da \emph{facp}, o que demonstra que num caso real pode ser difícil escolher entre um modelo $AR$ e um modelo $ARMA$ para representar a série temporal, apenas visualizando esses gráficos.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=14cm]{figuras/parciais}
-\caption{Autocorrelações e autocorrelações parciais amostrais de alguns modelos $ARIMA$.}
+\caption{Na coluna esquerda as autocorrelações e na coluna direita as autocorrelações parciais calculadas de alguns modelos $ARIMA$, demonstrando seus comportamentos esperados. Na primeira linha temos o modelo $AR(1)$, na segunda linha o modelo $MA(1)$, e na terceira linha o modelo $ARMA(1,1)$.}
 \label{fig:parciais}
 \end{figure}
 
