@@ -42,13 +42,17 @@ A ideia geral é usar essas janelas de dados para treinar modelos que descrevam 
 
 Os dados de cotação de venda do Dólar utilizados nesse trabalho foram obtidos via download de arquivo CSV disponível no site do Banco Central do Brasil\footnote{\url{https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/aplicacao}}, sendo que optei por baixar dados de cotações desde o ano de $2010$ até a data atual em que isso foi feito, para depois pudesse escolher os períodos que julgasse necessário.
 
+Para utilização do modelo paramétrico ARIMA, é necessário listar as hipóteses utilizadas por ele, e verificar, de alguma forma, se os dados que estamos utilizando seguem essas hipóteses. A principal hipótese para utilização do modelo ARIMA é que o conjunto de dados utilizados devem ser um processo estocástico, conceito já explicado no capítulo anterior, e também sabemos que as séries financeiras não-explosivas são desse tipo.
+
+Uma vez que isto é satisfeito sabemos por qualquer uma das equações \ref{series:5.1}, \ref{series:5.14}, \ref{series:5.44}, \ref{series:5.52} e \ref{series:5.75} que o termo $a_t$ presente em todos os modelos ARIMA estudados, seguem uma distribuição normal padrão, o que permite a construção de intervalos de confiança para as previsões do modelo.
+
 \section{Primeiro teste: Prevendo 7 dias}
 
 Neste primeiro teste filtrei os dados para um período específico, que vai de Julho/2016 até Dezembro/2017, ou seja, totalizando $18$ meses de dados. Essa série temporal é mostrada na Figura \ref{fig:serie_1}, abaixo.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=14cm]{figuras/serie_1}
+\includegraphics[width=13.1cm]{figuras/serie_1}
 \caption{Cotações de venda do Dólar em Reais. Período: Jul/2016 - Dez/2017.}
 \label{fig:serie_1}
 \end{figure}
@@ -85,9 +89,9 @@ Cada modelo possui suas particularidades na fase de treinamento. Para listá-las
 
 Tais previsões foram realizadas por modelos que foram treinados após a configuração dos hiperparâmetros de cada modelo. No caso do ARIMA é possível identificá-los utilizando a função de autocorrelação, já nos modelos de redes neurais é feito por tentativa-e-erro com algum conhecimento prévio do assunto. Neste caso foi utilizado um tutorial\footnote{Tutorial completo disponível em: \url{https://www.tensorflow.org/tutorials/structured_data/time_series}} disponível num artigo sobre previsões de séries temporais na documentação do TensorFlow.
 
-Neste tutorial foram testadas várias arquiteturas, desde modelos lineares, modelos de redes sequenciais (\eng{Perceptron}), de redes recorrentes e de redes convolucionais. Além disso, camadas de vários tipos são combinadas, e após isso os hiperparâmetros são testados e escolhidos para o problema em questão, que no tutorial são dados meteorológicos. Os resultados foram comparados, e o modelo de redes convolucionais foi o que se saiu melhor, e por essa razão, optei por utilizar um modelo desse tipo.
+Neste tutorial de referência foram testadas várias arquiteturas, desde modelos lineares, modelos de redes sequenciais (\eng{Perceptron}), de redes recorrentes e de redes convolucionais. Além disso, camadas de vários tipos são combinadas, e após isso os hiperparâmetros são testados e escolhidos para o problema em questão, que no tutorial são dados meteorológicos. Os resultados foram comparados, e o modelo de redes convolucionais foi o que se saiu melhor, e por essa razão, optei por utilizar um modelo desse tipo.
 
-Mesmo que cotações do Dólar e temperaturas sejam dados de tipos diferentes, ainda são séries temporais, e pelo visto no tutorial, a série meteorológica é estacionária, o que é um ponto de semelhança grande o suficiente para ser um bom ponto de partida, ao menos neste trabalho de cunho didático. Utilizando a arquitetura utilizada no tutorial como exemplo, criei uma similar, que é melhor explicada diretamente pelo código-fonte que a define, presente na listagem \ref{lst:rede_keras}.
+Mesmo que cotações do Dólar e temperaturas sejam dados de tipos diferentes, ainda são séries temporais, e pelo visto no tutorial, a série meteorológica é estacionária, o que é um ponto de semelhança grande o suficiente para ser um bom ponto de partida, ao menos neste trabalho de cunho didático. Utilizando a arquitetura utilizada no tutorial como exemplo, criei uma similar, que é melhor explicada diretamente pelo código-fonte que a define, presente no Programa \ref{lst:rede_keras}.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Definição da arquitetura da rede neural convolucional}, label={lst:rede_keras}, escapeinside={\%}]
@@ -215,7 +219,7 @@ Enquanto isso, o modelo \eng{Perceptron} foi o que se saiu pior em todas as mét
 
 O ARIMA saiu-se melhor que o \eng{Perceptron}, mas nem tão bom quanto o modelo neural convolucional, isto em todas as métricas. O modelo neural não utilizou pressupostos sobre os dados, apenas uma grande quantidade de dados de treinamento, o que é um dos requisitos para seu funcionamento e utilização.
 
-Apesar disso, o modelo de referência, a Média-Móvel $30$ dias de cada janela, saiu-se tão bem quanto o modelo neural Keras. Indicação que o modelo poderia se sair ainda melhor, se tivesse sido fornecido a ele ainda mais dados, uma vez que ele é de fato um modelo de aprendizagem profunda, funcionando tão bem quanto mais dados há disponíveis.
+Porém, o modelo de referência, a Média-Móvel $30$ dias de cada janela, saiu-se tão bem quanto o modelo neural convolucional. Isto aparentemente nos diz que a rede neural não teve um desempenho tão bom quanto poderia ter, tenhamos isso em mente por enquanto e voltaremos a esse assunto ao final dos testes.
 
 Já o modelo de Média-Móvel $7$ dias foi o pior dentre todos os modelos, com seus valores previstos estando em outro patamar, por exemplo a única correlação negativa, sendo inclusive pior em média do que o \eng{Perceptron}.
 
@@ -223,25 +227,25 @@ A seguir, na Figura \ref{fig:series_previsoes_7_1}, estão os gráficos dos mode
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=14cm]{figuras/series_previsoes_7_1}
+\includegraphics[width=13.1cm]{figuras/series_previsoes_7_1}
 \caption{Previsões de $7$ dias dos modelos ARIMA, Rede Neural Keras e Média-Móvel $30$ dias das janelas de cotações do Dólar.}
 \label{fig:series_previsoes_7_1}
 \end{figure}
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=14cm]{figuras/series_previsoes_7_2}
+\includegraphics[width=13.1cm]{figuras/series_previsoes_7_2}
 \caption{Previsões de $7$ dias do modelo de rede \eng{Perceptron} e de Média-Móvel de $7$ dias das janelas de cotações do Dólar.}
 \label{fig:series_previsoes_7_2}
 \end{figure}
 
-Não há como treinar um modelo de redes neurais sem uma quantidade razoável de exemplos, nesse caso, de janelas de dados do passado. Na verdade, como foram utilizadas janelas correspondentes a quase um ano de dados do passado, o percentual entre dados de teste $/$ dados de treino foi pouco menor de $3\%$, ou seja, a eficiência do modelo, apesar de impressionante, era de certa forma esperada.
+O modelo ARIMA é paramétrico, e de natureza estatística, dessa forma ele gera previsões que são estimativas contidas dentro de um intervalo de confiança. Uma vez que assumimos que os resíduos da série seguem uma distribuição normal padrão, esta é a distribuição utilizada para a geração do intervalo, além da variância amostral do conjunto de treino.
 
-O modelo ARIMA é paramétrico, e de natureza estatística, dessa forma ele gera previsões que são estimativas contidas dentro de um intervalo de confiança. Tal intervalo foi calculado, com nível de $95\%$ de confiança, e pode ser visto na Figura \ref{fig:series_previsoes_7_3}.
+O intervalo é opcionalmente calculado no método de previsão\footnote{Detalhes do intervalo de confiança da biblioteca utilizada: \url{https://www.statsmodels.org/stable/generated/statsmodels.tsa.arima_model.ARIMAResults.conf_int.html}}, do modelo ARIMA, com nível de $95\%$ de confiança, e pode ser visto pelo sombreado ao redor do gráfico das previsões na Figura \ref{fig:series_previsoes_7_3}.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=14cm]{figuras/series_previsoes_7_3}
+\includegraphics[width=13.1cm]{figuras/series_previsoes_7_3}
 \caption{Previsões de $7$ dias do modelo ARIMA com o intervalo de $95\%$ de confiança para cada previsão.}
 \label{fig:series_previsoes_7_3}
 \end{figure}
@@ -366,36 +370,38 @@ Estão listados na Tabela \ref{tabela:teste_30} os resultados de cada modelo, e 
 % \end{table}
 \normalsize
 
-Nota-se que a previsão de $30$ dias no futuro, partindo do mesmo ponto que no teste anterior, colocou o modelo \eng{ARIMA} em primeiro lugar, sendo que em segundo ficou a rede neural Keras praticamente empatado com a Média-Móvel $30$ dias.
-
-% comentar métricas aqui
+Nota-se que a previsão de $30$ dias no futuro, partindo do mesmo ponto que no teste anterior, colocou o modelo \eng{ARIMA} em primeiro lugar, sendo que em segundo ficou a rede neural Keras praticamente empatado com a Média-Móvel $30$ dias. Um destaque é a correlação entre o modelo ARIMA e os dados reais, que foi muito superior aos demais.
 
 A seguir, na Figura \ref{fig:series_previsoes_30_1}, estão os gráficos dos modelos dos $30$ dias de previsão, os quais se saíram melhores de acordo com as métricas na tabela acima. Na Figura \ref{fig:series_previsoes_30_2}, estão os gráficos dos demais modelos utilizados para previsão, que não tiveram desempenho tão bom quanto os anteriores.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=14cm]{figuras/series_previsoes_30_1}
+\includegraphics[width=13.1cm]{figuras/series_previsoes_30_1}
 \caption{Previsões de $30$ dias dos modelos ARIMA, Rede Neural Keras e Média-Móvel $30$ dias das janelas de cotações do Dólar.}
 \label{fig:series_previsoes_30_1}
 \end{figure}
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=14cm]{figuras/series_previsoes_30_2}
+\includegraphics[width=13.1cm]{figuras/series_previsoes_30_2}
 \caption{Previsões de $30$ dias do modelo de rede \eng{Perceptron} e de Média-Móvel de $7$ dias das janelas de cotações do Dólar.}
 \label{fig:series_previsoes_30_2}
 \end{figure}
+
+
+
 
 Novamente é exibido, na Figura \ref{fig:series_previsoes_30_3}, o gráfico com o intervalo de $95\%$ de confiança para cada uma das $30$ previsões do modelo ARIMA.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=14cm]{figuras/series_previsoes_30_3}
+\includegraphics[width=13.1cm]{figuras/series_previsoes_30_3}
 \caption{Previsões de $30$ dias do modelo ARIMA com o intervalo de $95\%$ de confiança para cada previsão.}
 \label{fig:series_previsoes_30_3}
 \end{figure}
 
 Se observarmos na Figura \ref{fig:series_previsoes_30_1}, há um vale nos valores de cotação próximo ao dia $08/09/2017$, e apenas as previsões do \eng{ARIMA} acompanham esse vale, o que faz com que seus resultados médios sejam superiores aos demais modelos, nesse caso. Os demais modelos tiveram os mesmos resultados, na mesma ordenação que no teste anterior.
+
 
 \section{Terceiro teste: Prevendo 1 ano}
 
@@ -403,7 +409,7 @@ Para este teste, um período maior de tempo foi utilizado, de forma a poder forn
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=14cm]{figuras/keras_treino_ano}
+\includegraphics[width=13.1cm]{figuras/keras_treino_ano}
 \caption{Período da série temporal das cotações do Dólar, especificando os conjuntos de treino (em azul) das redes neurais e o conjunto de teste (em vermelho) de todos os modelos.}
 \label{fig:keras_treino_ano}
 \end{figure}
@@ -498,7 +504,6 @@ A seguir, os hiperparâmetros, ajustados manualmente após algumas tentativas, d
 \end{center}
 \end{table}
 
-
 Estão listados na Tabela \ref{tabela:teste_ano_1} os resultados de todos os modelos utilizados, com as métricas de avaliação utilizadas. A partir desses resultados podemos ver que o modelo ARIMA foi o melhor, seguido pelo modelo de Média-Móvel $7$ dias, e em terceiro a Rede Neural Keras, com valores muito próximos entre esses dois últimos.
 
 \begin{table}[]
@@ -531,25 +536,57 @@ Novamente, os gráficos de todas as previsões foram analisadas, e figuras separ
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=14cm]{figuras/series_previsoes_ano_1}
+\includegraphics[width=13.1cm]{figuras/series_previsoes_ano_1}
 \caption{Previsões de um ano dos modelos ARIMA, Rede Neural Keras e Média-Móvel $7$ dias das janelas de cotações do Dólar.}
 \label{fig:previsoes_ano_1}
 \end{figure}
+
+
+À uma primeira vista o modelo neural parece inferior aos demais, e é comparável apenas ao modelo de referência utilizado. Mas afirmo que isso não pode ser tomado como uma conclusão definitiva e impeditiva de seu uso. É necessário lembrar que aqui foi testada apenas uma arquitetura dentre várias que existem e, nessa arquitetura escolhida, foram testadas poucas combinações de parâmetros dentre uma enorme quantidade possível.
+
+Como verificação desse argumento, podemos recorrer à tabela \ref{tabela:params_2}, onde vemos que no caso de uma rede convolucional temos três parâmetros que são números inteiros, e se não queremos extrapolar exageradamente, digamos que pudéssemos testar intervalos desses parâmetros e ainda combiná-los com os demais parâmetros discretos, por exemplo com o \eng{grid search}. 
+
+Como não há hipóteses sobre os dados, não há nenhum impeditivo numa abordagem desse tipo, que é testar todas as possibilidades até encontrar uma combinação que se saia um pouco melhor que as demais. Vejamos na Tabela \ref{tabela:possibilidades} uma estimativa não exaustiva desses intervalos e uma listagem dos parâmetros discretos (apenas os que foram aqui mencionados, há muitos mais disponíveis na biblioteca \eng{Keras}), para a seguir calcularmos a quantidade total de possibilidades.
+
+\begin{table}[]
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Hiperparâmetros do Modelo} & \multirow{2}{*}{\textbf{Valores possíveis}} & \multirow{2}{*}{\textbf{Quantidade total}} \\
+\textbf{Neural Convolucional} && \\
+\hline
+\hline
+Qtde de filtros & $(1, 100)$  & $100$\\
+Qtde de neurônios por filtro & $(1, 100)$ & $100$ \\
+\multirow{2}{*}{Função de ativação} & $\{$`\emph{elu}', `\emph{leaky-relu}', `\emph{relu}', & \multirow{2}{*}{$5$} \\ & `\emph{sigmoid}', `\emph{tanh}'$\}$ & \\
+Unidades de votação & $(1, 10)$  & $10$ \\
+Método de otimização\footnote{Lista dos métodos de otimização disponíveis: \url{keras.io/api/optimizers/}} & $\{$`\emph{sgd}', `\emph{adam}'$\}$ & $2$ \\
+Função de perda\footnote{Lista das funções de perda disponíveis: \url{keras.io/api/losses/}} & $\{$`\emph{mse}', `\emph{mae}'$\}$  & $2$ \\
+Qtde de neurônios na camada densa & $(1, 100)$ & $100$ \\
+\hline
+\multicolumn{2}{|c|}{\textbf{Total de possibilidades}} & $200.000.000$ \\
+\hline
+\end{tabular}
+\caption{Listagem das possibilidades de escolha dos hiperparâmetros da rede neural convolucional utilizada.}\label{tabela:possibilidades}
+\end{center}
+\end{table}
+
+Modelos de redes neurais dependem de poder computacional, o que fica claro nesse exercício mental, pois em nosso exemplo, se quiséssemos testar dentre os parâmetros já mencionados neste trabalho, somente levando em conta a arquitetura convolucional aqui utilizada, teríamos que testar dentre $200$ milhões de possibilidades. Ressalto que esse fator limitante de $100$, em alguns dos parâmetros, foi arbitrário e simplesmente ilustrativo.
 
 Os demais modelos, que não tiveram bons desempenhos, o \eng{Perceptron} e o modelo de Média-Móvel $30$ dias, estão nos gráficos da Figura \ref{fig:previsoes_ano_2}.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=14cm]{figuras/series_previsoes_ano_2}
+\includegraphics[width=13.1cm]{figuras/series_previsoes_ano_2}
 \caption{Previsões de um ano do modelo de rede \eng{Perceptron} e de Média-Móvel de $30$ dias das janelas de cotações do Dólar.}
 \label{fig:previsoes_ano_2}
 \end{figure}
 
-Por fim, é interessante mostrar que no caso do modelo ARIMA, há um intervalo de confiança que é gerado para cada previsão, com nível de confiança de $95\%$, que pode ser visualizado pelo sombreado ao redor do gráfico das previsões, na Figura \ref{fig:series_arima_ano}.
+Por fim, é novamente interessante mostrar o intervalo de confiança que é gerado para cada previsão, com nível de confiança de $95\%$, que pode ser visualizado na Figura \ref{fig:series_arima_ano}.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=14cm]{figuras/series_arima_ano}
+\includegraphics[width=13.1cm]{figuras/series_arima_ano}
 \caption{Previsões do modelo ARIMA com o intervalo de $95\%$ de confiança para cada previsão.}
 \label{fig:series_arima_ano}
 \end{figure}

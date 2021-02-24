@@ -5,7 +5,7 @@
 \chapter{Perceptron multi-camadas}
 \label{cap:perceptron}
 
-Neste capítulo é descrita a implementação e funcionamento de uma versão do algoritmo \eng{perceptron}, feito a partir de um núcleo básico disponibilizado no livro de Kopec \citep{classic}, e a partir do qual foram feitas modificações e criação de novos métodos de treinamento, de validação e de avaliação do treinamento.
+Neste capítulo é descrita a implementação e funcionamento de uma versão do algoritmo \eng{perceptron}, feita a partir de um núcleo básico disponibilizado no livro de Kopec \citep{classic}, e a partir do qual modificações e criados novos métodos de treinamento, validação e avaliação do treinamento.
 
 O \eng{perceptron} aqui implementado tem o objetivo de ser utilizado muito mais para fins didáticos do que práticos. Poderá ser usado para tarefas de aprendizagem contanto que sejam problemas que envolvam bases de dados de tamanho pequeno ou mediano. Neste capítulo, é apresentado um exemplo de sua utilização para um famoso problema de classificação de números escritos à mão\footnote{A base de dados MNIST, descrita na seção (\ref{secao:mnist}).}.
 
@@ -13,7 +13,11 @@ Na última parte desse capítulo é exibida uma biblioteca de \eng{machine learn
 
 \section{Matemática do algoritmo de retropropagação}
 
-Para a aprendizagem supervisionada foi utilizado o algoritmo de retropropagação (\eng{retropropagation}), que consiste na minimização de uma função de custos, a partir do gradiente descendente, ou seja, de derivadas desta função de custos, neste caso o erro quadrático médio (MSE), conforme foi definido no capítulo anterior.
+Para a aprendizagem supervisionada foi utilizado o algoritmo de retropropagação (\eng{retropropagation}), que consiste na minimização de uma função de custos, a partir do gradiente descendente, ou seja, de derivadas desta função de custos, neste caso o erro quadrático médio (MSE), que é definido para um par de valores, $x$ e $y$, por:
+
+\[
+MSE(x, y) = (x - y)^2
+\]
 
 De acordo com Kopec \citep{classic}, explicando em linhas mais gerais nesse momento, o \eng{perceptron} consiste de uma rede na qual os dados se propagam em uma só direção, da camada de entrada para a camada de saída, passando pelas camadas ocultas uma a uma, e por isso recebe o nome de rede \eng{feedforward}. 
 
@@ -23,19 +27,19 @@ Estendendo as definições já usadas no capítulo anterior, segue a derivação
 \begin{equation}\label{retro:custo}
 C_0 = (a^{(L)} - y)^2
 \end{equation}
-onde $y$ é a saída esperada, e $a^{(L)}$ é a saída de um neurônio da camada de saída.
+em que $y$ é a saída observada, e $a^{(L)}$ é a saída de um neurônio da camada de saída.
 
 Temos que $C_0$ é uma função de $a^{(L)}$, uma vez que $y$ é um valor fixo conhecido. Por sua vez, temos que de modo geral a saída de um neurônio é uma função do tipo:
 \begin{equation}\label{retro:neuron}
 a^{(L)} = \sigma(w^{(L)}~a^{(L-1)} + b^{(L)})
 \end{equation}
-onde escrevemos $a^{(L-1)}$ é a saída do neurônio da camada anterior, $w^{(L)}$ é o \defi{peso} atribuído a essa saída, o que seria o parâmetro angular $A$ na Figura \ref{fig:neuronio}, e $b^{(L)}$ é o chamado \defi{viés} desse neurônio, análogo ao parâmetro linear de uma reta. Por fim temos a \defi{função de ativação} que escrevemos como $\sigma$ que é aplicada à essa equação linear.
+em que $a^{(L-1)}$ é a saída do neurônio da camada anterior, $w^{(L)}$ é o \defi{peso} atribuído a essa saída, que pode ser visto na Figura \ref{fig:neuronio}, e $b^{(L)}$ é o \defi{viés} desse neurônio, análogo ao parâmetro linear de uma reta. Por fim temos a \defi{função de ativação} que denotamos como $\sigma$ que é aplicada à essa equação linear.
 
 Nota-se que internamente à função de ativação, um neurônio se comporta como uma transformação linear dos neurônios da camada anterior. Caso tivéssemos $n$ neurônios na camada anterior à de saída, teríamos então $n$ pesos, denotados com índice $i$ dessa forma: $\{ w_i^{(L)} \}_{i=1}^n$. Cabe assim à função de ativação, dar o comportamento não-linear à rede \eng{perceptron}.
 
 Como o objetivo é minimizar $C_0$, temos que calcular a influência dos pesos e dos vieses nesse custo. Já sabemos que isso será obtido com o gradiente, isto é, as derivadas parciais dessa função em relação a esses parâmetros, já que são exatamente eles que iremos otimizar. 
 
-De forma mais clara, temos que no início do treinamento da rede, atribuímos valores aleatórios aos pesos e aos vieses, e então executamos o \eng{feedforward}, de forma que a rede irá calcular sequencialmente os valores de saída em todas as suas camadas, obtidos a partir dos dados de entrada, que serão fixos, e desses parâmetros inicialmente aleatórios. A partir daí, poderemos otimizar esses parâmetros, exatamente da forma que estamos construindo.
+De forma mais clara, temos que no início do treinamento da rede, atribuímos valores aleatórios aos pesos e aos vieses, e então executamos o \eng{feedforward}, de forma que a rede irá calcular sequencialmente os valores de saída em todas as suas camadas, obtidos a partir dos dados de entrada, que serão fixos, e desses parâmetros inicialmente aleatórios. A partir daí, poderemos otimizar esses parâmetros.
 
 O cálculo dessas derivadas é feito segundo a regra da cadeia, e adicionalmente iremos denotar a transformação linear interna à função de ativação por $z^{(L)} = w^{(L)}~a^{(L-1)} + b^{(L)}$, de forma que $a^{(L)} = \sigma(z^{(L)})$. Assim, ficamos com as derivadas para a camada de saída:
 
@@ -47,7 +51,7 @@ O cálculo dessas derivadas é feito segundo a regra da cadeia, e adicionalmente
 \frac{\del C_0}{\del b^{(L)}} = \frac{\del z^{(L)}}{\del b^{(L)}} \frac{\del a^{(L)}}{\del z^{(L)}} \frac{\del C_0}{\del a^{(L)}}
 \end{equation}
 
-Para a camada de saída, podemos calcular diretamente cada um dos termos do lado direito das equações \ref{retro:1} e \ref{retro:2}:
+Podemos calcular diretamente cada um dos termos do lado direito das equações \eqref{retro:1} e \eqref{retro:2}:
 
 \begin{equation}\label{retro:4}
 \frac{\del C_0}{\del a^{(L)}} = 2(a^{(L)} - y) ~\propto~ (a^{(L)} - y)
@@ -75,30 +79,28 @@ O que resulta, fazendo todas as substituições, em:
 \frac{\del C_0}{\del b^{(L)}} ~\propto~ \sigma^{'}(z^{(L)})~ (a^{(L)} - y)
 \end{equation}
 
-Na equação \ref{retro:4} suprimimos o termo constante ``$2$'' sob um símbolo de proporcionalidade, o qual foi propagado para as equações \ref{retro:10} e \ref{retro:11}. Essa proporcionalidade tornar-se-á implícita com a utilização do fator $\eta$, a \defi{taxa de aprendizagem}, que é explicada em detalhes no Apêndice \ref{ap:gradiente}. 
+Na equação \eqref{retro:4} suprimimos o termo constante ``$2$'', o que propaga a relação de proporção para as equações \eqref{retro:10} e \eqref{retro:11}. Essa proporcionalidade tornar-se-á implícita na implementação do algoritmo com a utilização do fator $\eta$, a \defi{taxa de aprendizagem}. A sua motivação e utilização são explicadas em detalhes no Apêndice \ref{ap:gradiente}. 
 
-O que importa nesse momento, é que temos expressões conhecidas para calcular as derivadas da função de custo na camada de saída, que serão multiplicadas por um fator $\eta$, que em geral pertence ao intervalo $(0,1)$. Analogamente, podemos pensar numa forma de fazer esses cálculos para as camadas ocultas. A princípio, podemos calcular:
+O que é importante dizer nesse ponto é que temos expressões conhecidas para calcular as derivadas da função de custo na camada de saída, que serão multiplicadas por $\eta$, que em geral pertence ao intervalo $(0,1)$, por razões computacionais. Analogamente, podemos pensar numa forma de obter expressões para as derivadas do custo das camadas ocultas. A princípio, podemos calcular:
 
 \begin{equation}\label{retro:3}
-\frac{\del C_0}{\del a^{(L-1)}} = \frac{\del z^{(L)}}{\del a^{(L-1)}} \frac{\del a^{(L)}}{\del z^{(L)}} \frac{\del C_0}{\del a^{(L)}}
+\frac{\del C_0}{\del a^{(L-1)}} = \frac{\del z^{(L)}}{\del a^{(L-1)}} \frac{\del a^{(L)}}{\del z^{(L)}} \frac{\del C_0}{\del a^{(L)}} \; ,
 \end{equation}
-
-Usando o fato de que:
-
+usando o fato de que:
 \begin{equation}\label{retro:8}
-\frac{\del z^{(L)}}{\del a^{(L-1)}} = w^{(L)}
+\frac{\del z^{(L)}}{\del a^{(L-1)}} = w^{(L)} \; .
 \end{equation}
 
-Agora, seja a $i$-ésima camada oculta tal que $1 < i < L$, se observarmos a equação \ref{retro:3}, e fizermos $i = L-1$, usando a equação \ref{retro:8}, ficamos com:
+Agora, seja a $i$-ésima camada oculta tal que $1 < i < L$. Se observarmos \eqref{retro:3}, e fizermos $i = L-1$, usando \eqref{retro:8}, ficamos com:
 
 \begin{equation}\label{retro:9}
-\frac{\del C_0}{\del a^{(i)}} = w^{(i+1)} \frac{\del a^{(i+1)}}{\del z^{(i+1)}} \frac{\del C_0}{\del a^{(i+1)}}
+\frac{\del C_0}{\del a^{(i)}} = w^{(i+1)} \frac{\del a^{(i+1)}}{\del z^{(i+1)}} \frac{\del C_0}{\del a^{(i+1)}} \;.
 \end{equation}
 
-Podemos observar que há um mesmo termo duplo que aparece tanto nas equações \ref{retro:1} e \ref{retro:2} quanto na equação \ref{retro:9} acima, de forma que apenas o índice da camada é diferente. Podemos generalizá-lo como o termo \emph{delta da camada $i$}:
+Podemos observar que há um mesmo termo duplo que aparece tanto em \eqref{retro:1} e \eqref{retro:2} quanto em \eqref{retro:9}, de forma que apenas o índice da camada é diferente. Podemos generalizá-lo como o termo \emph{delta da camada $i$}:
 
 \begin{equation}\label{retro:12}
-\Delta^{(i)} = \dfrac{\del a^{(i)}}{\del z^{(i)}} \dfrac{\del C_0}{\del a^{(i)}}
+\Delta^{(i)} = \dfrac{\del a^{(i)}}{\del z^{(i)}} \dfrac{\del C_0}{\del a^{(i)}} \;.
 \end{equation}
 
 Simplificando todas as demais expressões usando essa definição, ficamos com:
@@ -106,33 +108,31 @@ Simplificando todas as demais expressões usando essa definição, ficamos com:
 \begin{equation}\label{retro:13}
 \frac{\del C_0}{\del w^{(i)}} = a^{(i-1)} \Delta^{(i)}
 \end{equation}
-
+e
 \begin{equation}\label{retro:14}
-\frac{\del C_0}{\del b^{(i)}} = \Delta^{(i)}
+\frac{\del C_0}{\del b^{(i)}} = \Delta^{(i)} \;.
 \end{equation}
 
-Como vemos, as derivadas que precisamos todas dependem desse termo $\Delta$, que por sua vez depende do cálculo do termo $\dfrac{\del C_0}{\del a^{(i)}}$ que será calculado de 2 formas distintas:
+Como vemos, todas as derivadas que precisamos dependem de $\Delta^{(i)}$, que por sua vez depende do termo $\dfrac{\del C_0}{\del a^{(i)}}$ que será calculado de 2 formas distintas:
 
 \[ \dfrac{\del C_0}{\del a^{(i)}} = w^{(i+1)}~ \Delta^{(i+1)}  \;\;\Rightarrow \]
 \begin{equation}\label{retro:15}
 \Delta^{(i)} = \sigma^{'}(z^{(i)})~ w^{(i+1)}~ \Delta^{(i+1)}
 \end{equation}
-para as camadas ocultas.
-
-
+para as camadas ocultas, e
 \[ \dfrac{\del C_0}{\del a^{(L)}} = (y - a^{(L)}) \;\;\Rightarrow \]
 \begin{equation}\label{retro:16}
 \Delta^{(L)} = \sigma^{'}(z^{(L)})~ (y - a^{(L)})
 \end{equation}
 para a camada de saída.
 
-Percebe-se a natureza recursiva do algoritmo, onde o caso base é calculado na camada de saída, e que o cálculo vai propagando-se para as camadas ocultas, em direção à camada de entrada. Assim, a retropropagação é calculada sucessivamente, camada a camada, até a primeira camada oculta (já que não se pode alterar a camada de entrada). Após uma nova instância de entrada, o processo se reinicia, até que todas as instâncias de treino sejam processadas.
+Percebe-se a natureza recursiva do algoritmo, onde o caso base é calculado na camada de saída, e que o cálculo vai propagando-se para as camadas ocultas, em direção à camada de entrada. Assim, a retropropagação é calculada sucessivamente, camada a camada, até a primeira camada oculta, já que não se pode alterar a camada de entrada. Este processo é repetido para cada par entrada e saída observada.
 
-Outro fato útil é que a expressão interna do neurônio é uma transformação linear, assim as contas podem ser facilmente ajustadas para o caso geral em que há $n_i$ neurônios em dada camada $i$ da rede, conforme já explicado, e que será detalhado diretamente nos trechos de código que serão mostrados a seguir na implementação propriamente dita.
+Outro fato útil é que a expressão interna do neurônio é uma transformação linear, assim as contas podem ser facilmente ajustadas para o caso geral em que há $n_i$ neurônios em dada camada $i$ da rede, conforme já explicado, e que será detalhado diretamente nos trechos de código que serão mostrados a seguir, na implementação propriamente dita.
 
 \section{Implementação do algoritmo de retropropagação}
 
-A princípio damos uma representação visual da rede \eng{perceptron}, que pode ser vista na Figura \ref{fig:estrutura_rn}. Cada círculo representa um neurônio, cada coluna vertical de neurônios é uma camada da rede, sendo a camada oculta a que está destacada em roxo. As setas representam as conexões entre as camadas de neurônios, cada neurônio de uma camada está ligado a todos os neurônios da camada anterior, o sentido dessa conexão é da esquerda pra direita, o que indica o processo de \eng{feedforward} da rede.
+A princípio damos uma representação visual da rede \eng{perceptron}, que pode ser vista na Figura \ref{fig:estrutura_rn}. Cada círculo representa um neurônio, cada coluna vertical de neurônios é uma camada da rede, sendo a camada oculta a que está destacada em roxo. As setas representam as conexões entre as camadas de neurônios, cada neurônio de uma camada está ligado a todos os neurônios da camada anterior, o sentido dessa conexão é da esquerda para a direita, o que indica o processo de \eng{feedforward} da rede.
 
 \begin{figure}[htb]
 \centering
@@ -147,7 +147,7 @@ Além dessa base, formada pelas classes \emph{Neuron}, \emph{Layer} e \emph{Netw
 
 \subsection{O neurônio}
 
-O primeiro passo é implementar a classe \emph{Neuron} para representar cada neurônio. Esta é uma classe de entidade, contendo apenas um construtor e o método \eng{output}, que recebe os valores de entrada para esse neurônio, e calcula a saída com os pesos o viés e a função de ativação usada neste neurônio, de acordo com a equação \ref{retro:neuron}. A listagem \ref{lst:neuron} abaixo mostra este método, em conjunto com o construtor da classe.
+O primeiro passo é implementar a classe \emph{Neuron} para representar cada neurônio. Esta é uma classe de entidade, contendo apenas um construtor e o método \eng{output}, que recebe os valores de entrada para esse neurônio, e calcula a saída com os pesos o viés e a função de ativação usada neste neurônio, de acordo com a equação \eqref{retro:neuron}. O Programa \ref{lst:neuron} abaixo mostra este método, em conjunto com o construtor da classe.
 
 \newpage
 
@@ -171,79 +171,79 @@ A função \emph{np.dot} da biblioteca \emph{Numpy} é utilizada para calcular o
 
 A função de ativação possui o papel de ativar ou não a saída de um neurônio, conforme visto no capítulo anterior. A forma com que essa ativação ocorre é definida pela função utilizada. Aqui o termo \emph{ativar} significa que a função irá retornar um valor mais próximo de $1$ enquanto que uma não-ativação retornará um valor mais próximo de $0$. Essa é uma restrição para a função de ativação para a camada de saída, que será sempre da forma:
 
-\[ f: \mathbb{R} \rightarrow [0, 1] \]
+\[ f: \mathbb{R} \rightarrow [0, 1] \;. \]
 
-No caso do neurônio biológico, quando dizemos que ele ativa/transmite ou não o sinal elétrico que chegou até ele, é como se ele \emph{retornasse} apenas $0$ ou $1$. De fato, poderíamos até usar uma função similar a essa em alguma camada de nossa rede artificial, e este tipo de \emph{função escada} tem a seguinte definição:
+No caso do neurônio biológico, quando dizemos que ele ativa/transmite ou não o sinal elétrico que chegou até ele, é como se ele \emph{retornasse} apenas $0$ ou $1$. De fato, poderíamos até usar uma função similar a essa em alguma camada de nossa rede artificial, e este tipo de \emph{função escada} teria a seguinte definição:
 
 \[
 f(x) = 
 \left\{
 \begin{array}{lcr}
-1 & \text{se} & x \geq 0\\
-0 & \text{se} & x < 0
+1 & \text{se} & x \geq 0 \;;\\
+0 & \text{se} & x < 0 \;.
 \end{array}
 \right.
 \]
 
 A utilização dessa função de ativação, conforme nos diz Grus \citep{data}, faria com que um neurônio fizesse simplesmente a distinção entre espaços separados pelo hiperplano de pontos tal que $ <w.x> + b = 0$, ou seja, o hiperplano definido pelos pontos de entrada cuja transformação linear resultasse em zero.
 
-Esta função é claramente não contínua e portanto não diferenciável, e precisamos de uma função de ativação que o seja, uma vez que algumas das equações da otimização que calculamos anteriormente, dependem da expressão de sua derivada. É por essa razão, que passou-se a considerar uma aproximação suave da função escada, como a função \textbf{sigmoid}:
+Esta função é claramente não contínua e portanto não diferenciável, e precisamos de uma função de ativação que o seja, uma vez que algumas das equações da otimização que calculamos anteriormente, dependem da expressão de sua derivada. É por essa razão, que passou-se a considerar uma aproximação suave da função escada, como a função \textbf{sigmoide}:
 
 \[
-\sigma(x) = \frac{1}{1 + e^{-x}}
+\sigma(x) = \frac{1}{1 + e^{-x}} \;.
 \]
 
 Ela retorna valores somente no intervalo $[0, 1]$, igualmente à função escada, sua inspiração. A sua derivada pode ser facilmente calculada, simplificando-se na seguinte expressão:
 
 \[
-\sigma^{'}(x) = \sigma(x)(1-\sigma(x))
+\sigma^{'}(x) = \sigma(x)(1-\sigma(x)) \;.
 \]
 
-Podemos comparar o comportamento dessas funções de ativação no gráfico presente na imagem \ref{fig:ativacao} abaixo. A seguir, na listagem \ref{lst:ativacao}, um trecho do script \texttt{util.py} com a implementação da função \eng{sigmoid} e de sua derivada.
+Podemos comparar o comportamento dessas funções de ativação no gráfico presente na Figura \ref{fig:ativacao} abaixo. A seguir, encontra-se o Programa \ref{lst:ativacao}, destacando um trecho do script \texttt{util.py} com a implementação da função \eng{sigmoide} e de sua derivada.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=12cm]{figuras/ativacao}
-\caption{Comparação entre as funções de ativação do tipo escada e a \eng{sigmoid}.}
+\caption{Comparação entre as funções de ativação do tipo escada e a \eng{sigmoide}.}
 \label{fig:ativacao}
 \end{figure}
 
 
 \estiloR
 \begin{lstlisting}[caption={Trecho do script util.py}, label={lst:ativacao}, escapeinside={\%}]
-def sigmoid(x):
+def sigmoide(x):
     '''(float) -> float'''
     return 1.0 / (1.0 + np.exp(-x))
 
-def der_sigmoid(x):
+def der_sigmoide(x):
     '''(float) -> float'''
-    sig = sigmoid(x)
+    sig = sigmoide(x)
     return sig * (1 - sig)
 \end{lstlisting}
 
 
-Com a popularização das redes neurais, várias outras funções de ativação foram criadas para ativarem as camadas ocultas do treinamento, devido aos problemas que podem acontecer ao se utilizar função \eng{sigmoid}. Podemos identificar um desses problemas analisando seu gráfico. Vemos que ela se aproxima de $1$, que é a ativação máxima, rapidamente a partir de $x > 4$, e aproxima-se simetricamente de zero com valores a partir de $x < -4$. 
+Com a popularização das redes neurais, várias outras funções de ativação foram criadas para ativar as camadas ocultas do treinamento, devido aos problemas que podem acontecer ao se utilizar função \eng{sigmoide}. Podemos identificar um desses problemas analisando seu gráfico. Vemos que ela se aproxima de $1$, que é a ativação máxima, rapidamente a partir de $x > 4$, e aproxima-se simetricamente de zero com valores a partir de $x < -4$. 
 
-Como o método do gradiente tenta ajustar os valores dos pesos a partir dos valores de saída e esses ajustes dependem da derivada da função de ativação, temos que levar em conta o comportamento da derivada da função \eng{sigmoid}, o qual podemos observar a partir de seu gráfico na Figura \ref{fig:der_sigm}.
+Como o método do gradiente tenta ajustar os valores dos pesos a partir dos valores de saída e esses ajustes dependem da derivada da função de ativação, temos que levar em conta o comportamento da derivada da função \eng{sigmoide}, o qual podemos observar a partir de seu gráfico na Figura \ref{fig:der_sigm}.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=12cm]{figuras/der_sigm}
-\caption{Gráficos da função \eng{sigmoid} e sua derivada.}
+\caption{Gráficos da função \eng{sigmoide} e sua derivada.}
 \label{fig:der_sigm}
 \end{figure}
 
-Por construção, a derivada retorna valores sempre menores do que $1$, e além disso aproxima-se de $0$ tão rapidamente quanto a \eng{sigmoid} aproxima-se de $1$. Isso faz com que atualizações baseadas na derivada para valores de erro que já estão muito altos não sejam efetivas para diminuí-los, pois justamente nessa região a derivada está muito próxima de $0$. Essa é a principal desvantagem da função \eng{sigmoid}.
+Por construção, a derivada retorna valores sempre menores do que $1/4$, e além disso aproxima-se de $0$ tão rapidamente quanto a \eng{sigmoide} aproxima-se de $1$. Isso faz com que atualizações baseadas na derivada para valores de erro que já estão muito altos não sejam efetivas para diminuí-los, pois justamente nessa região a derivada está muito próxima de $0$. Essa é a principal desvantagem da função \eng{sigmoide}.
 
-Um problema relacionado a este é que se a regra da cadeia em \ref{retro:1} e \ref{retro:2}, com as derivadas da função de ativação dadas em \ref{retro:5} multiplicadas através das várias camadas, pode resultar em: \textbf{i)} num número muito grande, se todas as derivadas resultarem em valores maiores do que zero; ou: \textbf{ii)} num número muito próximo de zero se todas as derivadas forem menores do que zero. Isto faz com que atualizações dadas pelo gradiente sejam instáveis. Este é o problema descrito por Matheus Facure \citep{matheus_2} e nomeado como problema do gradiente explodindo/desvanecendo (\eng{vanishing gradient problem}).
+Um problema relacionado a este é que se a regra da cadeia em \eqref{retro:1} e \eqref{retro:2}, com as derivadas da função de ativação dadas em \eqref{retro:5} multiplicadas através das várias camadas, pode resultar em: \textbf{i)} num número muito grande, se todas as derivadas resultarem em valores maiores do que zero; ou: \textbf{ii)} num número muito próximo de zero se todas as derivadas forem menores do que zero. Isto faz com que atualizações dadas pelo gradiente sejam instáveis. Este problema é descrito por Matheus Facure \citep{matheus_2} e denominado ``problema do gradiente explodindo/desvanecendo''(\eng{vanishing gradient problem}).
 
-Assim, conforme nos diz Facure \citep{matheus}, a utilização da função \eng{sigmoid} não é mais recomendada em problemas que envolvam redes neurais maiores, sendo bem comum o problema do gradiente explodindo, já que a derivada é sempre maior do que $0$. Porém, o uso da função \eng{sigmoid} é desejável (ou até mesmo necessário) em casos como: \textbf{i)} modelos probabilísticos de variáveis binárias, \textbf{ii)} modelagem de problemas biológicos onde ela é uma aproximação mais plausível da ativação elétrica-biológica, e \textbf{iii)} alguns modelos de redes com aprendizagem não supervisionada.
+Assim, conforme nos diz Facure \citep{matheus}, a utilização da função \eng{sigmoide} não é mais recomendada em problemas que envolvam redes neurais maiores, sendo bem comum o problema do gradiente explodindo, já que a derivada é sempre maior do que $0$. Porém, o uso da função \eng{sigmoide} é desejável (ou até mesmo necessário) em casos como: \textbf{i)} modelos probabilísticos de variáveis binárias, \textbf{ii)} modelagem de problemas biológicos onde ela é uma aproximação mais plausível da ativação elétrica-biológica, e \textbf{iii)} alguns modelos de redes com aprendizagem não supervisionada.
 
-A próxima função de ativação é o \emph{tangente hiperbólico} (\textbf{tanh}), que pode ser descrita em função da \eng{sigmoid}. Ela retorna valores no intervalo $[-1, 1]$ mas sua derivada retorna valores mais próximos de $1$, chegando ao valor máximo de $1$ quando $x = 0$. A sua expressão em função da \eng{sigmoid} e a sua derivada são dadas por:
+A próxima função de ativação é o \emph{tangente hiperbólico} (\textbf{tanh}), que é similar à função \eng{sigmoide} e pode ser escrita em função dela. Ela retorna valores no intervalo $[-1, 1]$ mas sua derivada retorna valores mais próximos de $1$, chegando ao valor máximo de $1$ quando $x = 0$. A sua expressão em termos da função \eng{sigmoide} e a sua derivada são dadas por:
 
-\[ tanh(x)=2\sigma(2x) - 1   \quad \quad  tanh'(x)=1 - tanh^2(x) \]
+\[ tanh(x)=2\sigma(2x) - 1   \quad \text{e} \quad  tanh'(x)=1 - tanh^2(x) \;. \]
 
-Na Figura \ref{fig:tanh} podemos ver o gráfico da função e de sua derivada, a partir do que podemos notar como a derivada da \emph{tanh} retorna valores maiores do que a derivada da função \eng{sigmoid}.
+Na Figura \ref{fig:tanh} podemos ver o gráfico da função e de sua derivada, a partir do que podemos notar como a derivada da \emph{tanh} retorna valores maiores do que a derivada da função \eng{sigmoide}.
 
 \begin{figure}[htb]
 \centering
@@ -252,17 +252,17 @@ Na Figura \ref{fig:tanh} podemos ver o gráfico da função e de sua derivada, a
 \label{fig:tanh}
 \end{figure}
 
-O próximo avanço é conseguido com a função de ativação linear retificada (\defi{RELU}). Essa função é quase a função identidade, exceto que na região negativa do domínio ela vale identicamente $0$. Ela não é derivável no ponto $x=0$, mas podemos estender a definição fixando seu valor em $1$ nesse ponto. Sua definição e de sua derivada estendida é dada por:
+O próximo avanço é conseguido com a função de ativação linear retificada (\defi{RELU}). Essa função é quase a função identidade, exceto que na região negativa do domínio ela é identicamente igual a $0$. Ela não é derivável no ponto $x=0$, mas podemos estender a definição fixando seu valor em $1$ nesse ponto. Sua definição e de sua derivada estendida é dada por:
 
 \[
-ReLU(x)=max\{0, x\}   \quad \quad  ReLU'(x)=
+ReLU(x)=max\{0, x\}   \quad \text{e} \quad  ReLU'(x)=
 	\begin{cases}
-    	1, & \text{se } x\ge 0\\
-    	0, & \text{c.c.}
+    	1, & \text{se } x\ge 0 \;;\\
+    	0, & \text{c.c.} \;.
 	\end{cases}
 \]
 
-Podemos ver seus gráficos, na Figura \ref{fig:relu}, a seguir. Usar essa função de ativação torna até mesmo a execução do código mais rápida, uma vez que não há cálculos matemáticos a serem feitos, apenas uma função de máximo que é trivial. Além disso, podemos notar que a derivada se mantém com o valor $1$ constante enquanto o neurônio é ativado, sendo uma forma de tentar resolver o problema do gradiente explodindo/desvanecendo, além de agilizar o processo de treinamento. 
+Podemos ver seus gráficos na Figura \ref{fig:relu}, a seguir. Usar essa função de ativação torna até mesmo a execução do código mais rápida, uma vez que não há cálculos matemáticos a serem feitos, apenas uma função de máximo que é trivial. Além disso, podemos notar que a derivada se mantém com o valor $1$ constante enquanto o neurônio é ativado, sendo essa uma forma de tentar resolver o problema do gradiente explodindo/desvanecendo, além de agilizar o processo de treinamento. 
 
 \begin{figure}[htb]
 \centering
@@ -273,25 +273,25 @@ Podemos ver seus gráficos, na Figura \ref{fig:relu}, a seguir. Usar essa funç�
 
 Essa é a razão, conforme explica Facure \citep{matheus}, dessa função ter contribuído para o recente aumento de popularidade das redes neurais. Adicionalmente, Bing Xu \citep{xu_relu} ressalta que outra vantagem das funções do tipo \eng{RELU}, além de resolver o problema do gradiente explodindo/desvanecendo, é a de aumentar a velocidade da convergência do algoritmo de treinamento rumo a um mínimo da função de custos.
 
-Uma desvantagem da função \eng{RELU} é a chance de neurônios serem desativados permanentemente, já que uma vez que ele zera, a função de ativação e sua derivada são ambos $0$, de forma que ele nunca mais irá aumentar durante o treinamento, tornando-se neurônios \emph{mortos}. Todavia, assim como no caso da \eng{sigmoid}, há casos em que esse comportamento é desejado, por exemplo, na camada de saída de redes de classificação.
+Uma desvantagem da função \eng{RELU} é a chance de um neurônio ser desativado permanentemente, já que uma vez que ele zera, a função de ativação e sua derivada são ambas iguais a $0$, de forma que ele nunca mais irá aumentar durante o treinamento, tornando-se um neurônio \emph{morto}. Todavia, assim como no caso da \eng{sigmoide}, há casos em que esse comportamento é desejado, por exemplo, na camada de saída de redes de classificação.
 
-O próximo avanço foi dado pela função conhecida como \eng{Leaky RELU}. Quase idêntica à \eng{RELU}, exceto que na parte negativa do domínio ao invés de $0$ a função retorna $x/\alpha$, onde $\alpha \in (0, \infty)$. Isso já imediatamente corrige o problema dos neurônios desativados. A definição da função e de sua derivada, dada por Xu \citep{xu_relu}, é:
+O próximo desenvolvimento foi dado pela função conhecida como \eng{Leaky RELU}. Quase idêntica à \eng{RELU}, exceto que na parte negativa do domínio ao invés de $0$ a função retorna $x/\alpha$, com $\alpha \in (0, \infty)$. Isso corrige imediatamente o problema dos neurônios desativados. A definição da função e de sua derivada, dada por Xu \citep{xu_relu}, é:
 
 \[
 LeakyReLU(x, \alpha) = 
 \begin{cases}
-    	x, & \text{se } x\ge 0\\
-    	x/\alpha, & \text{c.c.}
+    	x, & \text{se } x\ge 0 \;;\\
+    	x/\alpha, & \text{c.c.} \;,
 	\end{cases}
-\quad \quad  
+\quad \text{e} \quad  
 LeakyReLU'(x, \alpha) =
 	\begin{cases}
-    	1, & \text{se } x\ge 0\\
-    	\alpha, & \text{c.c.}
+    	1, & \text{se } x\ge 0 \;;\\
+    	1/\alpha, & \text{c.c.} \;.
 	\end{cases}
 \]
 
-A partir dos resultados dos estudos feitos por Xu \citep{xu_relu}, a função \eng{Leaky RELU}, e suas variações, se saíram consistentemente melhores do que a \eng{RELU} para as bases de dados de pequeno e médio portes. Os melhores resultados, encontrados empiricamente pelos autores, foram obtidos com $\alpha = 5.5$. Este parâmetro é conhecido como \defi{vazamento}, que dá o nome à função. Podemos ver o seu comportamento no gráfico da imagem \ref{fig:l_relu}.
+A partir dos resultados dos estudos feitos por Xu \citep{xu_relu}, a função \eng{Leaky RELU}, e suas variações, se mostraram consistentemente melhores do que a \eng{RELU} para bases de dados de pequeno e médio portes. Os melhores resultados, encontrados empiricamente pelos autores, foram obtidos com $\alpha = 5.5$. Este parâmetro é conhecido como \defi{vazamento}, que dá o nome à função. Podemos ver o seu comportamento no gráfico da Figura \ref{fig:l_relu}.
 
 \begin{figure}[htb]
 \centering
@@ -305,18 +305,18 @@ Por fim, temos a função de unidade linear exponencial \eng{ELU}, proposta por 
 \[
 ELU(x, \alpha)=
 	\begin{cases}
-    	x, & \text{se } x\ge 0\\
-    	\alpha(e^x - 1), & \text{c.c.}
+    	x, & \text{se } x\ge 0\;.\\
+    	\alpha(e^x - 1), & \text{c.c.}\;,
 	\end{cases}
-\quad \quad
+\quad \text{e} \quad
 ELU'(x, \alpha)=
 	\begin{cases}
-    	1, & \text{se } x\ge 0\\
-    	ELU(x, \alpha)+\alpha, & \text{c.c.}
+    	1, & \text{se } x\ge 0\;;\\
+    	\alpha e^x, & \text{c.c.}\;.
 	\end{cases} 
 \]
 
-Em seu artigo, Clevert \citep{clevert} utiliza o valor $\alpha = 1$, e com a função \eng{ELU} conseguiu performances melhores, tanto de resultados mais corretos, quanto de velocidade de treinamento, em relação às funções \eng{RELU} e \eng{Leaky RELU} para as mesmas bases de dados avaliadas por XU \citep{xu_relu}, mesmo com o uso da função exponencial em sua definição o que em teoria deveria diminuir a performance do treinamento. Podemos observar o comportamento dessa função e de sua derivada, com $\alpha = 1$ no gráfico mostrado na Figura \ref{fig:elu}.
+Em seu artigo, Clevert \citep{clevert} utiliza o valor $\alpha = 1$, e com a função \eng{ELU} conseguiu performances melhores, tanto de resultados mais corretos, quanto de velocidade de treinamento, em relação às funções \eng{RELU} e \eng{Leaky RELU} para as mesmas bases de dados avaliadas por XU \citep{xu_relu}, mesmo com o uso da função exponencial em sua definição, o que em teoria deveria diminuir a performance do treinamento. Podemos observar o comportamento dessa função e de sua derivada, com $\alpha = 1$ no gráfico mostrado na Figura \ref{fig:elu}.
 
 \begin{figure}[htb]
 \centering
@@ -325,9 +325,9 @@ Em seu artigo, Clevert \citep{clevert} utiliza o valor $\alpha = 1$, e com a fun
 \label{fig:elu}
 \end{figure}
 
-Testes feitos em condições similares por Facure \citep{matheus}, mostram que essa diferença não é tão significativa em relação à \eng{Leaky RELU}, mas que ambas, \eng{Leaky RELU} e a \eng{ELU} são sim melhores do que a original \eng{RELU}, o que é consistente com o fato delas resolverem teoricamente as desvantagens dela. São todas melhores escolhas, para camadas ocultas, do que a função \eng{sigmoid}, em todos os estudos acima citados.
+Testes feitos em condições similares por Facure \citep{matheus}, mostram que essa diferença não é tão significativa em relação à \eng{Leaky RELU}, mas que ambas, \eng{Leaky RELU} e a \eng{ELU} são melhores do que a original \eng{RELU}, o que é consistente com o fato delas resolverem teoricamente as desvantagens. São todas melhores escolhas, para camadas ocultas, do que a função \eng{sigmoide}, em todos os estudos acima citados.
 
-Na prática, podemos testar qual função de ativação irá performar melhor para o problema que queremos resolver. A abordagem mais comum, conforme descrita por Facure \citep{matheus} é utilizar a função \eng{Leaky RELU} nas camadas ocultas, sendo o modo mais simples de obtermos bons resultados graças ao seu comportamento. Podemos avaliar a utilização das outras de acordo com o problema em questão, dado que algumas funções podem se sair melhor em alguns contextos específicos, como utilizar a \eng{RELU} nas camadas de saída, ou a \eng{sigmoid} se queremos simular neurônios biológicos, etc.
+Na prática, podemos testar qual função de ativação irá apresentar melhor performance para o problema que queremos resolver. A abordagem mais comum, conforme descrita por Facure \citep{matheus} é utilizar a função \eng{Leaky RELU} nas camadas ocultas, sendo o modo mais simples de obtermos bons resultados graças ao seu comportamento. Podemos avaliar a utilização das outras funções de acordo com o problema em questão, dado que algumas funções podem se sair melhor em alguns contextos específicos, como utilizar a \eng{RELU} nas camadas de saída, ou a \eng{sigmoide} se queremos simular neurônios biológicos, etc.
 
 \subsection{As camadas}
 
@@ -335,9 +335,9 @@ A classe \emph{Layer} representa uma camada de neurônios. Cada camada conecta-s
 
 O construtor de \emph{Layer} é responsável por inicializar seus neurônios. Nessa implementação todos os neurônios de uma camada irão usar a mesma função de ativação ($\sigma$) e a mesma taxa de aprendizagem ($\eta$). Além de receber esses parâmetros, o número de neurônios dessa camada, e a referência da camada anterior, o construtor inicializa os pesos de cada neurônio, lembrando que cada neurônio de uma camada possui a mesma quantidade de pesos do que a quantidade de neurônios da camada anterior, e também inicializa o viés de cada neurônio. 
 
-Na listagem \ref{lst:layer_1} está o trecho do construtor que inicializa os pesos dos neurônios. Se a camada que estamos inicializando é a camada de entrada, então não criamos pesos e o viés, pois os valores de entrada serão utilizados diretamente como a saída dessa camada, este é o teste presente na linha 11 da listagem, pois a camada de entrada não possui referência a uma camada anterior já que ela é a primeira camada da rede.
+No Programa \ref{lst:layer_1} está o trecho do construtor que inicializa os pesos dos neurônios. Se a camada que estamos inicializando é a camada de entrada, então não criamos pesos e vieses, pois os valores de entrada serão utilizados diretamente como a saída dessa camada, este é o teste presente na linha 11 do Programa, pois a camada de entrada não possui referência a uma camada anterior já que ela é a primeira camada da rede.
 
-A linha 12 de \ref{lst:layer_1} inicializa os pesos dos neurônios da camada. Para fazer isso utiliza uma função que está definida no script \texttt{util.py}, que sorteia números aleatórios para esses pesos seguindo uma distribuição normal de média $0$ e desvio-padrão $0.3$ e além disso \emph{truncada} no intervalo $[-1, 1]$, para que nenhum peso esteja fora desse domínio e para que em média esse valor seja $0$. O viés é inicializado com um valor constante, próximo de zero, nesse caso com $0.01$.
+A linha 12 do Programa \ref{lst:layer_1} inicializa os pesos dos neurônios da camada. Para fazer isso é utilizada uma função que está definida no script \texttt{util.py}, que sorteia números aleatórios para esses pesos seguindo uma distribuição normal de média $0$ e desvio-padrão $0.3$ e \emph{truncada} no intervalo $[-1, 1]$, para que nenhum peso esteja fora desse domínio e para que em média esse valor seja $0$. O viés é inicializado com um valor constante, próximo de zero, nesse caso com $0.01$.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Layer}}, label={lst:layer_1}, escapeinside={\%}]
@@ -365,11 +365,11 @@ Se pelo contrário, inicializarmos todos os pesos com números muito próximos d
 
 Dellinger \citep{layers_1} discute esses problemas no contexto de redes bem grandes, com mais de $100$ camadas, e exibe sua solução heurística que é utilizar uma distribuição normal (não-truncada) com média $0$ e com desvio-padrão $\sqrt{2/n}$, sendo $n$ o número de neurônios da camada anterior.
 
-Para nossos fins didáticos, testei alguns desvios-padrão como $1$, $0.3$ e $0.1$, em um dos exemplos que serão mostrados ainda nesse capítulo, e dentre eles, o valor $0.3$ se saiu melhor sendo o suficiente para não explodir e nem desativar os neurônios da única camada oculta que foi usada na aplicação-exemplo em questão.
+Para nossos fins didáticos, foram testados alguns desvios-padrão como $1$, $0.3$ e $0.1$, em um dos exemplos que serão mostrados ainda nesse capítulo, e dentre eles, o valor $0.3$ se saiu melhor sendo o suficiente para não explodir e nem desativar os neurônios da única camada oculta que foi usada na aplicação-exemplo em questão.
 
-O desvio-padrão de $0.3$ auxilia na tarefa de restringir os valores no intervalo $[-1, 1]$, sem que precisemos truncar muitos valores o que poderia aumentar a massa de probabilidade dos extremos $-1$ e $1$, já que valores mais distantes da média do que $3$ vezes o desvio-padrão são raramente obtidos de uma distribuição normal. 
+O desvio-padrão de $0.3$ auxilia na tarefa de restringir os valores no intervalo $[-1, 1]$, sem que precisemos truncar muitos valores, o que poderia aumentar a massa de probabilidade dos extremos $-1$ e $1$, já que valores mais distantes da média do que $3$ vezes o desvio-padrão são raramente obtidos de uma distribuição normal. 
 
-Após inicializar cada neurônio, salvamos ele na lista de neurônios dessa camada, que é um dos atributos de classe discutidos no primeiro parágrafo. A próxima tarefa de uma camada é processar as entradas recebidas e retornar as saídas. Podemos observar esse comportamento na listagem \ref{lst:layer_2}.
+Após inicializar cada neurônio, o salvamos na lista de neurônios dessa camada, que é um dos atributos de classe discutidos no primeiro parágrafo. A próxima tarefa de uma camada é processar as entradas recebidas e retornar as saídas. Podemos observar esse comportamento no Programa \ref{lst:layer_2}.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Layer}}, label={lst:layer_2}, escapeinside={\%}]
@@ -388,7 +388,7 @@ def outputs(self, inputs):
 
 A camada de entrada não processa os dados, usando-os diretamente. As demais camadas devem processar cada neurônio, usando seu próprio método de processamento, aplicando a transformação linear e em seguida a função de ativação. O resultado é armazenado numa lista \eng{numpy} que é o atributo de classe \texttt{output$\_$cache}, que armazena as saídas dessa camada para uso posterior; por fim, a lista das saídas da camada é retornada.
 
-A última tarefa da classe \eng{Layer} é calcular os termos $\Delta$ definidos pelas equações \ref{retro:15} e \ref{retro:16}, que definem respectivamente o cálculo que é feito se estamos calculando as derivadas para as camadas ocultas e o cálculo feito para a camada de saída. As duas versões são exibidas na listagem \ref{lst:layer_3} abaixo.
+A última tarefa da classe \eng{Layer} é calcular os termos $\Delta$ definidos em \eqref{retro:15} e \eqref{retro:16}, que definem respectivamente o cálculo que é feito se estamos calculando as derivadas para as camadas ocultas e o cálculo feito para a camada de saída. As duas versões são exibidas no Programa \ref{lst:layer_3} abaixo.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Layer}}, label={lst:layer_3}, escapeinside={\%}]
@@ -408,13 +408,13 @@ def calcular_delta_camada_de_saida(self, expected):
 \end{lstlisting}
 
 
-Os algoritmos são as traduções quase literais das equações \ref{retro:15} e \ref{retro:16}. Podemos ver a natureza recursiva da regra da cadeia nas 2 linhas finais, onde usamos os deltas calculados da próxima camada para calcular os deltas da camada atual. O caso base é a função que calcula o delta da camada de saída. A lógica que orquestra essa recursão está implementada na próxima classe.
+Os algoritmos são as traduções quase literais de \eqref{retro:15} e \eqref{retro:16}. Podemos ver a natureza recursiva da regra da cadeia nas 2 linhas finais, onde usamos os deltas calculados da próxima camada para calcular os deltas da camada atual. O caso base é a função que calcula o delta da camada de saída. A lógica que orquestra essa recursão está implementada na próxima classe.
 
 \subsection{A rede}
 
 A classe \eng{Network} representa a rede neural como um todo. Ela armazena uma lista de camadas, ou seja, objetos do tipo \eng{Layer}, a partir dos parâmetros que recebe em seu construtor, que são a estrutura da rede que será criada, que é um vetor de inteiros que representam as quantidades de neurônios para cada camada. Além disso, recebe a taxa de aprendizado que será utilizada em toda a rede, nessa versão, e quais as funções de ativação que serão utilizadas nas camadas ocultas e na camada de saída.
 
-A listagem \ref{lst:network_1} exibe o trecho do construtor que cria cada camada e insere na lista de camadas do objeto da classe atual. A camada de entrada não possui camada anterior, nem função de ativação. Além disso, a camada de saída pode utilizar uma função de ativação diferente daquela utilizada pelas camadas ocultas, que usarão a mesma.
+O Programa \ref{lst:network_1} exibe o trecho do construtor que cria cada camada e insere na lista de camadas do objeto da classe atual. A camada de entrada não possui camada anterior, nem função de ativação. Além disso, a camada de saída pode utilizar uma função de ativação diferente daquela utilizada pelas camadas ocultas, que usarão a mesma.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_1}, escapeinside={\%}]
@@ -442,7 +442,7 @@ class Network:
 \end{lstlisting}
 
 
-A primeira tarefa da classe Network é o de processar entradas, fazendo elas atravessarem a rede, camada a camada, até a camada de saída, e retornar as saídas obtidas. É o processo de \eng{feedforward} explicado no início do capítulo. Sua implementação mesmo para o caso geral de multi-camadas é bem simples, conforme exibido na listagem \ref{lst:network_2} abaixo.
+A primeira tarefa da classe Network é o de processar entradas, fazendo elas atravessarem a rede, camada a camada, até a camada de saída, e retornar as saídas obtidas. É o processo de \eng{feedforward} explicado no início do capítulo. Sua implementação mesmo para o caso geral de multi-camadas é bem simples, conforme exibido no Programa \ref{lst:network_2} abaixo.
 \newpage
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_2}, escapeinside={\%}]
@@ -456,7 +456,7 @@ def feedforward(self, entrada):
 \end{lstlisting}
 
 
-A próxima tarefa é treinar a rede, passando uma lista de entradas e saídas esperadas, realizando o procedimento \eng{backpropagate} para atualizar os pesos e vieses dos neurônios de cada camada, tudo isso em sequência, para cada entrada fornecida. É o que está literalmente implementado na listagem \ref{lst:network_3} abaixo.
+A próxima tarefa é treinar a rede, passando uma lista de entradas e saídas observadas, realizando o procedimento \eng{backpropagation} para atualizar os pesos e vieses dos neurônios de cada camada, tudo isso em sequência, para cada entrada fornecida. É o que está literalmente implementado no Programa \ref{lst:network_3} abaixo.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_3}, escapeinside={\%}]
@@ -473,9 +473,9 @@ def train(self, entradas, saidas_reais):
 \end{lstlisting}
 
 
-Cada chamada à função \eng{train} significa o procedimento de treinamento sendo executado uma única vez. Cada vez que a rede é treinada dizemos que ela avançou em uma \defi{época} de treinamento. O treinamento consiste em primeiramente executar o \eng{feedforward} para uma entrada, para que as camadas possam armazenar as saídas correspondentes aos valores atuais de seus parâmetros, os pesos e vieses, assim como as saídas em seus atributos \eng{output$\_$cache}, que serão usados pelo método \eng{backpropagate} a seguir, de acordo com as equações que derivamos para o processo de treinamento.
+Cada chamada à função \eng{train} significa que o procedimento de treinamento sendo executado uma única vez. Cada vez que a rede é treinada dizemos que ela avançou em uma \defi{época} de treinamento. O treinamento consiste em primeiramente executar o \eng{feedforward} para uma entrada, para que as camadas possam armazenar as saídas correspondentes aos valores atuais de seus parâmetros, os pesos e os vieses, assim como as saídas em seus atributos \eng{output$\_$cache}, que serão usados pelo método \eng{backpropagation} a seguir, de acordo com as equações que derivamos para o processo de treinamento.
 
-O funcionamento do método \eng{backpropagate} pode ser visto na listagem \ref{lst:network_4} a seguir. Tudo o que ele faz aqui é calcular os deltas das camadas, na ordem correta, começando pela camada de saída, e depois percorrendo as demais camadas do final para o início da rede, fazendo a chamada para cada objeto da classe \eng{Layer} que constitui a rede.
+O funcionamento do método \eng{backpropagation} pode ser visto no Programa \ref{lst:network_4} a seguir. Tudo o que ele faz aqui é calcular os deltas das camadas, na ordem correta, começando pela camada de saída, e depois percorrendo as demais camadas do final para o início da rede, fazendo a chamada para cada objeto da classe \eng{Layer} que constitui a rede.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_4}, escapeinside={\%}]
@@ -490,7 +490,7 @@ def backpropagate(self, saidas_reais):
 \end{lstlisting}
 
 
-A seguir, atualiza-se os pesos e os vieses com os métodos correspondentes, que podem ser visualizados na listagem \ref{lst:network_5}. Como os valores são todos armazenados nos atributos de estado dos neurônios e das camadas, implementamos diretamente as contas das equações que obtemos para o método do gradiente e da regra da cadeia da retropropagação. Dessa forma, o que fazemos na classe \eng{Network} é basicamente traduzir a matemática para a sintaxe da linguagem Python.
+A seguir, atualiza-se os pesos e os vieses com os métodos correspondentes, que podem ser visualizados no Programa \ref{lst:network_5}. Como os valores são todos armazenados nos atributos de estado dos neurônios e das camadas, implementamos diretamente as contas das equações que obtemos para o método do gradiente e da regra da cadeia da retropropagação. Dessa forma, o que fazemos na classe \eng{Network} é basicamente traduzir a matemática para a sintaxe da linguagem Python.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_5}, escapeinside={\%}]
@@ -512,7 +512,7 @@ def update_bias(self):
 \end{lstlisting}
 
 
-A próxima responsabilidade da classe \eng{Network}, uma vez que já foi treinada, é fazer a previsão de classes de novos dados de entrada. Isto é feito pelo método mostrado na listagem \ref{lst:network_6}. Isto significa simplesmente processar as entradas fornecidas pelo método \eng{feedforward}, que usará os parâmetros que foram ajustados anteriormente para fazer os cálculos. 
+A próxima tarefa da classe \eng{Network}, uma vez que já foi treinada, é fazer a previsão de classes de novos dados de entrada. Isto é feito pelo método mostrado no Programa \ref{lst:network_6}. Isto significa simplesmente processar as entradas fornecidas pelo método \eng{feedforward}, que usará os parâmetros que foram ajustados anteriormente para fazer os cálculos. 
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_6}, escapeinside={\%}]
@@ -528,7 +528,7 @@ def predict(self, entradas, interpretar):
 
 Ao final, os dados da última camada são uma lista, isto é, um vetor de valores reais, que são interpretados por uma função que é passada por parâmetro que identifica a qual classe, previamente definida, pertence esse vetor de saída. A lógica dessa interpretação é externa à classe \eng{Network} e será vista mais adiante. A lista de classes preditas em formato \eng{numpy} é retornada.
 
-A última responsabilidade dessa classe é calcular uma métrica de avaliação para esta rede, que irá servir de avaliação do quão boa a rede é para classificar os dados utilizados. A métrica mais simples a ser utilizada é a \defi{acurácia} da previsão. Ela basicamente mede a proporção de classificações corretas dentre todas as classificações realizadas para um conjunto de dados. Essa lógica bem simples é implementada na listagem \ref{lst:network_7} abaixo. 
+A última função dessa classe é calcular uma métrica de avaliação para esta rede, que irá servir de avaliação do quão boa a rede é para classificar os dados utilizados. A métrica mais simples a ser utilizada é a \defi{acurácia} da previsão. Ela basicamente mede a proporção de classificações corretas dentre todas as classificações realizadas para um conjunto de dados. Essa lógica bem simples é implementada no Programa \ref{lst:network_7} abaixo. 
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Network}}, label={lst:network_7}, escapeinside={\%}]
@@ -544,9 +544,9 @@ def validate(self, esperados):
 \end{lstlisting}
 
 
-Nota-se que ela utiliza as previsões salvas no atributo de classe que é atualizado toda vez que executamos o método \eng{predict}, acima. As classes esperadas são passadas como parâmetro, uma vez que estamos lidando no \eng{perceptron} com uma aprendizagem supervisionada. Dessa forma, ao treinarmos a rede utilizamos um conjunto de dados para os quais já sabemos as classes, e ainda dividimos esse conjunto em duas partes, as quais chamamos de \defi{conjunto de treino} e de \defi{conjunto de teste ou validação}.
+Nota-se que ela utiliza as previsões salvas no atributo de classe que é atualizado toda vez que executamos o método \eng{predict}, acima. As classes conhecidas são passadas como parâmetro, uma vez que estamos lidando no \eng{perceptron} com uma aprendizagem supervisionada. Dessa forma, ao treinarmos a rede utilizamos um conjunto de dados para os quais já sabemos as classes, e ainda dividimos esse conjunto em duas partes, as quais chamamos de \defi{conjunto de treino} e de \defi{conjunto de teste ou validação}.
 
-Treinamos a rede com o conjunto de treino, que deve sempre ser a maior parte de nossa partição, uma vez que é a partir dele que iremos usar o \eng{backpropagate} para aproximar as saídas da rede às saídas esperadas contidas no conjunto. Géron \citep{hands} cita que tipicamente escolhemos aleatoriamente $20\%$ dos dados como nosso conjunto de teste, ficando o restante como o conjunto de treino. A seguir, podemos calcular a acurácia da classificação do conjunto de treino, e a seguir prever e medir a acurácia do conjunto de teste para comparar os resultados. 
+Treinamos a rede com o conjunto de treino, que deve sempre ser a maior parte de nossa partição, uma vez que é a partir dele que iremos usar o \eng{backpropagation} para aproximar as saídas da rede às saídas observadas contidas no conjunto. Géron \citep{hands} cita que tipicamente escolhemos aleatoriamente $20\%$ dos dados como nosso conjunto de teste, ficando o restante como o conjunto de treino. A seguir, podemos calcular a acurácia da classificação do conjunto de treino, e a seguir prever e medir a acurácia do conjunto de teste para comparar os resultados. 
 
 Naturalmente a acurácia para o conjunto de teste tende a ser menor, mas não pode ser muito menor, senão dizemos que nossa rede sofre de um problema de classificação conhecido como \defi{overfitting}, ou sobreajuste, o que significa que ela está boa para lidar com o conjunto com o qual foi treinado, o que era esperado dado que foi construída para isso, mas sofre para classificar dados novos, com os quais não foi treinada, e não é isso o que queremos. 
 
@@ -554,16 +554,16 @@ O que queremos é justamente o contrário, que nossa rede, ou seja, nosso algori
 
 De modo geral, define-se como uma técnica de \defi{regularização} qualquer uma que seja utilizada para reduzir o erro do conjunto de teste às custas do aumento do erro do conjunto de treino. Um exemplo, explicado em detalhes por Yash Upadhyay \citep{yash}, é a adição de termos de penalização (\eng{Parameter Norm Penalties}), à função de custo. Estes termos são expressões que envolvem os pesos e multiplicadas por hiperparâmetros que podem ser ajustados empiricamente dando maior ou menor peso à regularização. Esta função pode ser definida de formas diferentes, sendo as mais comuns as regularizações $L1$ e $L2$.
 
-Um outro exemplo de técnica é o \defi{dropout}, descrita por Amar Budhiraja \citep{network_2}, que consiste em ignorar aleatoriamente alguns neurônios durante o treinamento da rede, isto é, não calculamos deltas durante uma execução do \eng{backpropagate} e nem usamos seu valor em consideração quando processamos uma entrada na rede com o \eng{feedforward}. É como se alguns neurônios fossem ``desativados'' durante a fase de treinamento, o que irá prevenir que os neurônios se tornem dependentes uns dos outros em suas contribuições para diminuir o erro total da rede, de acordo com a interpretação do autor, e dessa forma esse procedimento irá diminuir o sobreajuste aos dados de treino.
+Um outro exemplo de técnica é o \defi{dropout}, descrita por Amar Budhiraja \citep{network_2}, que consiste em ignorar aleatoriamente alguns neurônios durante o treinamento da rede, isto é, não calculamos deltas durante uma execução do \eng{backpropagation} e nem usamos seu valor em consideração quando processamos uma entrada na rede com o \eng{feedforward}. É como se alguns neurônios fossem ``desativados'' durante a fase de treinamento, o que irá prevenir que os neurônios se tornem dependentes uns dos outros em suas contribuições para diminuir o erro total da rede, de acordo com a interpretação do autor, e dessa forma esse procedimento irá diminuir o sobreajuste aos dados de treino.
 
-Em nosso \eng{perceptron} didático optei por não implementar nem o \eng{dropout} tampouco as regularizações, já que o objetivo dessa versão aqui demonstrada não é fornecer um modelo que seja utilizado em problemas reais, mas apenas didáticos. Em contrapartida essas técnicas estão presentes e podem ser utilizadas nas bibliotecas de redes neurais que usaremos na parte prática do trabalho.
+Em nosso \eng{perceptron} didático optamos por não implementar nem o \eng{dropout} tampouco as regularizações, já que o objetivo dessa versão aqui demonstrada não é fornecer um modelo que seja utilizado em problemas reais, mas apenas didáticos. Em contrapartida essas técnicas estão presentes e podem ser utilizadas nas bibliotecas de redes neurais que usaremos na parte prática do trabalho.
 
 \subsection{A classe \eng{Perceptron}}
 \label{secao:perceptron}
 
-A última classe implementada, não foi baseada em um exemplo, mas criada a partir da necessidade de encapsular o comportamento da rede, para facilitar os testes do seu funcionamento que iremos realizar. Já discutimos sobre as diferentes taxas de aprendizagem para o gradiente descendente, discutimos sobre as diferentes funções de ativação que podem ser utilizadas nas redes neurais, assim como a sua topologia no que se refere apenas à quantidade de neurônios e a quantidade de camadas de neurônios.
+A última classe implementada, não foi baseada em um exemplo, mas criada a partir da necessidade de simplificar a criação da rede, para facilitar os testes do seu funcionamento que iremos realizar. Já discutimos sobre as diferentes taxas de aprendizagem para o gradiente descendente, discutimos sobre as diferentes funções de ativação que podem ser utilizadas nas redes neurais, assim como a sua topologia no que se refere apenas à quantidade de neurônios e a quantidade de camadas de neurônios.
 
-Esses são basicamente os atributos que teremos que ajustar de acordo com a necessidade que os dados utilizados em nosso aprendizado irão criar. Dessa forma criamos a classe \eng{Perceptron} que possui um construtor que irá lidar com a seleção dessas opções. Por enquanto, está na listagem \ref{lst:percep_1} apenas a definição de seu construtor e a documentação explicativa.
+Esses são basicamente os atributos que teremos que ajustar de acordo com a necessidade que os dados utilizados em nosso aprendizado irão criar. Dessa forma criamos a classe \eng{Perceptron} que possui um construtor que irá lidar com a seleção dessas opções. Por enquanto, está no Programa \ref{lst:percep_1} apenas a definição de seu construtor e a documentação explicativa.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_1}, escapeinside={\%}]
@@ -584,15 +584,15 @@ No construtor é feita uma seleção dentre as funções de ativação existente
 
 O parâmetro $M$ define a quantidade inicial padrão de \defi{épocas} que serão treinadas. Uma época corresponde a uma passagem do conjunto de treino pelo \eng{feedforward} e a seguir pelo \eng{backpropagation}, ou seja, configura um único ajuste dos parâmetros através de nosso algoritmo de treinamento.
 
-A arquitetura de camadas padrão definida pelo parâmetro $N$ ($N=[1]$) serve para uma validação existente no construtor, para não permitir a passagem de uma quantidade $\leq 0$ de camadas ou de neurônios. Se quiséssemos uma arquitetura de $3$ camadas com $4, 5, $ e $6$ neurônios cada, por exemplo, então o parâmetro passado durante a criação de um objeto \eng{Perceptron} deveria ser $N = [4, 5, 6]$.
+A arquitetura de camadas padrão definida pelo parâmetro $N$ ($N=[1]$) serve para uma validação existente no construtor, para não permitir a passagem de uma quantidade negativa ou nula de camadas ou de neurônios. Se quiséssemos uma arquitetura de $3$ camadas com $4, 5, $ e $6$ neurônios cada, por exemplo, então o parâmetro passado durante a criação de um objeto \eng{Perceptron} deveria ser $N = [4, 5, 6]$.
 
 Outra tarefa do construtor é criar um objeto da classe \eng{OneHotEncoder}\footnote{\url{https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html}} da biblioteca \eng{scikit-learn}\footnote{\url{https://scikit-learn.org/stable/index.html}}. Essa é uma das mais famosas e mais utilizadas bibliotecas da linguagem Python para tarefas de aprendizado de máquina. É a biblioteca utilizada pela maioria dos autores dos livros-textos da área de ciência de dados, como por exemplo Géron \citep{hands} e Grus \citep{data}.
 
 Esse objeto codificador (\eng{encoder}) é salvo como um atributo de classe: \texttt{self.\_enc}, e será utilizado no método de treinamento para criar automaticamente as classes numéricas a partir das classes fornecidas pelos conjuntos de treinamento e validação. Essas classes numéricas representam cada classe no formato de um vetor com todos os componentes zerados exceto um, o que identifica unicamente as classes.
 
-Suponha, por exemplo, que estamos treinando um conjunto de fotos que possuem as classes \emph{cachorro}, \emph{gato} e \emph{rato}. A função codificadora poderá transformar a palavra \emph{cachorro} no vetor $[1, 0, 0]$, \emph{gato} no vetor $[0, 1, 0]$ e \emph{rato} no vetor $[0, 0, 1]$. De forma que estes serão os valores esperados para os $3$ neurônios de saída que nossa rede obrigatoriamente deverá ter (número de classes = número de neurônios de saída). A ordem dessa codificação é irrelevante, sendo gerenciada internamente pela classe \eng{OneHotEncoder}.
+Suponha, por exemplo, que estamos treinando um conjunto de fotos que possuem as classes \emph{cachorro}, \emph{gato} e \emph{rato}. A função codificadora poderá transformar a palavra \emph{cachorro} no vetor $[1, 0, 0]$, \emph{gato} no vetor $[0, 1, 0]$ e \emph{rato} no vetor $[0, 0, 1]$. Dessa forma, estes serão os valores esperados para os $3$ neurônios de saída que nossa rede obrigatoriamente deverá ter (número de classes = número de neurônios de saída). A ordem dessa codificação é irrelevante, sendo gerenciada internamente pela classe \eng{OneHotEncoder}.
 
-A seguir, no método utilizado para treinar a rede, que recebe os dados de entrada e as classes esperadas correspondentes a cada entrada, o primeiro passo é fazer essa codificação. O primeiro trecho do método \texttt{treinar} está na listagem \ref{lst:percep_2}.
+A seguir, no método utilizado para treinar a rede, que recebe os dados de entrada e as classes conhecidas correspondentes a cada entrada, o primeiro passo é fazer essa codificação. O primeiro trecho do método \texttt{treinar} está no Programa \ref{lst:percep_2}.
 
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_2}, escapeinside={\%}]
@@ -606,9 +606,9 @@ def treinar(self, x_train, y_train, M=0):
 \end{lstlisting}
 
 
-Nessa classe e nos exemplos subsequentes neste trabalho, sempre nomeio o conjunto dos dados de treino de \texttt{x\_train} e \texttt{y\_train}, e do conjunto de teste de \texttt{x\_test} e \texttt{y\_test}. A letra $x$ indica que é o conjunto de dados de entrada e $y$ indica as classes esperadas de classificação. No trecho acima usamos a classe \eng{OneHotEncoder} para transformar quaisquer formatos que as classes forem informadas nos vetores numéricos que serão os valores esperados da saída da rede.
+Nessa classe e nos exemplos subsequentes neste trabalho, sempre nomeia-se o conjunto dos dados de treino de \texttt{x\_train} e \texttt{y\_train}, e o conjunto de teste de \texttt{x\_test} e \texttt{y\_test}. A letra $x$ indica que é o conjunto de dados de entrada e $y$ indica as classes conhecidas de classificação. No trecho acima utiliza-se a classe \eng{OneHotEncoder} para transformar quaisquer formatos que as classes forem informadas nos vetores numéricos que serão os valores esperados da saída da rede.
 
-O próximo trecho de código irá se encarregar de criar a estrutura geral da rede, ao final criando um objeto da classe \eng{Network} e salvando-o como um atributo de classe. É o que está presente na listagem \ref{lst:percep_3}. Os dados de entrada são esperados no formato de lista do tipo \eng{numpy}, dessa forma a primeira linha do trecho obtém a quantidade de características (\eng{features}) dos dados de entrada, ou seja, das variáveis explicativas do modelo, através do método \texttt{shape(1)} do tipo \eng{numpy}, essa será a quantidade de neurônios da camada de entrada da rede, um para cada característica.
+O próximo trecho de código irá se encarregar de criar a estrutura geral da rede, ao final criando um objeto da classe \eng{Network} e salvando-o como um atributo de classe. É o que está presente no Programa \ref{lst:percep_3}. Os dados de entrada são esperados no formato de lista do tipo \eng{numpy}, dessa forma a primeira linha do trecho obtém a quantidade de características (\eng{features}) dos dados de entrada, ou seja, das variáveis explicativas do modelo, através do método \texttt{shape(1)} do tipo \eng{numpy}, essa será a quantidade de neurônios da camada de entrada da rede, um para cada característica.
 
 Usando o exemplo das fotos de animais, os pixels da foto seriam as variáveis explicativas para um modelo de classificação, assumindo que todas as fotos possuem a mesma quantidade de pixels e que cada pixel possui apenas um valor de intensidade de cinza, ou outra cor única qualquer. Se utilizássemos fotos coloridas, com por exemplo, as intensidades de $3$ cores diferentes por pixel, então o número de variáveis explicativas de nosso modelo seria $3n$, sendo $n$ o número de pixels da foto.
 \newline
@@ -641,11 +641,11 @@ Obtém-se a quantidade de neurônios para a camada de saída a partir da quantid
 
 Essa quantidade apropriada é definida por Jeff Heaton \citep{layers_2} como sendo $2/3$ da quantidade de neurônios de entrada mais a quantidade de neurônios de saída. Esta é uma das `regras de ouro' que ele descobriu empiricamente para garantir o bom funcionamento da rede. Outra boa prática que ele encontrou, mais geral mas que satisfaz a primeira, é que a quantidade de neurônios de uma camada oculta única deve ser tal que seja menor que a quantidade de neurônios de entrada mas maior que a quantidade de neurônios de saída.
 
-Naturalmente o treinamento aceita quaisquer número de camadas ocultas e de neurônios em cada camada, apenas não há garantias de que o treinamento irá suceder sem ocorrer o problema do gradiente explodindo/desaparecendo. Mesmo a utilização das regras de Heaton \citep{layers_2} não assegura esse sucesso do treinamento, apenas testes com outras quantidades de neurônios e camadas, e com outras funções de ativação e taxas de aprendizado que poderão resultar eventualmente num treinamento bem sucedido, caso essas opções-padrão não sejam suficientes.
+Naturalmente o treinamento aceita qualquer quantidade de camadas ocultas e de neurônios em cada camada, apenas não há garantias de que o treinamento irá suceder sem ocorrer o problema do gradiente explodindo/desaparecendo. Mesmo a utilização das regras de Heaton \citep{layers_2} não assegura o sucesso do treinamento, apenas testes com outras quantidades de neurônios e camadas, e com outras funções de ativação e taxas de aprendizado que poderão resultar eventualmente num treinamento bem sucedido, caso essas opções-padrão não sejam suficientes.
 
 Essa é uma dificuldade inerente das redes neurais, ainda mais quando tenta lidar com conjuntos de dados muito grandes e com um grande número de variáveis explicativas. Essa é uma das razões principais para ser preferível a utilização de uma biblioteca já consolidada e com muitos anos de desenvolvimento e ajustes por muitos desenvolvedores e cientistas de dados ao redor do mundo.
 
-O próximo trecho, na listagem \ref{lst:percep_4} é o trecho principal deste método, é o treinamento \eng{backpropagate} feito um número $M$ de épocas. São passados como parâmetros os dados de entrada, e as classes esperadas já codificadas. Ao final desse treinamento, a rede está salva no atributo de classe \texttt{self.network} com os parâmetros já ajustados e prontos para serem utilizados para validação e previsão de novos dados.
+O próximo trecho, no Programa \ref{lst:percep_4} é o trecho principal deste método, é o treinamento \eng{backpropagation} feito um número $M$ de épocas. São passados como parâmetros os dados de entrada, e as classes conhecidas já codificadas. Ao final desse treinamento, a rede está salva no atributo de classe \texttt{self.network} com os parâmetros já ajustados e prontos para serem utilizados para validação e previsão de novos dados.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_4}, escapeinside={\%}]
@@ -653,7 +653,7 @@ O próximo trecho, na listagem \ref{lst:percep_4} é o trecho principal deste m�
         self.network.train(x_train, y_encoded)
 \end{lstlisting}
 
-O próximo método realiza a previsão das classes a partir dos dados informados, simplesmente utilizando a função da classe \eng{Network} criada para isso. É o que está na listagem \ref{lst:percep_5}, abaixo. 
+O próximo método realiza a previsão das classes a partir dos dados informados, simplesmente utilizando a função da classe \eng{Network} criada para isso. É o que está no Programa \ref{lst:percep_5}, abaixo. 
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_5}, escapeinside={\%}]
@@ -666,7 +666,7 @@ def prever(self, X, interpretar=None):
 \end{lstlisting}
 
 
-Por padrão a função que irá interpretar os neurônios de saída, convertendo-os em uma classe, foi criada da forma como será mostrada na listagem \ref{lst:percep_6}, a seguir.
+Por padrão a função que irá interpretar os neurônios de saída, convertendo-os em uma classe, foi criada da forma como será mostrada no Programa \ref{lst:percep_6}, a seguir.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_6}, escapeinside={\%}]
@@ -687,7 +687,7 @@ O que a função \texttt{reinterpretar\_saidas} faz é converter esse vetor de s
 
 Alternativamente podemos utilizar outra função de interpretação dos dados de saída, devendo ser informada diretamente por referência para o método \texttt{prever}.
 
-Por razões didáticas, se quisermos observar diretamente os valores calculados pela rede sem interpretação, criei um método que realiza apenas o \eng{feedforward} para uma lista de entradas fornecidas como parâmetro. É o que vemos na listagem \ref{lst:percep_7}, a seguir.
+Por razões didáticas, se quisermos observar diretamente os valores calculados pela rede sem interpretação, criamos um método que realiza apenas o \eng{feedforward} para uma lista de entradas fornecidas como parâmetro. É o que vemos no Programa \ref{lst:percep_7}, a seguir.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_7}, escapeinside={\%}]
@@ -701,7 +701,7 @@ def processar(self, X):
 \end{lstlisting}
 
 
-Por fim, podemos querer observar qual o erro, ou custo, que nossa rede está produzindo para um dado par de conjuntos de entrada e saídas esperadas. Para isso criei o método \texttt{funcao\_erro} exibido na listagem \ref{lst:percep_8}, a seguir. 
+Por fim, podemos querer observar qual o erro, ou custo, que nossa rede está produzindo para um dado par de conjuntos de entrada e saídas observadas. Para isso criamos o método \texttt{funcao\_erro} exibido no Programa \ref{lst:percep_8}, a seguir. 
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho da classe \eng{Perceptron}}, label={lst:percep_8}, escapeinside={\%}]
@@ -713,16 +713,16 @@ def funcao_erro(self, X, Y):
 \end{lstlisting}
 
 
-Ele utiliza a função de erro que está implementada na classe \eng{Network}, que é a função de custo que utilizamos como base para a criação de nosso algoritmo de otimização, o erro quadrático médio (MSE), também conhecido como a norma euclidiana do vetor distância entre os vetores das saídas esperadas e o das saídas obtidas pela rede.
+Ele utiliza a função de erro que está implementada na classe \eng{Network}, que é a função de custo que utilizamos como base para a criação de nosso algoritmo de otimização, o erro quadrático médio (MSE), também conhecido como a norma euclidiana do vetor distância entre os vetores das saídas observadas e o das saídas obtidas pela rede.
 
 Em todos os trechos da classe \eng{Perceptron} acima, várias linhas estão ocultas sob o símbolo de reticências, são linhas que fazem verificações dos dados utilizados e do estado atual do objeto, se ele pode ser usado para previsão por exemplo, ou seja, se já foi treinado previamente, entre outras verificações gerais para um bom funcionamento.
 
 \section{Exemplo de utilização do \eng{perceptron}}
 \label{secao:mnist}
 
-Para demonstrar a utilização da versão aqui implementada da rede \eng{perceptron}, resolvi utilizar aquela que é considerada a base de dados de entrada no mundo da ciência de dados, a base MNIST (\eng{Modified National Institute of Standards and Technology}) de números escritos à mão compilada originalmente pela Universidade de Nova York\footnote{Disponível originalmente em \url{http://yann.lecun.com/exdb/mnist/}.}.
+Para demonstrar a utilização da versão aqui implementada da rede \eng{perceptron}, utilizaremos aquela que é considerada a base de dados de entrada no mundo da ciência de dados, a base MNIST (\eng{Modified National Institute of Standards and Technology}) de números escritos à mão, compilada originalmente pela Universidade de Nova York\footnote{Disponível originalmente em \url{http://yann.lecun.com/exdb/mnist/}.}.
 
-A versão oficial da base de dados consistem em $60$ mil imagens de dimensões $28 \times 28$ pixels. Cada imagem é uma foto de um dígito manuscrito entre $0$ e $9$, sendo que a proporção de cada dígito é aproximadamente de um décimo, além disso a base contém a informação dos valores nominais de cada número, o que torna essa base de dados muito útil para validar modelos de aprendizado supervisionado, antes que sejam utilizados em casos reais. Exemplos de fotos estão na Figura \ref{fig:mnist_fig}.
+A versão oficial da base de dados consiste de $60$ mil imagens de dimensões $28 \times 28$ pixels. Cada imagem é uma foto de um dígito manuscrito entre $0$ e $9$, sendo que a proporção de cada dígito é aproximadamente de um décimo, além disso a base contém a informação dos valores nominais de cada número, o que torna essa base de dados muito útil para validar modelos de aprendizado supervisionado, antes que sejam utilizados em casos reais. Exemplos de fotos estão na Figura \ref{fig:mnist_fig}.
 
 \begin{figure}[htb]
 \centering
@@ -731,9 +731,9 @@ A versão oficial da base de dados consistem em $60$ mil imagens de dimensões $
 \label{fig:mnist_fig}
 \end{figure}
 
-É exatamente esse o objetivo aqui, testar nossa implementação didática do \eng{perceptron}. Para isso, o primeiro passo foi obter uma versão mais \emph{leve} da base de dados, com as fotos redimensionadas para $8 \times 8$ pixels, o que implica em $64$ variáveis explicativas e mesmo número de neurônios de entrada. Além disso essa base possui apenas $1.800$ fotos etiquetadas. A base original de $28^2 = 784$ pixels já se mostrou grande demais para essa implementação conseguir lidar em tempo hábil.\footnote{Em tentativas que fiz com a base original, meu computador ficou calculando deltas por quase 2 horas sem completar uma só época de treinamento.}
+Para nosso teste, o primeiro passo foi obter uma versão mais \emph{leve} da base de dados, com as fotos redimensionadas para $8 \times 8$ pixels, o que implica em $64$ variáveis explicativas e mesmo número de neurônios de entrada. Além disso essa base possui apenas $1.800$ fotos etiquetadas. A base original de $28^2 = 784$ pixels já se mostrou grande demais para essa implementação conseguir lidar em tempo hábil.\footnote{Em tentativas que fiz com a base original, meu computador ficou calculando deltas por quase 2 horas sem completar uma só época de treinamento.}
 
-A base foi importada através da biblioteca \eng{sklearn}, que já possui opções para fazer download automático para o programa em execução de várias versões da base MNIST. O código da listagem \ref{lst:mnist_1} mostra a importação e também o próximo passo, que é separar a base nos conjuntos de treino, com $85\%$ dos dados, e de validação com os $15\%$ restantes.
+A base foi importada através da biblioteca \eng{sklearn}, que já possui opções para fazer download automático para o programa em execução de várias versões da base MNIST. O código do Programa \ref{lst:mnist_1} mostra a importação e também o próximo passo, que é separar a base nos conjuntos de treino, com $85\%$ dos dados, e de validação com os $15\%$ restantes.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho do script \eng{mnist\_test.py}}, label={lst:mnist_1}, escapeinside={\%}]
@@ -748,7 +748,7 @@ x_test, y_test = mnist.data[N:], mnist.target[N:].astype(np.uint8)
 \end{lstlisting}
 
 
-Dada a arquitetura escolhida durante a implementação, para a tarefa de treinar a classificação dos números digitados, não precisamos de mais de meia dúzia de linhas de código, mostradas na listagem \ref{lst:mnist_2}.
+Dada a arquitetura escolhida durante a implementação, para a tarefa de treinar a classificação dos números digitados, não precisamos de mais de meia dúzia de linhas de código, mostradas no Programa \ref{lst:mnist_2}.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho do script \eng{mnist\_test.py}}, label={lst:mnist_2}, escapeinside={\%}]
@@ -765,11 +765,11 @@ score.exibir_grafico("Dados de teste")
 \end{lstlisting}
 
 
-Basicamente, uma rede é criada com a estrutura de uma camada de entrada com $64$ neurônios, quantidade obtida automaticamente pela classe a partir das dimensões da lista de dados informada (\eng{y\_train}), duas camadas ocultas com $48$ e $24$ neurônios cada, com taxa de aprendizado $0.001$ e a função de ativação \eng{ELU}, ambos ajustados empiricamente sendo o que se saíram melhores em acurácia. A segunda linha realiza o treinamento com $20$ épocas, informando a lista de imagens e a lista das classificações conhecidas.
+Basicamente, uma rede é criada com a estrutura de uma camada de entrada com $64$ neurônios, quantidade obtida automaticamente pela classe a partir das dimensões da lista de dados informada (\eng{y\_train}), duas camadas ocultas com $48$ e $24$ neurônios cada, com taxa de aprendizado $0.001$ e a função de ativação \eng{ELU}, sendo este o conjunto de parâmetros que obteve o melhor desempenho. A segunda linha realiza o treinamento com $20$ épocas, informando a lista de imagens e a lista das classificações conhecidas.
 
-As duas últimas linhas dessa listagem fazem a comparação dos valores previstos com os valores já conhecidos da classificação, para conhecermos a acurácia de nosso modelo de aprendizado. Abaixo nas figuras \ref{fig:mnist_treino} e \ref{fig:mnist_test} está uma exibição gráfica com a função de erro MSE, a acurácia e a \defi{matriz de confusão}, a partir da qual podemos calcular a acurácia de nossa rede neural.
+As duas últimas linhas desso Programa fazem a comparação dos valores previstos com os valores já conhecidos da classificação, para conhecermos a acurácia de nosso modelo de aprendizado. Abaixo, nas Figuras \ref{fig:mnist_treino} e \ref{fig:mnist_test}, está uma exibição gráfica com a função de erro MSE, a acurácia e a \defi{matriz de confusão}, a partir da qual podemos calcular a acurácia de nossa rede neural.
 
-A matriz de confusão permite relacionar as classes esperadas com as classes previstas de um conjunto de dados utilizados num algoritmo de aprendizagem supervisionada como é o caso do \eng{perceptron}. Ela mostra as contagens dessas relações, e dessa forma, a diagonal dessa matriz possui as classificações corretamente obtidas pelo algoritmo, e o restante da matriz a contagem das classificações incorretas.
+A matriz de confusão permite relacionar as classes conhecidas com as classes previstas de um conjunto de dados utilizados num algoritmo de aprendizagem supervisionada como é o caso do \eng{perceptron}. Ela mostra as contagens dessas relações, e dessa forma, a diagonal dessa matriz possui as classificações corretamente obtidas pelo algoritmo, e o restante da matriz a contagem das classificações incorretas.
 
 \begin{figure}[htb]
 \centering
@@ -785,7 +785,7 @@ A matriz de confusão permite relacionar as classes esperadas com as classes pre
 \label{fig:mnist_test}
 \end{figure}
 
-Como os pesos da rede são inicializados aleatoriamente, cada treinamento pode obter resultados levemente diferentes, embora que, no geral os resultados irão convergir para um resultado médio, que dependem dos parâmetros utilizados, como a função de ativação, quantidade de camadas e de neurônios e de épocas de treinamento.
+Como os pesos da rede são inicializados aleatoriamente, cada treinamento pode obter resultados levemente diferentes, embora no geral os resultados irão depender mais dos parâmetros utilizados, como a função de ativação, quantidade de camadas, de neurônios e de épocas de treinamento.
 
 Podemos notar que o conjunto de treino possui uma boa performance, obtendo mais de $93.9\%$ de acurácia, ou seja, de classificações corretas. Por outro lado, o conjunto de teste obteve pouco mais de $83.6\%$, o que indica o problema de \eng{overfitting} em nossa rede, quando a classificação do treino está boa, o que é esperado dado que é a base utilizada para o ajuste dos parâmetros internos, mas quando a rede treinada tenta lidar com dados inéditos, o que é o papel do conjunto de teste, se sai consideravelmente pior.
 
@@ -806,9 +806,9 @@ Todas essas implementações podem ser utilizadas em conjunto, na biblioteca con
 \label{fig:tensor_flow}
 \end{figure}
 
-Para entender o funcionamento e uso do Keras, criei uma rede com a mesma estrutura do \eng{perceptron} aqui implementado, mas com algumas melhorias já inerentes à API, com objetivo de classificar o mesmo conjunto de dados MNIST, para comparar a eficiência. O primeiro passo é importar a base de dados, sendo a mesma que usamos anteriormente, então reutilizamos o mesmo trecho de código mostrado na listagem \ref{lst:mnist_1}.
+Para entender o funcionamento e uso do Keras, criamos uma rede com a mesma estrutura do \eng{perceptron} aqui implementada, mas com algumas melhorias já inerentes à API, com objetivo de classificar o mesmo conjunto de dados MNIST, para comparar a eficiência. O primeiro passo é importar a base de dados, sendo a mesma que usamos anteriormente, então reutilizamos o mesmo trecho de código mostrado no Programa \ref{lst:mnist_1}.
 
-O próximo passo é criar a rede utilizando a API Keras, o que vemos na listagem \ref{lst:keras_1}. A primeira linha cria uma rede sequencial, isto é, uma rede \eng{feedforward}. A seguir, são adicionadas as camadas, a primeira camada é definida como \eng{Flatten} pois é a camada de entrada, então ela não aplica nenhuma transformação nos dados.
+O próximo passo é criar a rede utilizando a API Keras, o que vemos no Programa \ref{lst:keras_1}. A primeira linha cria uma rede sequencial, isto é, uma rede \eng{feedforward}. A seguir, são adicionadas as camadas, a primeira camada é definida como \eng{Flatten} pois é a camada de entrada, então ela não aplica nenhuma transformação nos dados.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}},label={lst:keras_1},escapeinside={\%}]
@@ -823,7 +823,7 @@ model.add(layers.Dense(10, activation='softmax'))
 
 As próximas camadas são adicionadas com o tipo \eng{Dense}, o que significa uma conexão de todos os neurônios de uma camada com todos da próxima, dessa forma estamos criando um \eng{perceptron} exatamente como aquele implementado. 
 
-As camadas ocultas utilizam a função de ativação \eng{ELU}, e a camada de saída utiliza a função \eng{softmax}, o que na API Keras significa que estamos classificando os dados de acordo com o valor máximo dos neurônios de saída, o que em nossa implementação foi papel da função \texttt{reinterpretar\_saidas}, que foi definida na listagem \ref{lst:percep_6}.
+As camadas ocultas utilizam a função de ativação \eng{ELU}, e a camada de saída utiliza a função \eng{softmax}, o que na API Keras significa que estamos classificando os dados de acordo com o valor máximo dos neurônios de saída, o que em nossa implementação foi papel da função \texttt{reinterpretar\_saidas}, que foi definida no Programa \ref{lst:percep_6}.
 \newpage
 \estiloR
 \begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}},label={lst:keras_2},escapeinside={\%}]
@@ -831,29 +831,38 @@ model.compile(optimizer=keras.optimizers.SGD(lr=0.001),
               loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 \end{lstlisting}
 
-Na listagem \ref{lst:keras_2}, definimos os parâmetros finais da rede. Define-se a função de otimização\footnote{\url{https://keras.io/api/optimizers/}} \eng{SGD} (\eng{Stocastic Gradient Descent})\footnote{\url{https://keras.io/api/optimizers/sgd/}}, quase idêntico à implementação do gradiente descendente implementada, mas ao invés de utilizar todas as imagens de treino numa época de treinamento, algumas são escolhidas aleatoriamente, e isso é feito um certo número de vezes, e os deltas são escolhidos para o conjunto aleatório que tenha se saído melhor, de acordo com a função de perda e métrica utilizada.
+No Programa \ref{lst:keras_2}, definimos os parâmetros finais da rede. Define-se a função de otimização\footnote{\url{https://keras.io/api/optimizers/}} \eng{SGD} (\eng{Stocastic Gradient Descent})\footnote{\url{https://keras.io/api/optimizers/sgd/}}, quase idêntica à implementação do gradiente descendente implementada, mas ao invés de utilizar todas as imagens de treino numa época de treinamento, algumas são escolhidas aleatoriamente, e isso é feito um certo número de vezes, e os deltas são escolhidos para o conjunto aleatório que tenha se saído melhor, de acordo com a função de perda e métrica utilizadas.
 
 A função de perda é escolhida com a opção \eng{sparse\_categorical\_crossentropy}, pois é a opção padrão do Keras para tarefas de classificação, não sendo possível utilizar a função MSE como antes, por limitações de projeto da API, o que significa que ela irá tratar as categorias de dados da forma que ela foi obtida, com as $10$ classes de $0$ a $9$, onde cada imagem pertence a apenas uma dessas classes. 
 
 Esse parâmetro seria diferente se fosse criada uma rede para classificação binária, por exemplo, ou então se nossos vetores \texttt{y\_train} e \texttt{y\_test} tivessem sido codificados em vetores do tipo $[0,\ldots,1,0,\ldots]$ da forma que foi feita na nossa implementação.
 
-Por fim a acurácia é escolhida como a métrica para avaliação da rede, e que será utilizada pelo gradiente estocástico para definir o melhor sub-conjunto de treino durante uma dada época de treinamento. Basta treinar a rede como o método \eng{fit}, especificando o número de épocas de treinamento desejado, neste caso $20$ foram suficientes, o que está feito na listagem \ref{lst:keras_3}.
+Por fim a acurácia é escolhida como a métrica para avaliação da rede, e que será utilizada pelo gradiente estocástico para definir o melhor sub-conjunto de treino durante uma dada época de treinamento. Basta treinar a rede como o método \eng{fit}, especificando o número de épocas de treinamento desejado, neste caso $20$ foram suficientes, o que é mostrado no Programa \ref{lst:keras_3}.
 \newline
 \estiloR
 \begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}},label={lst:keras_3},escapeinside={\%}]
 model.fit(x_train, y_train, epochs=20)
+
 # avaliando dados de treinamento
 model.evaluate(x_train, y_train, verbose=2)
 # avaliando os dados de teste
 model.evaluate(x_test, y_test, verbose=2)
+
+# prevendo a partir dos dados de teste
+y_train_pred = np.argmax(model.predict(x_train), axis=-1)
+y_test_pred = np.argmax(model.predict(x_test), axis=-1)
+
+# usando a minha classe de validação que mostra a matriz de confusão
+score_test = Scores(y_test, y_test_pred)
+score_test.exibir_grafico("Dados de teste")
 \end{lstlisting}
 
 
-Nessa listagem também está a avaliação da rede, para o conjunto de treino e para o conjunto de teste. Os resultados obtidos após $20$ épocas de treinamento foram $99.0\%$ de acurácia para o conjunto de treino e $89.7\%$ para o conjunto de teste. 
+Nesse Programa também está a avaliação da rede, para o conjunto de treino e para o conjunto de teste. Os resultados obtidos após $20$ épocas de treinamento foram $99.0\%$ de acurácia para o conjunto de treino e $89.7\%$ para o conjunto de teste. 
 
 Por fim podemos fazer previsões com a rede treinada, nesse caso a API possui o método \eng{predict} que irá retornar os valores da camada de saída, ou seja, as probabilidades de cada imagem pertencer à uma das $10$ classes informadas durante o treinamento.
 
-Nas últimas linhas da listagem \ref{lst:keras_3}, está a lógica de obter a classificação predita para o conjunto de teste, utiliza a função \eng{argmax} para obter a classe que obteve a probabilidade máxima. E por fim exibe a matriz de confusão dessa predição, o que está na Figura \ref{fig:keras_test}.
+Nas últimas linhas do Programa \ref{lst:keras_3}, está a lógica de obter a classificação predita para o conjunto de teste; utiliza a função \eng{argmax} para obter a classe que obteve a probabilidade máxima. E por fim exibe a matriz de confusão dessa predição, o que está na Figura \ref{fig:keras_test}.
 
 \begin{figure}[htb]
 \centering
@@ -866,32 +875,29 @@ Vemos que a API produz melhores resultados, levando em conta a mesma base de dad
 
 Mesmo assim, como não utilizamos diretamente outros recursos de melhoria disponíveis, ainda é possível notar o \eng{overfitting}, dado que a acurácia no conjunto de teste permanece menor que a acurácia no conjunto de treino. 
 
-A seguir, faço um teste com a versão oficial da base de dados, de dimensão maior de pixels (${28\times28}$), o que é possível já que a biblioteca está implementada com muita eficiência e funciona bem para bases maiores mesmo num ambiente pessoal de computação. O código está na íntegra na listagem \ref{lst:keras_4}.
-\newline
+A seguir, testamos com a versão oficial da base de dados, de dimensão maior de pixels (${28\times28}$), o que é possível já que a biblioteca está implementada com muita eficiência e funciona bem para bases maiores mesmo num ambiente pessoal de computação. O código está na íntegra no Programa \ref{lst:keras_4}.
+\newpage
 \estiloR
 \begin{lstlisting}[caption={Trecho do script \eng{mnist\_keras.py}},label={lst:keras_4},escapeinside={\%}]
+# obter os dados
 mnist = fetch_openml('mnist_784', version=1) # versao 28x28
-
+# definição do modelo
 model = tf.keras.Sequential()
 layers = tf.keras.layers
-
 model.add(layers.Flatten(input_shape=(28, 28)))
 model.add(layers.Dense(512, activation='elu'))
 model.add(layers.Dense(256, activation='elu'))
 model.add(layers.Dense(128, activation='elu'))
 model.add(layers.Dense(10, activation='softmax'))
-
+# gerar o modelo
 model.compile(optimizer=keras.optimizers.SGD(lr=0.001),
               loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-
+# treinar e prever
 model.fit(x_train, y_train, epochs=15)
-
 model.evaluate(x_train, y_train, verbose=2)
 model.evaluate(x_test, y_test, verbose=2)
-
 y_pred = np.argmax(model.predict(x), axis=-1)
-
-# usando a minha propria classe de validação
+# validar e medir desempenho
 score = Scores(y_test, y_pred)
 score.exibir_grafico("Dados de teste")
 \end{lstlisting}
@@ -899,7 +905,7 @@ score.exibir_grafico("Dados de teste")
 
 A importação da base é feita agora usando outra função da biblioteca \emph{sklearn}. A seguir, os dados são divididos entre os conjuntos de treino e de teste, com as listas \texttt{x\_train, x\_test} e \texttt{y\_train, y\_test} contendo os pixels e as classificações respectivamente, como antes.
 
-Dessa vez, a rede é criada de acordo com o tamanho da base utilizada, como a camada de entrada é bem maior, já que são ${28\times28 = 784}$ pixels. Crio $3$ camadas ocultas, com os valores progressivamente menores, mas usando ainda a mesma estrutura densa e com a camada final novamente com $10$ neurônios representando os diferentes algarismos.
+Dessa vez, a rede é criada de acordo com o tamanho da base utilizada, como a camada de entrada é bem maior, já que são ${28\times28 = 784}$ pixels. Criamos $3$ camadas ocultas, com os valores progressivamente menores, mas usando ainda a mesma estrutura densa e com a camada final novamente com $10$ neurônios representando os diferentes algarismos.
 
 Por fim, obtemos da mesma forma que no caso anterior, a classificação predita para o conjunto de teste. Dessa vez os resultados são $99.9\%$ de acurácia no conjunto de treino e $96.4\%$ de acurácia no conjunto de teste, conforme pode ser visto na Figura \ref{fig:keras_test_2}, junto com a matriz de confusão.
 
@@ -914,12 +920,12 @@ Por fim, obtemos da mesma forma que no caso anterior, a classificação predita 
 
 Além disso a acurácia final do conjunto de treino é praticamente perfeita, e a acurácia do conjunto de treino, apesar de muito melhor em relação ao \eng{perceptron} implementado, ainda está relativamente menor do que a acurácia do treino. Isto indica que mesmo na versão \eng{Keras} do \eng{perceptron} existe o problema de \eng{overfitting}, ainda que em menor intensidade.
 
-A estratégia utilizada no contexto de \eng{deep-learning} é sobretudo de tentativa e erro, e conforme um cientista de dados vai fazendo isso muitas vezes vai construindo conhecimentos sobre qual arquitetura usar para um problema, qual otimização funciona melhor, uma vez que isso irá sempre variar de acordo com a base de dados utilizada, seja para classificação seja para regressão.
+A estratégia utilizada no contexto de \eng{deep-learning} é sobretudo de tentativa e erro, e conforme um cientista de dados vai fazendo isso muitas vezes vai construindo conhecimentos sobre qual arquitetura usar para um problema e qual otimização funciona melhor, uma vez que isso irá sempre variar de acordo com a base de dados utilizada, seja para classificação seja para regressão.
 
 Uma tentativa recente de melhora nessa estratégia foi a criação de uma biblioteca cujo objetivo é o de justamente testar entre diversas arquiteturas e demais parâmetros de criação de uma rede neural, qual a que se sairá melhor para um dado conjunto de dados e objetivo de aprendizagem. Essa biblioteca é chamada de \eng{AutoKeras} e pertence à essa nova vertente de \eng{deep-learning} conhecida como AutoML (\eng{Automated Machine Learning}).
 
-Os objetivos da AutoML são, segundo Andre Ye \citep{automl}, tornar o \eng{deep-learning} mais acessível para o aprendizado de todos os entusiastas, e acelerar o desenvolvimento de pesquisas nessa área, para tornar a criação de conhecimentos mais sólidos e gerar mais \eng{insigths} para a interpretabilidade dos modelos de redes neurais.
+Os objetivos da AutoML, segundo Andre Ye \citep{automl}, são tornar o \eng{deep-learning} mais acessível para o aprendizado de todos os entusiastas, e acelerar o desenvolvimento de pesquisas nessa área, para tornar a criação de conhecimentos mais sólidos e gerar mais compreensão e interpretabilidade para modelos de redes neurais.
 
 Em seu artigo, Andre Ye \citep{automl} demostra como instalar e utilizar o \eng{AutoKeras}. Resumidamente, o que fazemos é fornecer uma base de dados, e ela irá fazer todo o trabalho de escolha da arquitetura e a otimização dos parâmetros, e ao final retornará um objeto da API Keras, que poderá ser usado tanto para tarefas de classificação quanto de regressão. Uma desvantagem a ser considerada é o tempo de processamento da biblioteca \eng{AutoKeras}, que pode ser longo, dado a quantidade de arquiteturas disponíveis e o conjunto de parâmetros de cada uma. 
 
-Dessa forma, para problemas de menor escala, tanto de quantidade de dados utilizada quanto de poder computacional disponível, o que inclui o que iremos fazer a seguir na previsão de séries temporais, é mais viável testar dentre alguns poucos parâmetros conhecidamente melhores a partir da experiência de outros cientistas de dados, o que implica num tempo consideravelmente menor de processamento.
+Dessa forma, para problemas de menor escala, tanto de quantidade de dados utilizada quanto de poder computacional disponível, o que inclui o que iremos fazer a seguir na previsão de séries temporais, é mais viável testar dentre alguns poucos parâmetros previamente escolhidos a partir da experiência de outros cientistas de dados, o que implica num tempo consideravelmente menor de processamento.

@@ -6,7 +6,9 @@
 \chapter{Conclusões}
 \label{cap:conclusoes}
 
-Este trabalho teve como objetivo avaliar o potencial do uso de redes neurais para a tarefa de previsão de séries temporais financeiras, e os resultados obtidos não foram definitivos em demonstrar vantagens absolutas nem desvantagens impeditivas nesse intento.
+Este trabalho teve como primeiro objetivo servir de um guia de estudos sobre as redes neurais, e podemos afirmar que este objetivo foi alcançado no Capítulo \ref{cap:perceptron}, onde deduzimos as equações de um método de treinamento e a seguir uma implementação completa da rede \eng{Perceptron}, que se mostrou funcional e eficiente para a tarefa-modelo de classificação da base de dados \emph{MNIST}.
+
+O segundo objetivo foi avaliar o potencial do uso de redes neurais para a tarefa de previsão de séries temporais financeiras, e os resultados obtidos não foram definitivos em demonstrar vantagens absolutas nem desvantagens impeditivas nesse intento.
 
 À primeira vista, os resultados são controversos. No primeiro teste, que previu $7$ dias do futuro, a rede neural recorrente do Keras se saiu melhor do que o modelo paramétrico ARIMA, e ambos muito melhores do que a rede neural Perceptron, que afinal de contas foi criada para tarefas de classificação e não para a previsão de um valor contínuo.
 
@@ -22,22 +24,24 @@ Assim, esta é uma clara \eng{desvantagem} do modelo de redes neurais, há a nec
 
 Pode-se pensar por outro lado, que esta torna-se uma \eng{vantagem} quando há de fato muitos dados disponíveis, o que é o caso de problemas de previsão financeiras como essa. Existem décadas de dados financeiros disponíveis, assim isso não é um problema, mas essa vantagem só seria garantida se outro fator também entrar em jogo, a velocidade de processamento dos algoritmos.
 
-Atualmente as redes neurais, principalmente da biblioteca aqui utilizada, a Keras, já foi e ainda está sendo super otimizada para obter o máximo desempenho de computação paralela, GPU's, etc. Então bastava fazer uma checagem disso, que de fato foi feita no capítulo anterior.
+A biblioteca de redes neurais que foi utilizada, Keras, já foi e ainda está sendo otimizada para obter o máximo desempenho de computação paralela, GPU's, etc. Então bastava fazer uma checagem desse desempenho, o que de fato foi feito no capítulo anterior.
 
-A Tabela \ref{tabela:desempenho} demonstra que a velocidade de processamento do treinamento de uma rede neural Keras foi quase que imediato para os três treinamentos, mesmo que houvesse mais de dez vezes o número de cálculos, o tempo foi praticamente o mesmo, não levando mais de um minuto.
+A Tabela \ref{tabela:desempenho} demonstra que o tempo de processamento do treinamento de uma rede neural Keras foi quase que instantâneo para os três treinamentos, mesmo que no último teste tenha sido necessário mais de dez vezes o número de cálculos em relação ao primeiro, o tempo foi praticamente o mesmo, não levando mais de um minuto.
 
 Enquanto isso, a busca pelos parâmetros ótimos do modelo paramétrico ARIMA teve um tempo de processamento que cresceu, com alguma ordem linear não calculada, mas ainda assim notável, já que enquanto levou menos de um minuto para prever $7$ dias, levou mais de uma hora e meia para treinar os $250$ dias úteis que representaram um ano de previsão do terceiro teste.
 
-Mesmo a implementação didática do Perceptron crescendo de acordo com a quantidade de dados do treinamento, já que tem uma complexidade de ordem linear, que pode ser vista no código-fonte produzido e explicado no segundo capítulo, teve um crescimento de tempo que foi menor do que do modelo ARIMA, demonstrando que é mais pesado, apesar de mais acurado em sua tarefa.
+Mesmo a implementação didática do Perceptron crescendo de acordo com a quantidade de dados do treinamento, já que tem uma complexidade de ordem linear, que pode ser vista no código-fonte produzido e explicado no segundo capítulo, teve um crescimento de tempo que foi menor do que do modelo ARIMA, demonstrando que este último é mais pesado, apesar de mais acurado em sua tarefa.
 
-Há ainda a questão da complexidade dos modelos. O modelo ARIMA é de natureza mais complexa, e exigiu um estudo e implementação mais delicados. Assim é preciso se perguntar se a maior qualidade das previsões é tão contundente assim para compensar um maior tempo de implementação e de processamento.
+Há ainda a questão da complexidade dos modelos. O modelo ARIMA é de natureza mais complexa, exige a verificação de propriedades como a estacionariedade, e a aplicação de transformações aos dados quando estes não são estacionários, o que exige mais estudo e uma implementação mais delicada. Assim é preciso se perguntar se a qualidade das previsões é tão melhor assim para compensar um maior tempo de implementação e de processamento.
 
-A menos da especificação do tipo da rede utilizada, e de alguns poucos parâmetros que foram aqui escolhidos por tentativa e erro, o modelo neural Keras foi muito simples de ser construído e utilizado, e com seu rápido processamento deu resultados comparáveis ao ARIMA em todos os testes, ainda que piores do que ele, estritamente falando.
+A menos da especificação do tipo da rede utilizada, e de alguns poucos parâmetros que foram aqui escolhidos por tentativa e erro, o modelo neural Keras foi muito simples de ser construído e utilizado, e com seu rápido processamento gerou previsões próximas às previsões do ARIMA em todos os testes, ainda que piores do que ele, levando em consideração as métricas utilizadas.
 
 Aqui não foram utilizados todos os recursos disponíveis às redes neurais, nem feita uma busca mais extensiva de hiperparâmetros que poderiam melhorar a qualidade das previsões, já que o objetivo era comparar de forma mais didática, e demonstrar que uma implementação rápida, sem quase nenhuma hipótese sobre os dados, é capaz de gerar previsões razoáveis.
 
-Dessa forma, conclui-se que as redes neurais tem sim potencial para a previsão de séries temporais financeiras, que não pode ser totalmente explorado neste trabalho, mas este não é um potencial infinito e esbarra na necessidade de existir um grande volume de dados do passado para treinamento.
+Dessa forma, mesmo que com os resultados aqui obtidos não nos permita afirmar que as redes neurais tem potencial para a previsão de séries temporais financeiras, lembramos que este potencial não pode ser totalmente explorado neste trabalho, e que esbarra na necessidade de existir um grande volume de dados do passado para treinamento, e de maior processamento para uma busca mais abrangente de hiperparâmetros adequados.
 
-Portanto, uma segunda conclusão que decorre da primeira é que nos casos em que tais dados não estão disponíveis, o modelo ARIMA será a melhor pedida, já que irá gerar melhores resultados, sem levar tanto tempo de processamento, já que este irá aumentar e ser uma desvantagem justamente quando há muitos dados, onde as vantagens das redes neurais entram no jogo.
+Portanto, uma segunda conclusão que decorre da primeira é que nos casos em que um grande volume de dados não está disponíveis, o modelo ARIMA será a melhor opção, já que irá gerar melhores resultados, sem levar tanto tempo de processamento, já que este irá aumentar e ser uma desvantagem justamente quando há muitos dados, onde as vantagens das redes neurais entram no jogo.
+
+Não há dúvidas que objetivos futuros, não alcançados nesta monografia, seriam testar outras séries financeiras, isto é, de outras moedas; testar mais arquiteturas de redes neurais; e tomar o tempo de CPU necessário para uma busca de hiperparâmetros ótimos de cada arquitetura e de cada série. É o que se pode tentar para de fato dizer se as redes neurais poderão servir ou não como uma alternativa válida ao modelo ARIMA na previsão de séries temporais financeiras.
 
 Assim, como toda tarefa de aprendizado de máquina, o importante é obter mais conhecimento sobre as vantagens e desvantagens de cada algoritmo de um certo contexto de ciência de dados. Isto ao menos, pode-se dizer que foi alcançado durante os estudos e testes realizados neste trabalho.
