@@ -292,7 +292,7 @@ Como há um número grande de parâmetros ótimos, $30$ de cada um dos $3$ parâ
 \begin{figure}[htb]
 \centering
 \includegraphics[width=11cm]{figuras/arima_boxplot_30}
-\caption{Previsões para $30$ dias dos modelos ARIMA e Rede Neural (Keras) das janelas de cotações do Dólar.}
+\caption{Distribuição dos parâmetros ótimos $(p, d, q)$ (da esquerda para a direita) encontrados com o \eng{grid search} para o modelo ARIMA para as $30$ janelas de dados.}
 \label{fig:arima_boxplot_30}
 \end{figure}
 
@@ -388,9 +388,6 @@ A seguir, na Figura \ref{fig:series_previsoes_30_1}, estão os gráficos dos mod
 \label{fig:series_previsoes_30_2}
 \end{figure}
 
-
-
-
 Novamente é exibido, na Figura \ref{fig:series_previsoes_30_3}, o gráfico com o intervalo de $95\%$ de confiança para cada uma das $30$ previsões do modelo ARIMA.
 
 \begin{figure}[htb]
@@ -455,7 +452,7 @@ Realizando o \eng{grid search}, o modelo otimizou sua métrica em cada janela, f
 \begin{figure}[htb]
 \centering
 \includegraphics[width=11cm]{figuras/arima_boxplot}
-\caption{Distribuição dos parâmetros ótimos $(p, q, d)$ (da direita para a esquerda) encontrados com o \eng{grid search} para o modelo ARIMA.}
+\caption{Distribuição dos parâmetros ótimos $(p, d, q)$ (da esquerda para a direita) encontrados com o \eng{grid search} para o modelo ARIMA para as $250$ janelas de dados.}
 \label{fig:arima_boxplot}
 \end{figure}
 
